@@ -1,7 +1,18 @@
 package com.server.crews.recruitment.domain;
 
-public abstract class Question {
-    protected String content;
-    protected Boolean necessity;
-    protected Integer order;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
+@AllArgsConstructor
+@Builder
+public class Question {
+    private QuestionType type;
+    private String content;
+    private Boolean necessity;
+    private Integer order;
+    private Integer wordLimit;
+    private Integer minimumSelection;
+    private Integer maximumSelection;
+    private List<String> options;
 }
