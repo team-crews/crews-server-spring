@@ -16,7 +16,13 @@ public class RecruitmentService {
 
     public void saveRecruitment(
             final Recruitment accessedRecruitment, final RecruitmentSaveRequest request) {
-        Recruitment updatedRecruitment = accessedRecruitment.updateAll(request);
-        recruitmentRepository.save(updatedRecruitment);
+        accessedRecruitment.updateAll(request);
+        recruitmentRepository.save(accessedRecruitment);
+    }
+
+    public void updateProgressState(
+            final Recruitment accessedRecruitment, final ProgressStateUpdateRequest request) {
+        accessedRecruitment.updateProgress(request.progress());
+        recruitmentRepository.save(accessedRecruitment);
     }
 }

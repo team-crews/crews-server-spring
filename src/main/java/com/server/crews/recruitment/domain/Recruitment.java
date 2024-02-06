@@ -36,10 +36,13 @@ public class Recruitment {
         this.progress = Progress.IN_PROGRESS;
     }
 
-    public Recruitment updateAll(final RecruitmentSaveRequest request) {
+    public void updateAll(final RecruitmentSaveRequest request) {
         this.title = request.title();
         this.description = request.description();
         this.sections = request.sections();
-        return this;
+    }
+
+    public void updateProgress(final Progress progress) {
+        this.progress = progress;
     }
 }
