@@ -76,7 +76,7 @@ public class AuthService {
     }
 
     private void validateDuplicated(Object existing) {
-        if(Objects.isNull(existing)) {
+        if(Objects.nonNull(existing)) {
             throw new CrewsException(ErrorCode.DUPLICATE_SECRET_CODE);
         }
     }
