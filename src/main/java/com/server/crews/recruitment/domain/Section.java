@@ -13,11 +13,11 @@ public class Section {
     private String description;
     private List<Question> questions;
 
-    public void setQuestionOrder() {
-        int sequence = 1;
+    public int setQuestionOrder(int startSequence) {
         for(Question question: questions) {
-            question.setOrder(sequence);
-            sequence += 1;
+            question.setOrder(startSequence);
+            startSequence += 1;
         }
+        return startSequence;
     }
 }

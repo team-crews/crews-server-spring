@@ -49,8 +49,9 @@ public class Recruitment {
     }
 
     public void setQuestionsOrder(List<Section> sectionsInRequest) {
+        int sequence = 1;
         for(Section section: sectionsInRequest) {
-            section.setQuestionOrder();
+            sequence = section.setQuestionOrder(sequence);
         }
     }
 
