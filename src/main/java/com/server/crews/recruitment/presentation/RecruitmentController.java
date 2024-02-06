@@ -5,10 +5,13 @@ import com.server.crews.recruitment.application.RecruitmentService;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.dto.request.ProgressStateUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
+import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,5 +39,12 @@ public class RecruitmentController {
             @RequestBody final ProgressStateUpdateRequest request) {
         recruitmentService.updateProgressState(accessedRecruitment, request);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{recruitment-id}")
+    @Operation(description = "지원서 양식 상세 정보를 조회한다.")
+    public ResponseEntity<RecruitmentDetailsResponse> getRecruitmentDetails(
+            @PathVariable(value = "recruitment-id") final String recruitmentId) {
+        return ResponseEntity.ok(recruitmentService.getRecruitmentDetails(recruitmentId));
     }
 }
