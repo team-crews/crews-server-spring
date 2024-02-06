@@ -40,10 +40,19 @@ public class Recruitment {
     }
 
     public void updateAll(final RecruitmentSaveRequest request) {
+        setQuestionsOrder(request.sections());
+
         this.title = request.title();
         this.description = request.description();
         this.sections = request.sections();
         this.deadline = request.deadline();
+    }
+
+    public void setQuestionsOrder(List<Section> sectionsInRequest) {
+        int sequence = 1;
+        for(Section section: sectionsInRequest) {
+            sequence = section.setQuestionOrder(sequence);
+        }
     }
 
     public void updateProgress(final Progress progress) {
