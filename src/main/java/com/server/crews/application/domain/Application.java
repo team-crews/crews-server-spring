@@ -1,9 +1,6 @@
-package com.server.crews.recruitment.domain;
+package com.server.crews.application.domain;
 
-import java.util.List;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -13,22 +10,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Document(collection = "recruitments")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Recruitment {
+public class Application {
     @Id
     private String id;
 
     @Indexed(unique = true)
     private String secretCode;
 
-    private String title;
-
-    private String description;
-
-    private Progress progress;
-
-    private List<Section> sections;
-
-    public Recruitment(final String secretCode) {
+    public Application(final String secretCode) {
         this.secretCode = secretCode;
     }
 }
