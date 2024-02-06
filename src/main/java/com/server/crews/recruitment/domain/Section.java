@@ -12,4 +12,12 @@ public class Section {
     private String name;
     private String description;
     private List<Question> questions;
+
+    public void setQuestionOrder() {
+        int sequence = 1;
+        for(Question question: questions) {
+            question.setOrder(sequence);
+            sequence += 1;
+        }
+    }
 }

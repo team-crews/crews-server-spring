@@ -17,4 +17,8 @@ public class Question {
     private Integer minimumSelection;
     private Integer maximumSelection;
     private List<String> options;
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
 }
