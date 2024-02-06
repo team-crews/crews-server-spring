@@ -1,7 +1,10 @@
 package com.server.crews.applicant.domain;
 
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
+import com.server.crews.global.exception.CrewsException;
+import com.server.crews.global.exception.ErrorCode;
 import java.util.List;
+import java.util.regex.Pattern;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +16,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "applicants")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Applicant {
+    private static final String EMAIL_PATTERN = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$";
+
     @Id
     private String id;
 
@@ -37,6 +42,7 @@ public class Applicant {
     }
 
     public void updateAll(final ApplicationSaveRequest request) {
+        validateEmail(request.email());
         setAnswersOrder(request.answers());
 
         this.recruitmentId = request.recruitmentId();
@@ -46,11 +52,17 @@ public class Applicant {
         this.answers = request.answers();
     }
 
-    public void setAnswersOrder(List<Answer> answersInRequest) {
+    private void setAnswersOrder(final List<Answer> answersInRequest) {
         int sequence = 1;
         for(Answer answer: answersInRequest) {
             answer.setOrder(sequence);
             sequence += 1;
+        }
+    }
+
+    private void validateEmail(final String email) {
+        if(!Pattern.matches(EMAIL_PATTERN, email)) {
+            throw new CrewsException(ErrorCode.INVALID_EMAIL_PATTERN);
         }
     }
 }
