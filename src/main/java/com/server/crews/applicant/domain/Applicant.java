@@ -1,4 +1,4 @@
-package com.server.crews.application.domain;
+package com.server.crews.applicant.domain;
 
 import java.util.List;
 import lombok.AccessLevel;
@@ -9,9 +9,9 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
-@Document(collection = "applications")
+@Document(collection = "applicants")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Application {
+public class Applicant {
     @Id
     private String id;
 
@@ -30,7 +30,7 @@ public class Application {
 
     private List<Answer> answers;
 
-    public Application(final String secretCode) {
+    public Applicant(final String secretCode) {
         this.secretCode = secretCode;
         this.outcome = Outcome.PENDING;
     }

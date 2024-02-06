@@ -1,7 +1,7 @@
 package com.server.crews.auth.application;
 
-import com.server.crews.application.domain.Application;
-import com.server.crews.application.repository.ApplicationRepository;
+import com.server.crews.applicant.domain.Applicant;
+import com.server.crews.applicant.repository.ApplicantRepository;
 import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.request.LoginRequest;
 import com.server.crews.auth.dto.request.NewSecretCodeRequest;
@@ -19,18 +19,18 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RecruitmentRepository recruitmentRepository;
-    private final ApplicationRepository applicationRepository;
+    private final ApplicantRepository applicantRepository;
 
     private final int refreshTokenValidityInSecond;
 
     public AuthService(
             final JwtTokenProvider jwtTokenProvider,
             final RecruitmentRepository recruitmentRepository,
-            final ApplicationRepository applicationRepository,
+            final ApplicantRepository applicantRepository,
             @Value("${jwt.refresh-token-validity}") final int refreshTokenValidityInMilliseconds) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.recruitmentRepository = recruitmentRepository;
-        this.applicationRepository = applicationRepository;
+        this.applicantRepository = applicantRepository;
         this.refreshTokenValidityInSecond = refreshTokenValidityInMilliseconds / 1000;
     }
 
@@ -64,15 +64,15 @@ public class AuthService {
     public TokenResponse createApplicationCode(final NewSecretCodeRequest request) {
         String code = request.code();
         validateDuplicatedApplicationCode(code);
-        Application application = applicationRepository.save(new Application(code));
-        String id = application.getId();
+        Applicant applicant = applicantRepository.save(new Applicant(code));
+        String id = applicant.getId();
 
         String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, id);
         return new TokenResponse(id, accessToken);
     }
 
     private void validateDuplicatedApplicationCode(final String code) {
-        Application existing = applicationRepository.findBySecretCode(code).orElse(null);
+        Applicant existing = applicantRepository.findBySecretCode(code).orElse(null);
         validateDuplicated(existing);
     }
 
@@ -97,8 +97,8 @@ public class AuthService {
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
     }
 
-    private Application validateExistingApplication(final String id) {
-        return applicationRepository.findById(id)
+    private Applicant validateExistingApplication(final String id) {
+        return applicantRepository.findById(id)
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
     }
 
@@ -112,10 +112,10 @@ public class AuthService {
     }
 
     public TokenResponse loginForApplicant(final LoginRequest request) {
-        Application application = applicationRepository.findBySecretCode(request.code())
+        Applicant applicant = applicantRepository.findBySecretCode(request.code())
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
 
-        String id = application.getId();
+        String id = applicant.getId();
         String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, id);
         return new TokenResponse(id, accessToken);
     }

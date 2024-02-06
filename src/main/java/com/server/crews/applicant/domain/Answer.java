@@ -1,4 +1,4 @@
-package com.server.crews.application.domain;
+package com.server.crews.applicant.domain;
 
 import java.util.List;
 import lombok.Getter;

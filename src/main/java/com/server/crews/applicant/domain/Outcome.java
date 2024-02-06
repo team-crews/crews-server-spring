@@ -1,4 +1,4 @@
-package com.server.crews.application.domain;
+package com.server.crews.applicant.domain;
 
 public enum Outcome {
     PASS,
