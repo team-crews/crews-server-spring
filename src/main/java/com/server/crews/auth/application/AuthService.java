@@ -80,4 +80,24 @@ public class AuthService {
             throw new CrewsException(ErrorCode.DUPLICATE_SECRET_CODE);
         }
     }
+
+    public Object createAuthentication(final String accessToken) {
+        jwtTokenProvider.validateAccessToken(accessToken);
+        String id = jwtTokenProvider.getPayload(accessToken);
+        Role role = jwtTokenProvider.getRole(accessToken);
+        if(role.equals(Role.ADMIN)) {
+            return validateExistingRecruitment(id);
+        }
+        return validateExistingApplication(id);
+    }
+
+    private Recruitment validateExistingRecruitment(final String id) {
+        return recruitmentRepository.findById(id)
+                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+    }
+
+    private Application validateExistingApplication(final String id) {
+        return applicationRepository.findById(id)
+                .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
+    }
 }

@@ -13,8 +13,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Document(collection = "recruitments")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class Recruitment {
     @Id
     private String id;
@@ -29,4 +27,8 @@ public class Recruitment {
     private Progress progress;
 
     private List<Section> sections;
+
+    public Recruitment(final String secretCode) {
+        this.secretCode = secretCode;
+    }
 }
