@@ -2,6 +2,7 @@ package com.server.crews.auth.presentation;
 
 import com.server.crews.auth.application.AuthService;
 import com.server.crews.auth.domain.Role;
+import com.server.crews.auth.dto.request.LoginRequest;
 import com.server.crews.auth.dto.request.NewSecretCodeRequest;
 import com.server.crews.auth.dto.response.TokenResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,6 +38,26 @@ public class AuthController {
     public ResponseEntity<TokenResponse> createApplicationSecretCode(
             @RequestBody final NewSecretCodeRequest request) {
         TokenResponse tokenResponse = authService.createApplicationCode(request);
+        ResponseCookie cookie = authService.createRefreshToken(Role.APPLICANT, tokenResponse.id());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(tokenResponse);
+    }
+
+    @PostMapping("/login/admins")
+    @Operation(description = "동아리 관리자가 로그인한다.")
+    public ResponseEntity<TokenResponse> loginForAdmin(@RequestBody final LoginRequest request) {
+        TokenResponse tokenResponse = authService.loginForAdmin(request);
+        ResponseCookie cookie = authService.createRefreshToken(Role.ADMIN, tokenResponse.id());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(tokenResponse);
+    }
+
+    @PostMapping("/login/applicants")
+    @Operation(description = "동아리 지원자가 로그인한다.")
+    public ResponseEntity<TokenResponse> loginForApplicant(@RequestBody final LoginRequest request) {
+        TokenResponse tokenResponse = authService.loginForApplicant(request);
         ResponseCookie cookie = authService.createRefreshToken(Role.APPLICANT, tokenResponse.id());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
