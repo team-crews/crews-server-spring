@@ -30,6 +30,8 @@ public class Applicant {
 
     private Long studentNumber;
 
+    private String major;
+
     private String email;
 
     private String name;
@@ -47,6 +49,7 @@ public class Applicant {
 
         this.recruitmentId = request.recruitmentId();
         this.studentNumber = request.studentNumber();
+        this.major = request.major();
         this.email = request.email();
         this.name = request.name();
         this.answers = request.answers();
