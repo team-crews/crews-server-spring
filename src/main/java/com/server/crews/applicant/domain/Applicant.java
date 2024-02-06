@@ -68,4 +68,8 @@ public class Applicant {
             throw new CrewsException(ErrorCode.INVALID_EMAIL_PATTERN);
         }
     }
+
+    public void decideOutcome(final Outcome outcome) {
+        this.outcome = outcome;
+    }
 }

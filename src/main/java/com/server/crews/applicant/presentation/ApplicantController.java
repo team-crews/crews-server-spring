@@ -3,6 +3,7 @@ package com.server.crews.applicant.presentation;
 import com.server.crews.applicant.application.ApplicantService;
 import com.server.crews.applicant.domain.Applicant;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
+import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.ApplicantDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicantsResponse;
 import com.server.crews.auth.presentation.Authentication;
@@ -11,6 +12,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,5 +47,14 @@ public class ApplicantController {
     public ResponseEntity<ApplicantDetailsResponse> getApplicantDetails(
             @PathVariable(value = "applicant-id") final String applicantId) {
         return ResponseEntity.ok(applicantService.getApplicantDetails(applicantId));
+    }
+
+    @PatchMapping("/{applicant-id}/evaluation")
+    @Operation(description = "지원자의 합/불을 결정한다.")
+    public ResponseEntity<Void> decideOutcome(
+            @RequestBody final EvaluationRequest request,
+            @PathVariable(value = "applicant-id") final String applicantId) {
+        applicantService.decideOutcome(request, applicantId);
+        return ResponseEntity.ok().build();
     }
 }

@@ -2,6 +2,7 @@ package com.server.crews.applicant.application;
 
 import com.server.crews.applicant.domain.Applicant;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
+import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.ApplicantDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicantsResponse;
 import com.server.crews.applicant.repository.ApplicantRepository;
@@ -31,5 +32,12 @@ public class ApplicantService {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
         return ApplicantDetailsResponse.from(applicant);
+    }
+
+    public void decideOutcome(final EvaluationRequest request, final String applicantId) {
+        Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
+        applicant.decideOutcome(request.outcome());
+        applicantRepository.save(applicant);
     }
 }
