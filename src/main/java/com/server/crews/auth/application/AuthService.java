@@ -1,5 +1,6 @@
 package com.server.crews.auth.application;
 
+import com.server.crews.application.domain.Application;
 import com.server.crews.application.repository.ApplicationRepository;
 import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.request.NewSecretCodeRequest;
@@ -56,6 +57,21 @@ public class AuthService {
 
     private void validateDuplicatedRecruitmentCode(final String code) {
         Recruitment existing = recruitmentRepository.findBySecretCode(code).orElse(null);
+        validateDuplicated(existing);
+    }
+
+    public TokenResponse createApplicationCode(final NewSecretCodeRequest request) {
+        String code = request.code();
+        validateDuplicatedApplicationCode(code);
+        Application application = applicationRepository.save(new Application(code));
+        String id = application.getId();
+
+        String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, id);
+        return new TokenResponse(id, accessToken);
+    }
+
+    private void validateDuplicatedApplicationCode(final String code) {
+        Application existing = applicationRepository.findBySecretCode(code).orElse(null);
         validateDuplicated(existing);
     }
 

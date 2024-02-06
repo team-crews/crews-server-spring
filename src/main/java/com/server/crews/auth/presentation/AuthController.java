@@ -22,10 +22,19 @@ public class AuthController {
 
     @PostMapping("/recruitment/secret-code")
     @Operation(description = "지원서 양식에 대한 코드를 생성한다.")
-    public ResponseEntity<TokenResponse> createSecretCode(
+    public ResponseEntity<TokenResponse> createRecruitmentSecretCode(
             @RequestBody final NewSecretCodeRequest request) {
         TokenResponse tokenResponse = authService.createRecruitmentCode(request);
         HttpHeaders headers = authService.createRefreshToken(Role.ADMIN, tokenResponse.id());
+        return ResponseEntity.status(HttpStatus.CREATED).headers(headers).body(tokenResponse);
+    }
+
+    @PostMapping("/application/secret-code")
+    @Operation(description = "지원서에 대한 코드를 생성한다.")
+    public ResponseEntity<TokenResponse> createApplicationSecretCode(
+            @RequestBody final NewSecretCodeRequest request) {
+        TokenResponse tokenResponse = authService.createApplicationCode(request);
+        HttpHeaders headers = authService.createRefreshToken(Role.APPLICANT, tokenResponse.id());
         return ResponseEntity.status(HttpStatus.CREATED).headers(headers).body(tokenResponse);
     }
 }
