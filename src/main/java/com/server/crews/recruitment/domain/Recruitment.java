@@ -49,4 +49,8 @@ public class Recruitment {
     public void updateProgress(final Progress progress) {
         this.progress = progress;
     }
+
+    public void updateDeadline(final LocalDateTime deadline) {
+        this.deadline = deadline;
+    }
 }

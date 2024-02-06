@@ -3,6 +3,7 @@ package com.server.crews.recruitment.application;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.ProgressStateUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
@@ -33,5 +34,11 @@ public class RecruitmentService {
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
         return RecruitmentDetailsResponse.from(recruitment);
+    }
+
+    public void updateDeadline(
+            final Recruitment accessedRecruitment, final DeadlineUpdateRequest request) {
+        accessedRecruitment.updateDeadline(request.deadline());
+        recruitmentRepository.save(accessedRecruitment);
     }
 }
