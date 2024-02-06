@@ -1,7 +1,7 @@
 package com.server.crews.recruitment.application;
 
-import com.server.crews.auth.domain.Access;
 import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.recruitment.dto.request.ProgressStateUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +15,8 @@ public class RecruitmentService {
     private final RecruitmentRepository recruitmentRepository;
 
     public void saveRecruitment(
-            final Access access, final RecruitmentSaveRequest request) {
-        log.info("id: {}", access.id());
-        Recruitment updatedRecruitment = Recruitment.from(request, access.id());
+            final Recruitment accessedRecruitment, final RecruitmentSaveRequest request) {
+        Recruitment updatedRecruitment = accessedRecruitment.updateAll(request);
         recruitmentRepository.save(updatedRecruitment);
     }
 }

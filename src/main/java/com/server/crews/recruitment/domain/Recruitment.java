@@ -36,12 +36,10 @@ public class Recruitment {
         this.progress = Progress.IN_PROGRESS;
     }
 
-    public static Recruitment from(final RecruitmentSaveRequest request, final String id) {
-        return Recruitment.builder()
-                .id(id)
-                .title(request.title())
-                .description(request.description())
-                .sections(request.sections())
-                .build();
+    public Recruitment updateAll(final RecruitmentSaveRequest request) {
+        this.title = request.title();
+        this.description = request.description();
+        this.sections = request.sections();
+        return this;
     }
 }

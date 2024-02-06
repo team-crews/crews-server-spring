@@ -2,7 +2,6 @@ package com.server.crews.auth.application;
 
 import com.server.crews.application.domain.Application;
 import com.server.crews.application.repository.ApplicationRepository;
-import com.server.crews.auth.domain.Access;
 import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.request.NewSecretCodeRequest;
 import com.server.crews.auth.dto.response.TokenResponse;
@@ -92,15 +91,13 @@ public class AuthService {
         return validateExistingApplication(id);
     }
 
-    private Access validateExistingRecruitment(final String id) {
-        Recruitment recruitment = recruitmentRepository.findById(id)
+    private Recruitment validateExistingRecruitment(final String id) {
+        return recruitmentRepository.findById(id)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
-        return new Access(recruitment.getId());
     }
 
-    private Access validateExistingApplication(final String id) {
-        Application application = applicationRepository.findById(id)
+    private Application validateExistingApplication(final String id) {
+        return applicationRepository.findById(id)
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
-        return new Access(application.getId());
     }
 }

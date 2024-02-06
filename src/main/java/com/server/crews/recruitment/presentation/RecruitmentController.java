@@ -1,8 +1,8 @@
 package com.server.crews.recruitment.presentation;
 
-import com.server.crews.auth.domain.Access;
 import com.server.crews.auth.presentation.Authentication;
 import com.server.crews.recruitment.application.RecruitmentService;
+import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +22,9 @@ public class RecruitmentController {
     @PostMapping
     @Operation(description = "지원서 양식을 저장한다.")
     public ResponseEntity<Void> saveRecruitment(
-            @Authentication final Access access,
+            @Authentication final Recruitment accessedRecruitment,
             @RequestBody final RecruitmentSaveRequest request) {
-        recruitmentService.saveRecruitment(access, request);
+        recruitmentService.saveRecruitment(accessedRecruitment, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
