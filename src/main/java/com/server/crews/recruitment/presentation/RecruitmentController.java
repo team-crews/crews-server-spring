@@ -29,7 +29,7 @@ public class RecruitmentController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping
+    @PostMapping("/progress")
     @Operation(description = "모집 상태를 변경한다.")
     public ResponseEntity<Void> updateProgressState(
             @Authentication final Recruitment accessedRecruitment,
