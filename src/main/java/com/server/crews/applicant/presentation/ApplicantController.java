@@ -3,13 +3,17 @@ package com.server.crews.applicant.presentation;
 import com.server.crews.applicant.application.ApplicantService;
 import com.server.crews.applicant.domain.Applicant;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
+import com.server.crews.applicant.dto.response.ApplicantsResponse;
 import com.server.crews.auth.presentation.Authentication;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -25,5 +29,12 @@ public class ApplicantController {
             @RequestBody final ApplicationSaveRequest request) {
         applicantService.saveApplication(accessedApplicant, request);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping
+    @Operation(description = "한 공고의 모든 지원자 목록을 조회한다.")
+    public ResponseEntity<List<ApplicantsResponse>> findAllApplicants(
+            @RequestParam(value = "recruitment-id") final String recruitmentId) {
+        return ResponseEntity.ok(applicantService.findAllApplicants(recruitmentId));
     }
 }
