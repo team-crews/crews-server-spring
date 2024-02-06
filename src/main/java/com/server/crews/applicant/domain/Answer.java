@@ -8,4 +8,8 @@ public class Answer {
     private Integer order;
     private String content;
     private List<String> choices;
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
 }
