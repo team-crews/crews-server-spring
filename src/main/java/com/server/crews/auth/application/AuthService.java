@@ -3,6 +3,7 @@ package com.server.crews.auth.application;
 import com.server.crews.application.domain.Application;
 import com.server.crews.application.repository.ApplicationRepository;
 import com.server.crews.auth.domain.Role;
+import com.server.crews.auth.dto.request.LoginRequest;
 import com.server.crews.auth.dto.request.NewSecretCodeRequest;
 import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.global.exception.CrewsException;
@@ -99,5 +100,23 @@ public class AuthService {
     private Application validateExistingApplication(final String id) {
         return applicationRepository.findById(id)
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
+    }
+
+    public TokenResponse loginForAdmin(final LoginRequest request) {
+        Recruitment recruitment = recruitmentRepository.findBySecretCode(request.code())
+                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+
+        String id = recruitment.getId();
+        String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, id);
+        return new TokenResponse(id, accessToken);
+    }
+
+    public TokenResponse loginForApplicant(final LoginRequest request) {
+        Application application = applicationRepository.findBySecretCode(request.code())
+                .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
+
+        String id = application.getId();
+        String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, id);
+        return new TokenResponse(id, accessToken);
     }
 }
