@@ -9,10 +9,9 @@ import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
-import jakarta.servlet.http.Cookie;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -44,15 +43,16 @@ public class AuthService {
         return new TokenResponse(id, accessToken);
     }
 
-    public HttpHeaders createRefreshToken(Role role, String id) {
+    public ResponseCookie createRefreshToken(Role role, String id) {
         String refreshToken = jwtTokenProvider.createRefreshToken(role, id);
 
-        HttpHeaders headers = new HttpHeaders();
-        Cookie cookie = new Cookie("refreshToken", refreshToken);
-        cookie.setMaxAge(refreshTokenValidityInSecond);
-
-        headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
-        return headers;
+        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/auth/refresh")
+                .maxAge(refreshTokenValidityInSecond)
+                .build();
+        return responseCookie;
     }
 
     private void validateDuplicatedRecruitmentCode(final String code) {

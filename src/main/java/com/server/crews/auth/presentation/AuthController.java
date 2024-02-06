@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,8 +26,10 @@ public class AuthController {
     public ResponseEntity<TokenResponse> createRecruitmentSecretCode(
             @RequestBody final NewSecretCodeRequest request) {
         TokenResponse tokenResponse = authService.createRecruitmentCode(request);
-        HttpHeaders headers = authService.createRefreshToken(Role.ADMIN, tokenResponse.id());
-        return ResponseEntity.status(HttpStatus.CREATED).headers(headers).body(tokenResponse);
+        ResponseCookie cookie = authService.createRefreshToken(Role.ADMIN, tokenResponse.id());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(tokenResponse);
     }
 
     @PostMapping("/application/secret-code")
@@ -34,7 +37,9 @@ public class AuthController {
     public ResponseEntity<TokenResponse> createApplicationSecretCode(
             @RequestBody final NewSecretCodeRequest request) {
         TokenResponse tokenResponse = authService.createApplicationCode(request);
-        HttpHeaders headers = authService.createRefreshToken(Role.APPLICANT, tokenResponse.id());
-        return ResponseEntity.status(HttpStatus.CREATED).headers(headers).body(tokenResponse);
+        ResponseCookie cookie = authService.createRefreshToken(Role.APPLICANT, tokenResponse.id());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(tokenResponse);
     }
 }
