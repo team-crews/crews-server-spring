@@ -1,6 +1,7 @@
 package com.server.crews.recruitment.domain;
 
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,8 @@ public class Recruitment {
 
     private List<Section> sections;
 
+    private LocalDateTime deadline;
+
     public Recruitment(final String secretCode) {
         this.secretCode = secretCode;
         this.progress = Progress.IN_PROGRESS;
@@ -40,6 +43,7 @@ public class Recruitment {
         this.title = request.title();
         this.description = request.description();
         this.sections = request.sections();
+        this.deadline = request.deadline();
     }
 
     public void updateProgress(final Progress progress) {
