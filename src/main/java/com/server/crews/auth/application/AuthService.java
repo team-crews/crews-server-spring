@@ -82,7 +82,7 @@ public class AuthService {
         }
     }
 
-    public Object createAuthentication(final String accessToken) {
+    public Object findAuthentication(final String accessToken) {
         jwtTokenProvider.validateAccessToken(accessToken);
         String id = jwtTokenProvider.getPayload(accessToken);
         Role role = jwtTokenProvider.getRole(accessToken);

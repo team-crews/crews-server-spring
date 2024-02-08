@@ -7,6 +7,7 @@ import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.ApplicantDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicantsResponse;
 import com.server.crews.auth.presentation.Authentication;
+import com.server.crews.auth.presentation.AuthenticationRequired;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class ApplicantController {
     }
 
     @GetMapping
+    @AuthenticationRequired
     @Operation(description = "한 공고의 모든 지원자 목록을 조회한다.")
     public ResponseEntity<List<ApplicantsResponse>> findAllApplicants(
             @RequestParam(value = "recruitment-id") final String recruitmentId) {
@@ -43,6 +45,7 @@ public class ApplicantController {
     }
 
     @GetMapping("/{applicant-id}")
+    @AuthenticationRequired
     @Operation(description = "특정 지원자의 지원서를 조회한다.")
     public ResponseEntity<ApplicantDetailsResponse> getApplicantDetails(
             @PathVariable(value = "applicant-id") final String applicantId) {
@@ -50,6 +53,7 @@ public class ApplicantController {
     }
 
     @PatchMapping("/{applicant-id}/evaluation")
+    @AuthenticationRequired
     @Operation(description = "지원자의 합/불을 결정한다.")
     public ResponseEntity<Void> decideOutcome(
             @RequestBody final EvaluationRequest request,
