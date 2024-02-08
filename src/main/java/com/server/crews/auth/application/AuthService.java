@@ -126,4 +126,15 @@ public class AuthService {
         String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, id);
         return new TokenResponse(id, accessToken);
     }
+
+    public TokenResponse renew(final String refreshToken) {
+        jwtTokenProvider.validateRefreshToken(refreshToken);
+        refreshTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new CrewsException(ErrorCode.INVALID_REFRESH_TOKEN));
+
+        String id = jwtTokenProvider.getPayload(refreshToken);
+        Role role = jwtTokenProvider.getRole(refreshToken);
+        String accessToken = jwtTokenProvider.createAccessToken(role, id);
+        return new TokenResponse(id, accessToken);
+    }
 }
