@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionManager {
     @ExceptionHandler(CrewsException.class)
     public ResponseEntity<ErrorDto> crewsExceptionHandler(CrewsException e){
-        return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(new ErrorDto(e));
+        return ResponseEntity.status(e.getHttpStatus()).body(new ErrorDto(e));
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
