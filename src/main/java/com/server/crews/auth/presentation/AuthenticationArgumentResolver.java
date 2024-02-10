@@ -26,6 +26,6 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
             final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String accessToken = AuthorizationExtractor.extract(request);
-        return authService.createAuthentication(accessToken);
+        return authService.findAuthentication(accessToken);
     }
 }
