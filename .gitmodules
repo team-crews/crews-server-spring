@@ -1,3 +1,3 @@
-[submodule "src/main/resources"]
-	path = src/main/resources
+[submodule "src/main/resources/config"]
+	path = src/main/resources/config
 	url = https://github.com/Crews-Server/crews-config.git
