@@ -129,7 +129,7 @@ public class AuthService {
 
     public TokenResponse renew(final String refreshToken) {
         jwtTokenProvider.validateRefreshToken(refreshToken);
-        refreshTokenRepository.findByRefreshToken(refreshToken)
+        refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new CrewsException(ErrorCode.INVALID_REFRESH_TOKEN));
 
         String id = jwtTokenProvider.getPayload(refreshToken);

@@ -26,6 +26,8 @@ public class Recruitment {
 
     private String title;
 
+    private String clubName;
+
     private String description;
 
     private Progress progress;
@@ -43,6 +45,7 @@ public class Recruitment {
         setQuestionsOrder(request.sections());
 
         this.title = request.title();
+        this.clubName = request.clubName();
         this.description = request.description();
         this.sections = request.sections();
         this.deadline = request.deadline();

@@ -10,7 +10,7 @@ public class ErrorDto {
     private String message;
 
     public ErrorDto(final CrewsException e) {
-        this.code = e.getErrorCode().getHttpStatus().value();
-        this.message = e.getErrorCode().getMessage();
+        this.code = e.getHttpStatus().value();
+        this.message = e.getMessage();
     }
 }

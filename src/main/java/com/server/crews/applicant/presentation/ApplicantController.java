@@ -8,6 +8,7 @@ import com.server.crews.applicant.dto.response.ApplicantDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicantsResponse;
 import com.server.crews.auth.presentation.Authentication;
 import com.server.crews.auth.presentation.AuthenticationRequired;
+import com.server.crews.recruitment.domain.Recruitment;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -59,6 +60,14 @@ public class ApplicantController {
             @RequestBody final EvaluationRequest request,
             @PathVariable(value = "applicant-id") final String applicantId) {
         applicantService.decideOutcome(request, applicantId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/announcement")
+    @Operation(description = "모든 지원자에게 지원 결과 메일을 전송한다.")
+    public ResponseEntity<Void> sendOutcomeEmail(
+            @Authentication final Recruitment accessedRecruitment) {
+        applicantService.sendOutcomeEmail(accessedRecruitment);
         return ResponseEntity.ok().build();
     }
 }

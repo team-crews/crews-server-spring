@@ -5,6 +5,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record RecruitmentSaveRequest(
-        String title, String description, List<Section> sections, LocalDateTime deadline) {
+        String title, String clubName, String description, List<Section> sections, LocalDateTime deadline) {
 
 }

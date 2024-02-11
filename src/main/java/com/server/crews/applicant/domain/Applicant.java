@@ -72,4 +72,11 @@ public class Applicant {
     public void decideOutcome(final Outcome outcome) {
         this.outcome = outcome;
     }
+
+    public boolean isNotDetermined() {
+        if(outcome.equals(Outcome.PENDING)) {
+            return true;
+        }
+        return false;
+    }
 }
