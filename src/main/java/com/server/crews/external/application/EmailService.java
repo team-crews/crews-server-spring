@@ -20,11 +20,8 @@ public class EmailService {
     private  final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
 
-    public void send(
-            final Applicant applicant,
-            final Outcome outcome,
-            final Recruitment recruitment) {
-        MimeMessagePreparator message = createMessage(applicant, outcome, recruitment);
+    public void send(final Applicant applicant, final Recruitment recruitment) {
+        MimeMessagePreparator message = createMessage(applicant, recruitment);
 
         try {
             javaMailSender.send(message);
@@ -33,12 +30,9 @@ public class EmailService {
         }
     }
 
-    private MimeMessagePreparator createMessage(
-            final Applicant applicant,
-            final Outcome outcome,
-            final Recruitment recruitment) {
+    private MimeMessagePreparator createMessage(final Applicant applicant, final Recruitment recruitment) {
         Context context = prepareVariables(applicant, recruitment);
-        String htmlName = determineHtml(outcome);
+        String htmlName = determineHtml(applicant.getOutcome());
 
         MimeMessagePreparator preparator = mimeMessage -> {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
