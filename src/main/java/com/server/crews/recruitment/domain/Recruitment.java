@@ -9,7 +9,6 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Entity
@@ -19,7 +18,7 @@ import java.util.List;
 public class Recruitment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     @Column(unique = true)
     private String secretCode;
@@ -32,8 +31,6 @@ public class Recruitment {
 
     private Progress progress;
 
-    private List<Section> sections;
-
     private LocalDateTime deadline;
 
     public Recruitment(final String secretCode) {
@@ -42,20 +39,10 @@ public class Recruitment {
     }
 
     public void updateAll(final RecruitmentSaveRequest request) {
-        setQuestionsOrder(request.sections());
-
-        this.title = request.title();
-        this.clubName = request.clubName();
-        this.description = request.description();
-        this.sections = request.sections();
-        this.deadline = request.deadline();
-    }
-
-    public void setQuestionsOrder(List<Section> sectionsInRequest) {
-        int sequence = 1;
-        for (Section section : sectionsInRequest) {
-            sequence = section.setQuestionOrder(sequence);
-        }
+        this.title = request.getTitle();
+        this.clubName = request.getClubName();
+        this.description = request.getDescription();
+        this.deadline = request.getDeadline();
     }
 
     public void updateProgress(final Progress progress) {

@@ -1,23 +1,24 @@
 package com.server.crews.recruitment.domain;
 
-import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Getter
-@AllArgsConstructor
+@Entity
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Section {
-    private String name;
-    private String description;
-    private List<Question> questions;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public int setQuestionOrder(int startSequence) {
-        for(Question question: questions) {
-            question.setOrder(startSequence);
-            startSequence += 1;
-        }
-        return startSequence;
-    }
+    @Column(nullable = false)
+    private Long recruitmentId;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column
+    private String description;
 }
