@@ -14,8 +14,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+
 import java.security.Key;
 import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -66,13 +68,14 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(validity)
-                .signWith(algorithm, key)
+                .signWith(key)
                 .compact();
     }
 
     public String getPayload(final String token) {
-        return Jwts.parser()
+        return Jwts.parserBuilder()
                 .setSigningKey(key)
+                .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
@@ -87,24 +90,23 @@ public class JwtTokenProvider {
         return Role.valueOf((String) claims.get("role"));
     }
 
-    public boolean validateAccessToken(String token) {
-        if(!validateToken(token).equals(ACCESS_TOKEN_ALGORITHM)) {
+    public void validateAccessToken(String token) {
+        if (!validateToken(token).equals(ACCESS_TOKEN_ALGORITHM)) {
             throw new CrewsException(ErrorCode.INVALID_ACCESS_TOKEN);
         }
-        return true;
     }
 
-    public boolean validateRefreshToken(String token) {
-        if(!validateToken(token).equals(REFRESH_TOKEN_ALGORITHM)) {
+    public void validateRefreshToken(String token) {
+        if (!validateToken(token).equals(REFRESH_TOKEN_ALGORITHM)) {
             throw new CrewsException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
-        return true;
     }
 
     private SignatureAlgorithm validateToken(String token) {
         try {
-            String algorithm = Jwts.parser()
+            String algorithm = Jwts.parserBuilder()
                     .setSigningKey(key)
+                    .build()
                     .parseClaimsJws(token)
                     .getHeader()
                     .getAlgorithm();
