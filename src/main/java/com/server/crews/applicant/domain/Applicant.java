@@ -3,25 +3,29 @@ package com.server.crews.applicant.domain;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
-import java.util.List;
-import java.util.regex.Pattern;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.List;
+import java.util.regex.Pattern;
 
 @Getter
-@Document(collection = "applicants")
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Applicant {
     private static final String EMAIL_PATTERN = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$";
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
-    @Indexed(unique = true)
+    @Column(unique = true)
     private String secretCode;
 
     private Outcome outcome;

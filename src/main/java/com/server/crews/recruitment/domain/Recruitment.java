@@ -1,27 +1,27 @@
 package com.server.crews.recruitment.domain;
 
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
-@Document(collection = "recruitments")
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class Recruitment {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
-    @Indexed(unique = true)
+    @Column(unique = true)
     private String secretCode;
 
     private String title;
@@ -53,7 +53,7 @@ public class Recruitment {
 
     public void setQuestionsOrder(List<Section> sectionsInRequest) {
         int sequence = 1;
-        for(Section section: sectionsInRequest) {
+        for (Section section : sectionsInRequest) {
             sequence = section.setQuestionOrder(sequence);
         }
     }

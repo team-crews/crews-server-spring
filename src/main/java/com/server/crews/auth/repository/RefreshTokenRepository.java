@@ -1,10 +1,11 @@
 package com.server.crews.auth.repository;
 
 import com.server.crews.auth.domain.RefreshToken;
-import java.util.Optional;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RefreshTokenRepository extends MongoRepository<RefreshToken, String> {
+import java.util.Optional;
+
+public interface RefreshTokenRepository extends JpaRepository<RefreshToken, String> {
     void deleteByOwnerId(String id);
     Optional<RefreshToken> findByToken(String token);
 }
