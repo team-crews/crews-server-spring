@@ -12,12 +12,13 @@ import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
-import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RecruitmentRepository recruitmentRepository;
@@ -39,6 +40,7 @@ public class AuthService {
         this.refreshTokenValidityInSecond = refreshTokenValidityInMilliseconds / 1000;
     }
 
+    @Transactional
     public TokenResponse createRecruitmentCode(final NewSecretCodeRequest request) {
         String code = request.code();
         validateDuplicatedRecruitmentCode(code);
@@ -49,25 +51,26 @@ public class AuthService {
         return new TokenResponse(id, accessToken);
     }
 
+    private void validateDuplicatedRecruitmentCode(final String code) {
+        recruitmentRepository.findBySecretCode(code)
+                .orElseThrow(() -> new CrewsException(ErrorCode.DUPLICATE_SECRET_CODE));
+    }
+
+    @Transactional
     public ResponseCookie createRefreshToken(Role role, String id) {
         String refreshToken = jwtTokenProvider.createRefreshToken(role, id);
         refreshTokenRepository.deleteByOwnerId(id);
         refreshTokenRepository.save(new RefreshToken(refreshToken, id));
 
-        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
+        return ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(true)
                 .path("/auth/refresh")
                 .maxAge(refreshTokenValidityInSecond)
                 .build();
-        return responseCookie;
     }
 
-    private void validateDuplicatedRecruitmentCode(final String code) {
-        Recruitment existing = recruitmentRepository.findBySecretCode(code).orElse(null);
-        validateDuplicated(existing);
-    }
-
+    @Transactional
     public TokenResponse createApplicationCode(final NewSecretCodeRequest request) {
         String code = request.code();
         validateDuplicatedApplicationCode(code);
@@ -79,32 +82,26 @@ public class AuthService {
     }
 
     private void validateDuplicatedApplicationCode(final String code) {
-        Applicant existing = applicantRepository.findBySecretCode(code).orElse(null);
-        validateDuplicated(existing);
-    }
-
-    private void validateDuplicated(Object existing) {
-        if(Objects.nonNull(existing)) {
-            throw new CrewsException(ErrorCode.DUPLICATE_SECRET_CODE);
-        }
+        applicantRepository.findBySecretCode(code)
+                .orElseThrow(() -> new CrewsException(ErrorCode.DUPLICATE_SECRET_CODE));
     }
 
     public Object findAuthentication(final String accessToken) {
         jwtTokenProvider.validateAccessToken(accessToken);
         String id = jwtTokenProvider.getPayload(accessToken);
         Role role = jwtTokenProvider.getRole(accessToken);
-        if(role.equals(Role.ADMIN)) {
-            return validateExistingRecruitment(id);
+        if (role.equals(Role.ADMIN)) {
+            return findExistingRecruitment(id);
         }
-        return validateExistingApplication(id);
+        return findExistingApplication(id);
     }
 
-    private Recruitment validateExistingRecruitment(final String id) {
+    private Recruitment findExistingRecruitment(final String id) {
         return recruitmentRepository.findById(id)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
     }
 
-    private Applicant validateExistingApplication(final String id) {
+    private Applicant findExistingApplication(final String id) {
         return applicantRepository.findById(id)
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
     }
