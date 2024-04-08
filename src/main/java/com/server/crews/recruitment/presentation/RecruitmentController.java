@@ -46,7 +46,7 @@ public class RecruitmentController {
     @GetMapping("/{recruitment-id}")
     @Operation(description = "지원서 양식 상세 정보를 조회한다.")
     public ResponseEntity<RecruitmentDetailsResponse> getRecruitmentDetails(
-            @PathVariable(value = "recruitment-id") final String recruitmentId) {
+            @PathVariable(value = "recruitment-id") final Long recruitmentId) {
         return ResponseEntity.ok(recruitmentService.getRecruitmentDetails(recruitmentId));
     }
 
