@@ -2,17 +2,14 @@ package com.server.crews.recruitment.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Entity
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SelectiveQuestion implements Question, Comparable<SelectiveQuestion> {
+public class SelectiveQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,8 +18,8 @@ public class SelectiveQuestion implements Question, Comparable<SelectiveQuestion
     @JoinColumn(nullable = false)
     private Section section;
 
-    @OneToMany(mappedBy = "selective_question", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Choice> choices = new ArrayList<>();
+    @OneToMany(mappedBy = "selectiveQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Choice> choices;
 
     @Column(nullable = false)
     private String content;
@@ -39,13 +36,16 @@ public class SelectiveQuestion implements Question, Comparable<SelectiveQuestion
     @Column(nullable = false)
     private Integer maximumSelection;
 
-    @Override
-    public boolean isNarrative() {
-        return false;
-    }
-
-    @Override
-    public int compareTo(SelectiveQuestion other) {
-        return Integer.compare(order, other.order);
+    @Builder
+    public SelectiveQuestion(
+            final List<Choice> choices, final String content,
+            final Boolean necessity, final Integer order,
+            final Integer minimumSelection, final Integer maximumSelection) {
+        this.choices = new ArrayList<>(choices);
+        this.content = content;
+        this.necessity = necessity;
+        this.order = order;
+        this.minimumSelection = minimumSelection;
+        this.maximumSelection = maximumSelection;
     }
 }

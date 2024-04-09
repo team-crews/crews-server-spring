@@ -1,7 +1,7 @@
 package com.server.crews.recruitment.dto.request;
 
+import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
-import com.server.crews.recruitment.domain.Question;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,19 +20,25 @@ public class QuestionRequest {
     private final Integer maximumSelection;
     private final List<String> choices;
 
-    public Question toEntity(final Long sectionId) {
-        if (isSelective()) {
-            return SelectiveQuestion.builder()
-                    .sectionId(sectionId)
-                    .content(content)
-                    .necessity(necessity)
-                    .order(order)
-                    .minimumSelection(minimumSelection)
-                    .maximumSelection(maximumSelection)
-                    .build();
-        }
+    public SelectiveQuestion createSelectiveQuestion() {
+        return SelectiveQuestion.builder()
+                .content(content)
+                .necessity(necessity)
+                .order(order)
+                .minimumSelection(minimumSelection)
+                .maximumSelection(maximumSelection)
+                .choices(createChoices())
+                .build();
+    }
+
+    private List<Choice> createChoices() {
+        return choices.stream()
+                .map(Choice::new)
+                .toList();
+    }
+
+    public NarrativeQuestion createNarrativeQuestion() {
         return NarrativeQuestion.builder()
-                .sectionId(sectionId)
                 .content(content)
                 .necessity(necessity)
                 .order(order)
@@ -42,5 +48,9 @@ public class QuestionRequest {
 
     public boolean isSelective() {
         return type == QuestionType.SELECTIVE;
+    }
+
+    public boolean isNarrative() {
+        return type == QuestionType.NARRATIVE;
     }
 }

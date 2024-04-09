@@ -3,7 +3,6 @@ package com.server.crews.recruitment.domain;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,6 +44,7 @@ public class Recruitment {
         this.clubName = request.getClubName();
         this.description = request.getDescription();
         this.deadline = request.getDeadline();
+        this.sections.addAll(request.createSections());
     }
 
     public void updateProgress(final Progress progress) {

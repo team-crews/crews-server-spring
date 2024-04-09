@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 
 @Getter
 @Entity
@@ -21,8 +20,7 @@ public class Choice {
     @Column(nullable = false)
     private String content;
 
-    public Choice(SelectiveQuestion selectiveQuestion, String content) {
-        this.selectiveQuestion = selectiveQuestion;
+    public Choice(String content) {
         this.content = content;
     }
 }

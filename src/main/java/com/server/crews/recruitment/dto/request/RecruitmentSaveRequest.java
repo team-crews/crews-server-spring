@@ -1,6 +1,5 @@
 package com.server.crews.recruitment.dto.request;
 
-import com.server.crews.recruitment.domain.Question;
 import com.server.crews.recruitment.domain.Section;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,9 +16,9 @@ public class RecruitmentSaveRequest {
     private final List<SectionRequest> sections;
     private final LocalDateTime deadline;
 
-    public List<Section> createSections(Long recruitmentId) {
+    public List<Section> createSections() {
         return sections.stream()
-                .map(sectionRequest -> sectionRequest.toEntity(recruitmentId))
+                .map(SectionRequest::toEntity)
                 .toList();
     }
 }
