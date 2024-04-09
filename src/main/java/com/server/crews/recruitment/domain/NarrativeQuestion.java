@@ -32,4 +32,8 @@ public class NarrativeQuestion {
     public void updateSection(final Section section) {
         this.section = section;
     }
+
+    public boolean hasSameSection(final Section section) {
+        return this.section.equals(section);
+    }
 }

@@ -37,10 +37,20 @@ public class Section {
             final List<SelectiveQuestion> selectiveQuestions) {
         this.name = name;
         this.description = description;
-        narrativeQuestions.forEach(narrativeQuestion -> narrativeQuestion.updateSection(this));
-        this.narrativeQuestions = new ArrayList<>(narrativeQuestions);
-        selectiveQuestions.forEach(selectiveQuestion -> selectiveQuestion.updateSection(this));
-        this.selectiveQuestions = new ArrayList<>(selectiveQuestions);
+        replaceQuestions(narrativeQuestions, selectiveQuestions);
+    }
+
+    public void replaceQuestions(
+            final List<NarrativeQuestion> narrativeQuestions,
+            final List<SelectiveQuestion> selectiveQuestions) {
+        if (narrativeQuestions != null) {
+            narrativeQuestions.forEach(narrativeQuestion -> narrativeQuestion.updateSection(this));
+            this.narrativeQuestions = new ArrayList<>(narrativeQuestions);
+        }
+        if (selectiveQuestions != null) {
+            selectiveQuestions.forEach(selectiveQuestion -> selectiveQuestion.updateSection(this));
+            this.selectiveQuestions = new ArrayList<>(selectiveQuestions);
+        }
     }
 
     public void updateRecruitment(final Recruitment recruitment) {
