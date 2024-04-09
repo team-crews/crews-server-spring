@@ -16,12 +16,12 @@ class RecruitmentRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("지원서 양식 조회시 섹션 목록도 함께 조회한다.")
-    void findDetailsById() {
+    void findWithSectionsById() {
         // given
         Long recruitmentId = saveDefaultRecruitment().getId();
 
         // when
-        Recruitment recruitment = recruitmentRepository.findDetailsById(recruitmentId).get();
+        Recruitment recruitment = recruitmentRepository.findWithSectionsById(recruitmentId).get();
 
         // then
         assertAll(

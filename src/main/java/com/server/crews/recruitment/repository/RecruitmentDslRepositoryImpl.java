@@ -13,7 +13,7 @@ public class RecruitmentDslRepositoryImpl implements RecruitmentDslRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Optional<Recruitment> findDetailsById(Long id) {
+    public Optional<Recruitment> findWithSectionsById(Long id) {
         QRecruitment qRecruitment = QRecruitment.recruitment;
         QSection qSection = QSection.section;
 
