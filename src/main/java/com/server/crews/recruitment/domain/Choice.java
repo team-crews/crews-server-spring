@@ -23,4 +23,8 @@ public class Choice {
     public Choice(String content) {
         this.content = content;
     }
+
+    public void updateSelectiveQuestion(final SelectiveQuestion selectiveQuestion) {
+        this.selectiveQuestion = selectiveQuestion;
+    }
 }

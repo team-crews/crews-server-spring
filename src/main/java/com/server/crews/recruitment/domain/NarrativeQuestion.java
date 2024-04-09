@@ -28,4 +28,8 @@ public class NarrativeQuestion {
 
     @Column(nullable = false)
     private Integer wordLimit;
+
+    public void updateSection(final Section section) {
+        this.section = section;
+    }
 }

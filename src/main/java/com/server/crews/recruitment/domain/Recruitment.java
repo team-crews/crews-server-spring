@@ -19,7 +19,7 @@ public class Recruitment {
     private Long id;
 
     @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    private final List<Section> sections = new ArrayList<>();
 
     @Column(unique = true)
     private String secretCode;
@@ -44,7 +44,12 @@ public class Recruitment {
         this.clubName = request.getClubName();
         this.description = request.getDescription();
         this.deadline = request.getDeadline();
-        this.sections.addAll(request.createSections());
+        addSections(request.createSections());
+    }
+
+    private void addSections(final List<Section> sections) {
+        sections.forEach(section -> section.updateRecruitment(this));
+        this.sections.addAll(sections);
     }
 
     public void updateProgress(final Progress progress) {

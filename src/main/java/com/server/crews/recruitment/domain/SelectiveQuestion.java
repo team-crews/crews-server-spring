@@ -41,11 +41,16 @@ public class SelectiveQuestion {
             final List<Choice> choices, final String content,
             final Boolean necessity, final Integer order,
             final Integer minimumSelection, final Integer maximumSelection) {
+        choices.forEach(choice -> choice.updateSelectiveQuestion(this));
         this.choices = new ArrayList<>(choices);
         this.content = content;
         this.necessity = necessity;
         this.order = order;
         this.minimumSelection = minimumSelection;
         this.maximumSelection = maximumSelection;
+    }
+
+    public void updateSection(final Section section) {
+        this.section = section;
     }
 }
