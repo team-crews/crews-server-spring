@@ -62,8 +62,10 @@ public class RecruitmentService {
         return RecruitmentDetailsResponse.from(recruitment, narrativeQuestionsBySection, selectiveQuestionsBySection);
     }
 
+    @Transactional
     public void updateDeadline(
-            final Recruitment accessedRecruitment, final DeadlineUpdateRequest request) {
+            final Recruitment accessedRecruitment,
+            final DeadlineUpdateRequest request) {
         accessedRecruitment.updateDeadline(request.deadline());
         recruitmentRepository.save(accessedRecruitment);
     }
