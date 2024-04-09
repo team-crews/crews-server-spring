@@ -23,7 +23,7 @@ class RecruitmentServiceTest extends IntegrationTest {
     @DisplayName("지원서 양식을 저장한다.")
     void saveRecruitment() {
         // given
-        Recruitment recruitment = integrationTestEnviron.saveRecruitment(new Recruitment(DEFAULT_SECRET_CODE), List.of());
+        Recruitment recruitment = integrationTestEnviron.saveLoginedRecruitment(DEFAULT_SECRET_CODE);
 
         // when
         recruitmentService.saveRecruitment(recruitment, RECRUITMENT_SAVE_REQUEST);
@@ -37,7 +37,7 @@ class RecruitmentServiceTest extends IntegrationTest {
     @DisplayName("지원서 양식의 진행 상태를 변경한다.")
     void updateProgressState() {
         // given
-        Recruitment recruitment = integrationTestEnviron.saveRecruitment(RECRUITMENT, DEV_SECTIONS);
+        Recruitment recruitment = integrationTestEnviron.saveDefaultRecruitment();
 
         ProgressStateUpdateRequest request = new ProgressStateUpdateRequest(Progress.COMPLETION);
 
