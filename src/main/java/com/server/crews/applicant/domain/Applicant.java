@@ -3,14 +3,10 @@ package com.server.crews.applicant.domain;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -30,7 +26,7 @@ public class Applicant {
 
     private Outcome outcome;
 
-    private String recruitmentId;
+    private Long recruitmentId;
 
     private Long studentNumber;
 
@@ -40,7 +36,7 @@ public class Applicant {
 
     private String name;
 
-    private List<Answer> answers;
+//    private List<Answer> answers;
 
     public Applicant(final String secretCode) {
         this.secretCode = secretCode;
@@ -56,7 +52,7 @@ public class Applicant {
         this.major = request.major();
         this.email = request.email();
         this.name = request.name();
-        this.answers = request.answers();
+//        this.answers = request.answers();
     }
 
     private void setAnswersOrder(final List<Answer> answersInRequest) {

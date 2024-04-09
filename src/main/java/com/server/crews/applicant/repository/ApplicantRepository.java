@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface ApplicantRepository extends JpaRepository<Applicant, Long> {
     Optional<Applicant> findBySecretCode(String code);
-    List<Applicant> findAllByRecruitmentId(String id);
+    List<Applicant> findAllByRecruitmentId(Long id);
 }

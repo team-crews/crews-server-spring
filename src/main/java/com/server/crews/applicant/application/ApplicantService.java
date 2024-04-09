@@ -28,18 +28,18 @@ public class ApplicantService {
         applicantRepository.save(accessedApplicant);
     }
 
-    public List<ApplicantsResponse> findAllApplicants(final String recruitmentId) {
+    public List<ApplicantsResponse> findAllApplicants(final Long recruitmentId) {
         List<Applicant> applicants = applicantRepository.findAllByRecruitmentId(recruitmentId);
         return applicants.stream().map(ApplicantsResponse::from).toList();
     }
 
-    public ApplicantDetailsResponse getApplicantDetails(final String applicantId) {
+    public ApplicantDetailsResponse getApplicantDetails(final Long applicantId) {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
         return ApplicantDetailsResponse.from(applicant);
     }
 
-    public void decideOutcome(final EvaluationRequest request, final String applicantId) {
+    public void decideOutcome(final EvaluationRequest request, final Long applicantId) {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
         applicant.decideOutcome(request.outcome());
@@ -47,7 +47,7 @@ public class ApplicantService {
     }
 
     public void sendOutcomeEmail(final Recruitment accessedRecruitment) {
-        String recruitmentId = accessedRecruitment.getId();
+        Long recruitmentId = accessedRecruitment.getId();
         List<Applicant> applicants = applicantRepository.findAllByRecruitmentId(recruitmentId);
 
         applicants.stream().filter(Applicant::isNotDetermined)

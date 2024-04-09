@@ -41,7 +41,7 @@ public class ApplicantController {
     @AuthenticationRequired
     @Operation(description = "한 공고의 모든 지원자 목록을 조회한다.")
     public ResponseEntity<List<ApplicantsResponse>> findAllApplicants(
-            @RequestParam(value = "recruitment-id") final String recruitmentId) {
+            @RequestParam(value = "recruitment-id") final Long recruitmentId) {
         return ResponseEntity.ok(applicantService.findAllApplicants(recruitmentId));
     }
 
@@ -49,7 +49,7 @@ public class ApplicantController {
     @AuthenticationRequired
     @Operation(description = "특정 지원자의 지원서를 조회한다.")
     public ResponseEntity<ApplicantDetailsResponse> getApplicantDetails(
-            @PathVariable(value = "applicant-id") final String applicantId) {
+            @PathVariable(value = "applicant-id") final Long applicantId) {
         return ResponseEntity.ok(applicantService.getApplicantDetails(applicantId));
     }
 
@@ -58,7 +58,7 @@ public class ApplicantController {
     @Operation(description = "지원자의 합/불을 결정한다.")
     public ResponseEntity<Void> decideOutcome(
             @RequestBody final EvaluationRequest request,
-            @PathVariable(value = "applicant-id") final String applicantId) {
+            @PathVariable(value = "applicant-id") final Long applicantId) {
         applicantService.decideOutcome(request, applicantId);
         return ResponseEntity.ok().build();
     }

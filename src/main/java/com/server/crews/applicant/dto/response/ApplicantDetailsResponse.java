@@ -12,8 +12,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ApplicantDetailsResponse {
-    private String id;
-    private String recruitmentId;
+    private Long id;
+    private Long recruitmentId;
     private Outcome outcome;
     private Long studentNumber;
     private String major;
@@ -30,7 +30,7 @@ public class ApplicantDetailsResponse {
                 .major(applicant.getMajor())
                 .email(applicant.getEmail())
                 .name(applicant.getName())
-                .answers(applicant.getAnswers())
+//                .answers(applicant.getAnswers())
                 .build();
     }
 }

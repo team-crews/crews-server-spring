@@ -1,13 +1,9 @@
 package com.server.crews.auth.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 
 @Getter
 @Entity
@@ -21,9 +17,9 @@ public class RefreshToken {
     private String token;
 
     @Column(nullable = false)
-    private String ownerId;
+    private Long ownerId;
 
-    public RefreshToken(final String token, final String ownerId) {
+    public RefreshToken(final String token, final Long ownerId) {
         this.token = token;
         this.ownerId = ownerId;
     }

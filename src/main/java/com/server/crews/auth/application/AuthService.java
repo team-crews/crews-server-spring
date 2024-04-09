@@ -57,8 +57,8 @@ public class AuthService {
     }
 
     @Transactional
-    public ResponseCookie createRefreshToken(Role role, String id) {
-        String refreshToken = jwtTokenProvider.createRefreshToken(role, id);
+    public ResponseCookie createRefreshToken(Role role, Long id) {
+        String refreshToken = jwtTokenProvider.createRefreshToken(role, String.valueOf(id));
         refreshTokenRepository.deleteByOwnerId(id);
         refreshTokenRepository.save(new RefreshToken(refreshToken, id));
 

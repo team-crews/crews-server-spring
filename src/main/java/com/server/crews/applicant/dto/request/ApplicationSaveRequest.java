@@ -4,6 +4,6 @@ import com.server.crews.applicant.domain.Answer;
 import java.util.List;
 
 public record ApplicationSaveRequest(
-        String recruitmentId, Long studentNumber, String major, String email, String name, List<Answer> answers) {
+        Long recruitmentId, Long studentNumber, String major, String email, String name, List<Answer> answers) {
 
 }
