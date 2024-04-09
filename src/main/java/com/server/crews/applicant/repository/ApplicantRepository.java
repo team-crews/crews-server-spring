@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface ApplicantRepository extends JpaRepository<Applicant, String> {
+public interface ApplicantRepository extends JpaRepository<Applicant, Long> {
     Optional<Applicant> findBySecretCode(String code);
     List<Applicant> findAllByRecruitmentId(String id);
 }

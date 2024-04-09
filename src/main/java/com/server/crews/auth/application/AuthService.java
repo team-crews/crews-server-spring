@@ -45,9 +45,9 @@ public class AuthService {
         String code = request.code();
         validateDuplicatedRecruitmentCode(code);
         Recruitment recruitment = recruitmentRepository.save(new Recruitment(code));
-        String id = recruitment.getId();
+        Long id = recruitment.getId();
 
-        String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, id);
+        String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, String.valueOf(id));
         return new TokenResponse(id, accessToken);
     }
 
@@ -75,9 +75,9 @@ public class AuthService {
         String code = request.code();
         validateDuplicatedApplicationCode(code);
         Applicant applicant = applicantRepository.save(new Applicant(code));
-        String id = applicant.getId();
+        Long id = applicant.getId();
 
-        String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, id);
+        String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, String.valueOf(id));
         return new TokenResponse(id, accessToken);
     }
 
@@ -88,7 +88,8 @@ public class AuthService {
 
     public Object findAuthentication(final String accessToken) {
         jwtTokenProvider.validateAccessToken(accessToken);
-        String id = jwtTokenProvider.getPayload(accessToken);
+        String payload = jwtTokenProvider.getPayload(accessToken);
+        long id = Long.parseLong(payload);
         Role role = jwtTokenProvider.getRole(accessToken);
         if (role.equals(Role.ADMIN)) {
             return findExistingRecruitment(id);
@@ -96,12 +97,12 @@ public class AuthService {
         return findExistingApplication(id);
     }
 
-    private Recruitment findExistingRecruitment(final String id) {
+    private Recruitment findExistingRecruitment(final Long id) {
         return recruitmentRepository.findById(id)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
     }
 
-    private Applicant findExistingApplication(final String id) {
+    private Applicant findExistingApplication(final Long id) {
         return applicantRepository.findById(id)
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
     }
@@ -110,8 +111,8 @@ public class AuthService {
         Recruitment recruitment = recruitmentRepository.findBySecretCode(request.code())
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
 
-        String id = recruitment.getId();
-        String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, id);
+        Long id = recruitment.getId();
+        String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, String.valueOf(id));
         return new TokenResponse(id, accessToken);
     }
 
@@ -119,8 +120,8 @@ public class AuthService {
         Applicant applicant = applicantRepository.findBySecretCode(request.code())
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
 
-        String id = applicant.getId();
-        String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, id);
+        Long id = applicant.getId();
+        String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, String.valueOf(id));
         return new TokenResponse(id, accessToken);
     }
 
@@ -129,9 +130,10 @@ public class AuthService {
         refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new CrewsException(ErrorCode.INVALID_REFRESH_TOKEN));
 
-        String id = jwtTokenProvider.getPayload(refreshToken);
+        String payload = jwtTokenProvider.getPayload(refreshToken);
+        long id = Long.parseLong(payload);
         Role role = jwtTokenProvider.getRole(refreshToken);
-        String accessToken = jwtTokenProvider.createAccessToken(role, id);
+        String accessToken = jwtTokenProvider.createAccessToken(role, payload);
         return new TokenResponse(id, accessToken);
     }
 }
