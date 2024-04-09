@@ -12,7 +12,7 @@ public abstract class IntegrationTest {
     private DatabaseCleaner databaseCleaner;
 
     @Autowired
-    private IntegrationTestEnviron integrationTestEnviron;
+    protected IntegrationTestEnviron integrationTestEnviron;
 
     @BeforeEach
     void setUp() {
