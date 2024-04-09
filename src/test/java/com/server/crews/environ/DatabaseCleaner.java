@@ -1,19 +1,37 @@
 package com.server.crews.environ;
 
-import java.util.Set;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class DatabaseCleaner {
-    private final MongoTemplate mongoTemplate;
+    private final EntityManager entityManager;
 
-    public void truncate() {
-        Set<String> collectionNames = mongoTemplate.getCollectionNames();
-        for (String collectionName : collectionNames) {
-            mongoTemplate.dropCollection(collectionName);
+    @Transactional
+    public void clear() {
+        entityManager.clear();
+        truncate();
+    }
+
+    private void truncate() {
+        List<String> tableNames = getTableNames();
+        entityManager.createNativeQuery("SET foreign_key_checks = 0").executeUpdate();
+        for (String tableName : tableNames) {
+            entityManager.createNativeQuery("TRUNCATE TABLE " + tableName).executeUpdate();
         }
+        entityManager.createNativeQuery("SET foreign_key_checks = 1").executeUpdate();
+    }
+
+    private List<String> getTableNames() {
+        return entityManager.createNativeQuery("SHOW TABLES")
+                .getResultList()
+                .stream()
+                .map(String::valueOf)
+                .toList();
     }
 }

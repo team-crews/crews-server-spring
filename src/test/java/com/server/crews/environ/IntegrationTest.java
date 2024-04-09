@@ -1,17 +1,21 @@
 package com.server.crews.environ;
 
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-@RequiredArgsConstructor
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public abstract class IntegrationTest {
-    private final DatabaseCleaner databaseCleaner;
-    private final IntegrationTestEnviron integrationTestEnviron;
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
+    @Autowired
+    private IntegrationTestEnviron integrationTestEnviron;
 
     @BeforeEach
     void setUp() {
-        databaseCleaner.truncate();
+        databaseCleaner.clear();
     }
 }
