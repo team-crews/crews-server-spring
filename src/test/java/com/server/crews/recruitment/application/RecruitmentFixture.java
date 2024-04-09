@@ -36,12 +36,13 @@ public class RecruitmentFixture {
     public static final List<SectionDto> SECTION_REQUESTS = List.of(BACKEND_SECTION_REQUEST, FRONTEND_SECTION_REQUEST);
     public static final RecruitmentSaveRequest RECRUITMENT_SAVE_REQUEST = new RecruitmentSaveRequest(DEFAULT_TITLE, DEFAULT_CLUB_NAME, DEFAULT_DESCRIPTION, SECTION_REQUESTS, DEFAULT_DEADLINE);
 
-    public static final Recruitment RECRUITMENT = Recruitment.builder()
-            .id(1L)
-            .secretCode(DEFAULT_SECRET_CODE)
-            .title(DEFAULT_TITLE)
-            .clubName(DEFAULT_CLUB_NAME)
-            .description(DEFAULT_DESCRIPTION)
-            .deadline(DEFAULT_DEADLINE)
-            .build();
+    public static Recruitment RECRUITMENT() {
+        return Recruitment.builder()
+                .secretCode(DEFAULT_SECRET_CODE)
+                .title(DEFAULT_TITLE)
+                .clubName(DEFAULT_CLUB_NAME)
+                .description(DEFAULT_DESCRIPTION)
+                .deadline(DEFAULT_DEADLINE)
+                .build();
+    }
 }

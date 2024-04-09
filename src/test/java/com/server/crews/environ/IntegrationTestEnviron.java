@@ -1,7 +1,5 @@
 package com.server.crews.environ;
 
-import com.server.crews.applicant.repository.ApplicantRepository;
-import com.server.crews.auth.repository.RefreshTokenRepository;
 import com.server.crews.recruitment.domain.*;
 import com.server.crews.recruitment.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -16,21 +14,19 @@ import static com.server.crews.recruitment.application.SectionFixture.DEV_SECTIO
 @Component
 @RequiredArgsConstructor
 public class IntegrationTestEnviron {
-    private final ApplicantRepository applicantRepository;
     private final RecruitmentRepository recruitmentRepository;
     private final SectionRepository sectionRepository;
     private final SelectiveQuestionRepository selectiveQuestionRepository;
     private final NarrativeQuestionRepository narrativeQuestionRepository;
     private final ChoiceRepository choiceRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
 
     public Recruitment saveDefaultRecruitment() {
         return saveRecruitment(
-                RECRUITMENT,
-                DEV_SECTIONS,
-                List.of(NARRATIVE_QUESTION),
-                List.of(SELECTIVE_QUESTION),
-                CHOICES
+                RECRUITMENT(),
+                DEV_SECTIONS(),
+                List.of(NARRATIVE_QUESTION()),
+                List.of(SELECTIVE_QUESTION()),
+                CHOICES()
         );
     }
 

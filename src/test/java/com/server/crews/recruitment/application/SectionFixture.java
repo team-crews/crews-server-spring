@@ -10,13 +10,14 @@ public class SectionFixture {
     public static final String BACKEND_SECTION_NAME = "BACKEND";
     public static final String FRONTEND_SECTION_NAME = "FRONTEND";
 
-    public static final Section BACKEND_SECTION = Section.builder()
-            .name(BACKEND_SECTION_NAME)
-            .description(DEFAULT_DESCRIPTION)
-            .build();
-    public static final Section FRONTEND_SECTION = Section.builder()
-            .name(FRONTEND_SECTION_NAME)
-            .description(DEFAULT_DESCRIPTION)
-            .build();
-    public static final List<Section> DEV_SECTIONS = List.of(BACKEND_SECTION, FRONTEND_SECTION);
+    public static Section SECTION(String name) {
+        return Section.builder()
+                .name(BACKEND_SECTION_NAME)
+                .description(DEFAULT_DESCRIPTION)
+                .build();
+    }
+
+    public static List<Section> DEV_SECTIONS() {
+        return List.of(SECTION(BACKEND_SECTION_NAME), SECTION(FRONTEND_SECTION_NAME));
+    }
 }

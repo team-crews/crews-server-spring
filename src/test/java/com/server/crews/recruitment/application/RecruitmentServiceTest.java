@@ -4,15 +4,12 @@ import com.server.crews.environ.IntegrationTest;
 import com.server.crews.recruitment.domain.Progress;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.dto.request.ProgressStateUpdateRequest;
-import com.server.crews.recruitment.repository.RecruitmentRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
-import static com.server.crews.recruitment.application.RecruitmentFixture.*;
-import static com.server.crews.recruitment.application.SectionFixture.DEV_SECTIONS;
+import static com.server.crews.recruitment.application.RecruitmentFixture.DEFAULT_SECRET_CODE;
+import static com.server.crews.recruitment.application.RecruitmentFixture.RECRUITMENT_SAVE_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RecruitmentServiceTest extends IntegrationTest {

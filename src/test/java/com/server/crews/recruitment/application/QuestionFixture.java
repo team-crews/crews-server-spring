@@ -14,19 +14,27 @@ public class QuestionFixture {
     public static final String METICULOUS_CHOICE = "꼼꼼함";
     public static final List<String> STRENGTH_CHOICES = List.of(FAITHFUL_CHOICE, BRIGHT_CHOICE, METICULOUS_CHOICE);
 
-    public static final List<Choice> CHOICES = List.of(new Choice(FAITHFUL_CHOICE), new Choice(BRIGHT_CHOICE), new Choice(METICULOUS_CHOICE));
-    public static final NarrativeQuestion NARRATIVE_QUESTION = NarrativeQuestion.builder()
-            .content(INTRODUCTION_QUESTION)
-            .necessity(true)
-            .order(1)
-            .wordLimit(100)
-            .build();
-    public static final SelectiveQuestion SELECTIVE_QUESTION = SelectiveQuestion.builder()
-            .content(STRENGTH_QUESTION)
-            .necessity(true)
-            .order(1)
-            .minimumSelection(1)
-            .maximumSelection(1)
-            .choices(CHOICES)
-            .build();
+    public static List<Choice> CHOICES() {
+        return List.of(new Choice(FAITHFUL_CHOICE), new Choice(BRIGHT_CHOICE), new Choice(METICULOUS_CHOICE));
+    }
+
+    public static NarrativeQuestion NARRATIVE_QUESTION() {
+        return NarrativeQuestion.builder()
+                .content(INTRODUCTION_QUESTION)
+                .necessity(true)
+                .order(1)
+                .wordLimit(100)
+                .build();
+    }
+
+    public static SelectiveQuestion SELECTIVE_QUESTION() {
+        return SelectiveQuestion.builder()
+                .content(STRENGTH_QUESTION)
+                .necessity(true)
+                .order(1)
+                .minimumSelection(1)
+                .maximumSelection(1)
+                .choices(CHOICES())
+                .build();
+    }
 }
