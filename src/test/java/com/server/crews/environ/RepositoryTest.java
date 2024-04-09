@@ -27,7 +27,7 @@ public abstract class RepositoryTest {
         NarrativeQuestion FENarrativeQuestion = createNarrativeQuestion(FESection);
         SelectiveQuestion BESelectivequestion = createSelectiveQuestion(BESection);
         SelectiveQuestion FESelectivequestion = createSelectiveQuestion(FESection);
-        List<Choice> choices = createChoices(List.of(BESelectivequestion, FESelectivequestion));
+        createChoices(List.of(BESelectivequestion, FESelectivequestion));
         testRepository.save(
                 recruitment, BESection, FESection, BENarrativeQuestion, FENarrativeQuestion,
                 BESelectivequestion, FESelectivequestion
@@ -38,6 +38,7 @@ public abstract class RepositoryTest {
     private Section createSection(String sectionName, Recruitment recruitment) {
         Section section = SECTION(sectionName);
         section.updateRecruitment(recruitment);
+        recruitment.addSections(List.of(section));
         return section;
     }
 

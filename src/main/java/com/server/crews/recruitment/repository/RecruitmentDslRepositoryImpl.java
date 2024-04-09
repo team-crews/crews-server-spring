@@ -17,8 +17,7 @@ public class RecruitmentDslRepositoryImpl implements RecruitmentDslRepository {
         QRecruitment qRecruitment = QRecruitment.recruitment;
         QSection qSection = QSection.section;
 
-        Recruitment recruitment =  jpaQueryFactory.select(qRecruitment)
-                .from(qRecruitment)
+        Recruitment recruitment =  jpaQueryFactory.selectFrom(qRecruitment)
                 .leftJoin(qRecruitment.sections, qSection)
                 .fetchJoin()
                 .where(qRecruitment.id.eq(id))
