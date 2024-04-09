@@ -1,9 +1,6 @@
 package com.server.crews.recruitment.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,14 +14,15 @@ public class Choice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long questionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private SelectiveQuestion selectiveQuestion;
 
     @Column(nullable = false)
     private String content;
 
-    public Choice(Long questionId, String content) {
-        this.questionId = questionId;
+    public Choice(SelectiveQuestion selectiveQuestion, String content) {
+        this.selectiveQuestion = selectiveQuestion;
         this.content = content;
     }
 }

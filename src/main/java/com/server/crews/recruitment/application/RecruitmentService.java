@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
 @Slf4j
@@ -64,7 +65,7 @@ public class RecruitmentService {
 
     private void saveChoices(final RecruitmentSaveRequest request, final List<SelectiveQuestion> selectiveQuestions) {
         Map<Integer, List<String>> choicesByOrder = choicesBySelectiveQuestionOrder(request);
-        Map<Integer, Long> selectiveQuestionIdsByOrder = selectiveQuestionIdsByOrder(selectiveQuestions);
+        Map<Integer, SelectiveQuestion> selectiveQuestionIdsByOrder = selectiveQuestionIdsByOrder(selectiveQuestions);
         List<Choice> choices = choicesByOrder.entrySet()
                 .stream()
                 .flatMap(choiceContentsByOrder -> choiceStreamByOrder(choiceContentsByOrder, selectiveQuestionIdsByOrder))
@@ -80,14 +81,14 @@ public class RecruitmentService {
                 .collect(toMap(QuestionRequest::getOrder, QuestionRequest::getChoices));
     }
 
-    private Map<Integer, Long> selectiveQuestionIdsByOrder(final List<SelectiveQuestion> selectiveQuestions) {
+    private Map<Integer, SelectiveQuestion> selectiveQuestionIdsByOrder(final List<SelectiveQuestion> selectiveQuestions) {
         return selectiveQuestions.stream()
-                .collect(toMap(SelectiveQuestion::getOrder, SelectiveQuestion::getId));
+                .collect(toMap(SelectiveQuestion::getOrder, identity()));
     }
 
     private Stream<Choice> choiceStreamByOrder(
             final Map.Entry<Integer, List<String>> choiceContentsByOrder,
-            final Map<Integer, Long> selectiveQuestionIdsByOrder) {
+            final Map<Integer, SelectiveQuestion> selectiveQuestionIdsByOrder) {
         return choiceContentsByOrder.getValue()
                 .stream()
                 .map(choiceContent -> new Choice(selectiveQuestionIdsByOrder.get(choiceContentsByOrder.getKey()), choiceContent));

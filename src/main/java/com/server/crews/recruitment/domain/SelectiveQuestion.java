@@ -1,11 +1,11 @@
 package com.server.crews.recruitment.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.Id;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -17,8 +17,12 @@ public class SelectiveQuestion implements Question, Comparable<SelectiveQuestion
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long sectionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private Section section;
+
+    @OneToMany(mappedBy = "selective_question", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Choice> choices = new ArrayList<>();
 
     @Column(nullable = false)
     private String content;
