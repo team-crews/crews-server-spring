@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class QuestionRequest {
+public class QuestionSaveRequest {
     private final QuestionType type;
     private final String content;
     private final Boolean necessity;
@@ -27,11 +27,11 @@ public class QuestionRequest {
                 .order(order)
                 .minimumSelection(minimumSelection)
                 .maximumSelection(maximumSelection)
-                .choices(createChoices())
+                .choices(choices())
                 .build();
     }
 
-    private List<Choice> createChoices() {
+    private List<Choice> choices() {
         return choices.stream()
                 .map(Choice::new)
                 .toList();

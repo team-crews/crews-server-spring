@@ -13,12 +13,12 @@ public class RecruitmentSaveRequest {
     private final String title;
     private final String clubName;
     private final String description;
-    private final List<SectionRequest> sections;
+    private final List<SectionsSaveRequest> sections;
     private final LocalDateTime deadline;
 
     public List<Section> createSections() {
         return sections.stream()
-                .map(SectionRequest::toEntity)
+                .map(SectionsSaveRequest::toEntity)
                 .toList();
     }
 }
