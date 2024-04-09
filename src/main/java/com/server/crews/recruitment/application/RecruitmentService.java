@@ -28,8 +28,10 @@ public class RecruitmentService {
         recruitmentRepository.save(accessedRecruitment);
     }
 
+    @Transactional
     public void updateProgressState(
-            final Recruitment accessedRecruitment, final ProgressStateUpdateRequest request) {
+            final Recruitment accessedRecruitment,
+            final ProgressStateUpdateRequest request) {
         accessedRecruitment.updateProgress(request.progress());
         recruitmentRepository.save(accessedRecruitment);
     }

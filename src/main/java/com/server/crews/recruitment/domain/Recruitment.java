@@ -47,7 +47,7 @@ public class Recruitment {
         addSections(request.createSections());
     }
 
-    private void addSections(final List<Section> sections) {
+    public void addSections(final List<Section> sections) {
         sections.forEach(section -> section.updateRecruitment(this));
         this.sections.addAll(sections);
     }
