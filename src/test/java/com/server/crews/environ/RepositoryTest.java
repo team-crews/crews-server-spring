@@ -8,9 +8,9 @@ import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
-import static com.server.crews.recruitment.application.QuestionFixture.*;
-import static com.server.crews.recruitment.application.RecruitmentFixture.RECRUITMENT;
-import static com.server.crews.recruitment.application.SectionFixture.*;
+import static com.server.crews.fixture.QuestionFixture.*;
+import static com.server.crews.fixture.RecruitmentFixture.RECRUITMENT;
+import static com.server.crews.fixture.SectionFixture.*;
 
 @DataJpaTest
 @Import(RepositoryTestConfig.class)

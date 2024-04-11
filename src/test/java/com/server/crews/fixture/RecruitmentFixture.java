@@ -1,4 +1,4 @@
-package com.server.crews.recruitment.application;
+package com.server.crews.fixture;
 
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
@@ -9,9 +9,9 @@ import com.server.crews.recruitment.dto.request.SectionsSaveRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.server.crews.recruitment.application.QuestionFixture.*;
-import static com.server.crews.recruitment.application.SectionFixture.BACKEND_SECTION_NAME;
-import static com.server.crews.recruitment.application.SectionFixture.FRONTEND_SECTION_NAME;
+import static com.server.crews.fixture.QuestionFixture.*;
+import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
+import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
 
 public class RecruitmentFixture {
     public static final LocalDateTime DEFAULT_DEADLINE = LocalDateTime.now().plusMonths(1L);

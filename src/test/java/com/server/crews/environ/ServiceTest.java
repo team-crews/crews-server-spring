@@ -6,14 +6,16 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_SECRET_CODE;
+
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public abstract class IntegrationTest {
+public abstract class ServiceTest {
     @Autowired
     private DatabaseCleaner databaseCleaner;
 
     @Autowired
-    protected IntegrationTestEnviron integrationTestEnviron;
+    protected TestRecruitmentEnviron testRecruitmentEnviron;
 
     @MockBean
     private TestRepository testRepository;
@@ -21,5 +23,11 @@ public abstract class IntegrationTest {
     @BeforeEach
     void setUp() {
         databaseCleaner.clear();
+    }
+
+    protected TestRecruitment LIKE_LION_RECRUITMENT() {
+        var testRecruitment = new TestRecruitment(testRecruitmentEnviron);
+        testRecruitment.create(DEFAULT_SECRET_CODE);
+        return testRecruitment;
     }
 }

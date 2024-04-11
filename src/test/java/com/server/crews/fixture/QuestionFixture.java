@@ -1,4 +1,4 @@
-package com.server.crews.recruitment.application;
+package com.server.crews.fixture;
 
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
