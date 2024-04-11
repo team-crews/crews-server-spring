@@ -21,11 +21,13 @@ public class Applicant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String secretCode;
 
+    @Column(nullable = false)
     private Outcome outcome;
 
+    @Column(nullable = false)
     private Long recruitmentId;
 
     private Long studentNumber;
@@ -35,8 +37,6 @@ public class Applicant {
     private String email;
 
     private String name;
-
-//    private List<Answer> answers;
 
     public Applicant(final String secretCode) {
         this.secretCode = secretCode;
@@ -52,19 +52,18 @@ public class Applicant {
         this.major = request.major();
         this.email = request.email();
         this.name = request.name();
-//        this.answers = request.answers();
     }
 
     private void setAnswersOrder(final List<Answer> answersInRequest) {
         int sequence = 1;
-        for(Answer answer: answersInRequest) {
+        for (Answer answer : answersInRequest) {
             answer.setOrder(sequence);
             sequence += 1;
         }
     }
 
     private void validateEmail(final String email) {
-        if(!Pattern.matches(EMAIL_PATTERN, email)) {
+        if (!Pattern.matches(EMAIL_PATTERN, email)) {
             throw new CrewsException(ErrorCode.INVALID_EMAIL_PATTERN);
         }
     }
@@ -74,9 +73,6 @@ public class Applicant {
     }
 
     public boolean isNotDetermined() {
-        if(outcome.equals(Outcome.PENDING)) {
-            return true;
-        }
-        return false;
+        return outcome.equals(Outcome.PENDING);
     }
 }
