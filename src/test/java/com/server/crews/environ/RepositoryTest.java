@@ -3,8 +3,8 @@ package com.server.crews.environ;
 import com.server.crews.recruitment.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
@@ -12,8 +12,8 @@ import static com.server.crews.recruitment.application.QuestionFixture.*;
 import static com.server.crews.recruitment.application.RecruitmentFixture.RECRUITMENT;
 import static com.server.crews.recruitment.application.SectionFixture.*;
 
-@SpringBootTest
-@Transactional
+@DataJpaTest
+@Import(RepositoryTestConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public abstract class RepositoryTest {
     @Autowired
