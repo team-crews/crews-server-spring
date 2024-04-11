@@ -2,7 +2,6 @@ package com.server.crews.environ;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,6 +13,5 @@ public class TestRepository {
         for(Object o: objects) {
             em.persist(o);
         }
-        em.clear();
     }
 }
