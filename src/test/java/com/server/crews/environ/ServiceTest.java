@@ -15,7 +15,7 @@ public abstract class ServiceTest {
     private DatabaseCleaner databaseCleaner;
 
     @Autowired
-    protected TestRecruitmentEnviron testRecruitmentEnviron;
+    private TestEnviron testEnviron;
 
     @MockBean
     private TestRepository testRepository;
@@ -26,8 +26,14 @@ public abstract class ServiceTest {
     }
 
     protected TestRecruitment LIKE_LION_RECRUITMENT() {
-        var testRecruitment = new TestRecruitment(testRecruitmentEnviron);
+        var testRecruitment = new TestRecruitment(testEnviron);
         testRecruitment.create(DEFAULT_SECRET_CODE);
         return testRecruitment;
+    }
+
+    protected TestApplicant JONGMEE() {
+        var testApplicant = new TestApplicant(testEnviron);
+        testApplicant.create(DEFAULT_SECRET_CODE);
+        return testApplicant;
     }
 }

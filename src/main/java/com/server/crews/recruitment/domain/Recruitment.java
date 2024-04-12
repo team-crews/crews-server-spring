@@ -21,7 +21,7 @@ public class Recruitment {
     @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String secretCode;
 
     private String title;

@@ -8,14 +8,14 @@ import java.util.List;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
 
 public class TestRecruitment {
-    private final TestRecruitmentEnviron environ;
+    private final TestEnviron environ;
     private final List<Section> sections;
     private final List<NarrativeQuestion> narrativeQuestions;
     private final List<SelectiveQuestion> selectiveQuestions;
     private final List<Choice> choices;
     private Recruitment recruitment;
 
-    public TestRecruitment(final TestRecruitmentEnviron environ) {
+    public TestRecruitment(final TestEnviron environ) {
         this.environ = environ;
         this.sections = new ArrayList<>();
         this.narrativeQuestions = new ArrayList<>();

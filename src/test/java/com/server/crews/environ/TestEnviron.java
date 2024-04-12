@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class TestRecruitmentEnviron {
+public class TestEnviron {
     private final RecruitmentRepository recruitmentRepository;
     private final SectionRepository sectionRepository;
     private final SelectiveQuestionRepository selectiveQuestionRepository;
@@ -37,5 +37,17 @@ public class TestRecruitmentEnviron {
 
     public ChoiceRepository choiceRepository() {
         return choiceRepository;
+    }
+
+    public ApplicantRepository applicantRepository() {
+        return applicantRepository;
+    }
+
+    public NarrativeAnswerRepository narrativeAnswerRepository() {
+        return narrativeAnswerRepository;
+    }
+
+    public SelectiveAnswerRepository selectiveAnswerRepository() {
+        return selectiveAnswerRepository;
     }
 }

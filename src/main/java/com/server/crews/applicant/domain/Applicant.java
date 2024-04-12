@@ -8,7 +8,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.regex.Pattern;
 
 @Getter
@@ -27,10 +26,10 @@ public class Applicant {
     @Column(nullable = false)
     private Outcome outcome;
 
-    @Column(nullable = false)
+    @Column
     private Long recruitmentId;
 
-    private Long studentNumber;
+    private String studentNumber;
 
     private String major;
 
@@ -45,21 +44,12 @@ public class Applicant {
 
     public void updateAll(final ApplicationSaveRequest request) {
         validateEmail(request.email());
-        setAnswersOrder(request.answers());
 
         this.recruitmentId = request.recruitmentId();
         this.studentNumber = request.studentNumber();
         this.major = request.major();
         this.email = request.email();
         this.name = request.name();
-    }
-
-    private void setAnswersOrder(final List<Answer> answersInRequest) {
-        int sequence = 1;
-        for (Answer answer : answersInRequest) {
-            answer.setOrder(sequence);
-            sequence += 1;
-        }
     }
 
     private void validateEmail(final String email) {
