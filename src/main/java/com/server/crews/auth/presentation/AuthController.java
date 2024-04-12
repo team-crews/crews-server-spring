@@ -3,7 +3,8 @@ package com.server.crews.auth.presentation;
 import com.server.crews.auth.application.AuthService;
 import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.request.LoginRequest;
-import com.server.crews.auth.dto.request.NewSecretCodeRequest;
+import com.server.crews.auth.dto.request.NewApplicantRequest;
+import com.server.crews.auth.dto.request.NewRecruitmentRequest;
 import com.server.crews.auth.dto.response.TokenResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class AuthController {
     @PostMapping("/recruitment/secret-code")
     @Operation(description = "지원서 양식에 대한 코드를 생성한다.")
     public ResponseEntity<TokenResponse> createRecruitmentSecretCode(
-            @RequestBody final NewSecretCodeRequest request) {
+            @RequestBody final NewRecruitmentRequest request) {
         TokenResponse tokenResponse = authService.createRecruitmentCode(request);
         ResponseCookie cookie = authService.createRefreshToken(Role.ADMIN, tokenResponse.id());
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -35,9 +36,9 @@ public class AuthController {
     }
 
     @PostMapping("/application/secret-code")
-    @Operation(description = "지원서에 대한 코드를 생성한다.")
+    @Operation(description = "지원자에 대한 코드를 생성한다.")
     public ResponseEntity<TokenResponse> createApplicationSecretCode(
-            @RequestBody final NewSecretCodeRequest request) {
+            @RequestBody final NewApplicantRequest request) {
         TokenResponse tokenResponse = authService.createApplicationCode(request);
         ResponseCookie cookie = authService.createRefreshToken(Role.APPLICANT, tokenResponse.id());
         return ResponseEntity.status(HttpStatus.CREATED)

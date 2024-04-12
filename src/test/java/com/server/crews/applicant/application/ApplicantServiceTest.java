@@ -21,7 +21,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.server.crews.fixture.ApplicantFixture.*;
@@ -55,11 +54,11 @@ class ApplicantServiceTest extends ServiceTest {
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment();
-        Applicant applicant = JONGMEE().applicant();
+        Applicant applicant = JONGMEE(recruitment.getId())
+                .applicant();
 
         ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(
-                recruitment.getId(), DEFAULT_STUDENT_NUMBER,
-                DEFAULT_MAJOR, DEFAULT_EMAIL, DEFAULT_NAME, answerSaveRequests);
+                DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_EMAIL, DEFAULT_NAME, answerSaveRequests);
 
         // when
         applicantService.saveApplication(applicant, saveRequest);
@@ -95,13 +94,13 @@ class ApplicantServiceTest extends ServiceTest {
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment();
-        Applicant applicant = JONGMEE().applicant();
+        Applicant applicant = JONGMEE(recruitment.getId())
+                .applicant();
 
         List<AnswerSaveRequest> invalidAnswerSaveRequests = List.of(
                 new AnswerSaveRequest(QuestionType.NARRATIVE, 3L, DEFAULT_NARRATIVE_ANSWER, null));
         ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(
-                recruitment.getId(), DEFAULT_STUDENT_NUMBER,
-                DEFAULT_MAJOR, DEFAULT_EMAIL, DEFAULT_NAME, invalidAnswerSaveRequests);
+                DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_EMAIL, DEFAULT_NAME, invalidAnswerSaveRequests);
 
         // when & then
         assertThatThrownBy(() -> applicantService.saveApplication(applicant, saveRequest))
@@ -116,7 +115,8 @@ class ApplicantServiceTest extends ServiceTest {
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment();
-        Applicant applicant = JONGMEE().addNarrativeAnswers(1L, "안녕하세요")
+        Applicant applicant = JONGMEE(recruitment.getId())
+                .addNarrativeAnswers(1L, "안녕하세요")
                 .saveSelectiveAnswers(1L, 1L)
                 .saveSelectiveAnswers(1L, 2L)
                 .applicant();

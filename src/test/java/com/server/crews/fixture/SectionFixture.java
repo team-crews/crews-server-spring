@@ -2,8 +2,6 @@ package com.server.crews.fixture;
 
 import com.server.crews.recruitment.domain.Section;
 
-import java.util.List;
-
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
 
 public class SectionFixture {
@@ -15,9 +13,5 @@ public class SectionFixture {
                 .name(name)
                 .description(DEFAULT_DESCRIPTION)
                 .build();
-    }
-
-    public static List<Section> DEV_SECTIONS() {
-        return List.of(SECTION(BACKEND_SECTION_NAME), SECTION(FRONTEND_SECTION_NAME));
     }
 }

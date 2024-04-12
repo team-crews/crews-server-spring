@@ -31,9 +31,15 @@ public abstract class ServiceTest {
         return testRecruitment;
     }
 
-    protected TestApplicant JONGMEE() {
+    protected TestApplicant JONGMEE(final Long recruitmentId) {
         var testApplicant = new TestApplicant(testEnviron);
-        testApplicant.create(DEFAULT_SECRET_CODE);
+        testApplicant.create(DEFAULT_SECRET_CODE + " JONGMEE", recruitmentId);
+        return testApplicant;
+    }
+
+    protected TestApplicant KYUNGHO(final Long recruitmentId) {
+        var testApplicant = new TestApplicant(testEnviron);
+        testApplicant.create(DEFAULT_SECRET_CODE + " KYUNGHO", recruitmentId);
         return testApplicant;
     }
 }

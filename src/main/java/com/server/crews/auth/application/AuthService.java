@@ -5,7 +5,8 @@ import com.server.crews.applicant.repository.ApplicantRepository;
 import com.server.crews.auth.domain.RefreshToken;
 import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.request.LoginRequest;
-import com.server.crews.auth.dto.request.NewSecretCodeRequest;
+import com.server.crews.auth.dto.request.NewApplicantRequest;
+import com.server.crews.auth.dto.request.NewRecruitmentRequest;
 import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.repository.RefreshTokenRepository;
 import com.server.crews.global.exception.CrewsException;
@@ -41,7 +42,7 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenResponse createRecruitmentCode(final NewSecretCodeRequest request) {
+    public TokenResponse createRecruitmentCode(final NewRecruitmentRequest request) {
         String code = request.code();
         validateDuplicatedRecruitmentCode(code);
         Recruitment recruitment = recruitmentRepository.save(new Recruitment(code));
@@ -71,10 +72,11 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenResponse createApplicationCode(final NewSecretCodeRequest request) {
+    public TokenResponse createApplicationCode(final NewApplicantRequest request) {
         String code = request.code();
+        Recruitment recruitment = findExistingRecruitment(request.recruitmentId());
         validateDuplicatedApplicationCode(code);
-        Applicant applicant = applicantRepository.save(new Applicant(code));
+        Applicant applicant = applicantRepository.save(new Applicant(code, recruitment.getId()));
         Long id = applicant.getId();
 
         String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, String.valueOf(id));

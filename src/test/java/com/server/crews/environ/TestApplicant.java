@@ -2,6 +2,7 @@ package com.server.crews.environ;
 
 import com.server.crews.applicant.domain.Applicant;
 import com.server.crews.applicant.domain.NarrativeAnswer;
+import com.server.crews.applicant.domain.Outcome;
 import com.server.crews.applicant.domain.SelectiveAnswer;
 
 import java.util.ArrayList;
@@ -19,8 +20,8 @@ public class TestApplicant {
         this.selectiveAnswers = new ArrayList<>();
     }
 
-    public TestApplicant create(final String secretCode) {
-        Applicant applicant = new Applicant(secretCode);
+    public TestApplicant create(final String secretCode, final Long recruitmentId) {
+        Applicant applicant = new Applicant(secretCode, recruitmentId);
         this.applicant = environ.applicantRepository().save(applicant);
         return this;
     }
@@ -44,6 +45,12 @@ public class TestApplicant {
                 .build();
         SelectiveAnswer savedSelectiveAnswer = environ.selectiveAnswerRepository().save(selectiveAnswer);
         this.selectiveAnswers.add(savedSelectiveAnswer);
+        return this;
+    }
+
+    public TestApplicant decideOutcome(final Outcome outcome) {
+        applicant.decideOutcome(outcome);
+        this.applicant = environ.applicantRepository().save(applicant);
         return this;
     }
 

@@ -26,7 +26,7 @@ public class Applicant {
     @Column(nullable = false)
     private Outcome outcome;
 
-    @Column
+    @Column(nullable = false)
     private Long recruitmentId;
 
     private String studentNumber;
@@ -37,15 +37,14 @@ public class Applicant {
 
     private String name;
 
-    public Applicant(final String secretCode) {
+    public Applicant(final String secretCode, final Long recruitmentId) {
         this.secretCode = secretCode;
+        this.recruitmentId = recruitmentId;
         this.outcome = Outcome.PENDING;
     }
 
     public void updateAll(final ApplicationSaveRequest request) {
         validateEmail(request.email());
-
-        this.recruitmentId = request.recruitmentId();
         this.studentNumber = request.studentNumber();
         this.major = request.major();
         this.email = request.email();
