@@ -18,7 +18,6 @@ public class EmailEventListener {
         Recruitment recruitment = event.recruitment();
         List<Applicant> applicants = event.applicants();
 
-        applicants.stream()
-                .forEach(applicant -> emailService.send(applicant, recruitment));
+        applicants.forEach(applicant -> emailService.send(applicant, recruitment));
     }
 }

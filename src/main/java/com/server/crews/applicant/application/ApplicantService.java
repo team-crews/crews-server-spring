@@ -84,7 +84,9 @@ public class ApplicantService {
 
     public List<ApplicantsResponse> findAllApplicants(final Long recruitmentId) {
         List<Applicant> applicants = applicantRepository.findAllByRecruitmentId(recruitmentId);
-        return applicants.stream().map(ApplicantsResponse::from).toList();
+        return applicants.stream()
+                .map(ApplicantsResponse::from)
+                .toList();
     }
 
     public ApplicantDetailsResponse getApplicantDetails(final Long applicantId) {
@@ -93,13 +95,14 @@ public class ApplicantService {
         return ApplicantDetailsResponse.from(applicant);
     }
 
+    @Transactional
     public void decideOutcome(final EvaluationRequest request, final Long applicantId) {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
         applicant.decideOutcome(request.outcome());
-        applicantRepository.save(applicant);
     }
 
+    @Transactional
     public void sendOutcomeEmail(final Recruitment accessedRecruitment) {
         Long recruitmentId = accessedRecruitment.getId();
         List<Applicant> applicants = applicantRepository.findAllByRecruitmentId(recruitmentId);
