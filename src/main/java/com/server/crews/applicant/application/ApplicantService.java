@@ -7,7 +7,7 @@ import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
-import com.server.crews.applicant.dto.response.ApplicantDetailsResponse;
+import com.server.crews.applicant.dto.response.ApplicantAnswersResponse;
 import com.server.crews.applicant.dto.response.ApplicantsResponse;
 import com.server.crews.applicant.event.OutcomeDeterminedEvent;
 import com.server.crews.applicant.repository.ApplicantRepository;
@@ -24,7 +24,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+
+import static java.util.stream.Collectors.groupingBy;
+
 
 @Service
 @Transactional(readOnly = true)
@@ -89,10 +93,18 @@ public class ApplicantService {
                 .toList();
     }
 
-    public ApplicantDetailsResponse getApplicantDetails(final Long applicantId) {
-        Applicant applicant = applicantRepository.findById(applicantId)
+    public ApplicantAnswersResponse findAllApplicantAnswers(final Long applicantId) {
+        validateApplicantId(applicantId);
+        List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplicantId(applicantId);
+        Map<Long, List<SelectiveAnswer>> selectiveAnswers = selectiveAnswerRepository.findAllByApplicantId(applicantId)
+                .stream()
+                .collect(groupingBy(SelectiveAnswer::getSelectiveQuestionId));
+        return ApplicantAnswersResponse.of(narrativeAnswers, selectiveAnswers);
+    }
+
+    private void validateApplicantId(final Long applicantId) {
+        applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
-        return ApplicantDetailsResponse.from(applicant);
     }
 
     @Transactional

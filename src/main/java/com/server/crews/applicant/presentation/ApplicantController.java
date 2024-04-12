@@ -4,7 +4,7 @@ import com.server.crews.applicant.application.ApplicantService;
 import com.server.crews.applicant.domain.Applicant;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
-import com.server.crews.applicant.dto.response.ApplicantDetailsResponse;
+import com.server.crews.applicant.dto.response.ApplicantAnswersResponse;
 import com.server.crews.applicant.dto.response.ApplicantsResponse;
 import com.server.crews.auth.presentation.Authentication;
 import com.server.crews.auth.presentation.AuthenticationRequired;
@@ -48,9 +48,9 @@ public class ApplicantController {
     @GetMapping("/{applicant-id}")
     @AuthenticationRequired
     @Operation(description = "특정 지원자의 지원서를 조회한다.")
-    public ResponseEntity<ApplicantDetailsResponse> getApplicantDetails(
+    public ResponseEntity<ApplicantAnswersResponse> findApplicantAnswers(
             @PathVariable(value = "applicant-id") final Long applicantId) {
-        return ResponseEntity.ok(applicantService.getApplicantDetails(applicantId));
+        return ResponseEntity.ok(applicantService.findAllApplicantAnswers(applicantId));
     }
 
     @PatchMapping("/{applicant-id}/evaluation")

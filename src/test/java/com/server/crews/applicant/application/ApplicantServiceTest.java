@@ -5,6 +5,7 @@ import com.server.crews.applicant.domain.NarrativeAnswer;
 import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
+import com.server.crews.applicant.dto.response.ApplicantAnswersResponse;
 import com.server.crews.applicant.repository.ApplicantRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
@@ -20,6 +21,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.server.crews.fixture.ApplicantFixture.*;
@@ -104,5 +106,28 @@ class ApplicantServiceTest extends ServiceTest {
         // when & then
         assertThatThrownBy(() -> applicantService.saveApplication(applicant, saveRequest))
                 .isInstanceOf(CrewsException.class);
+    }
+
+    @Test
+    @DisplayName("지원자의 모든 서술형, 선택형 문항 답변을 조회한다.")
+    void findAllApplicantAnswers() {
+        // given
+        Recruitment recruitment = LIKE_LION_RECRUITMENT()
+                .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
+                .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
+                .recruitment();
+        Applicant applicant = JONGMEE().addNarrativeAnswers(1L, "안녕하세요")
+                .saveSelectiveAnswers(1L, 1L)
+                .saveSelectiveAnswers(1L, 2L)
+                .applicant();
+
+        // when
+        ApplicantAnswersResponse response = applicantService.findAllApplicantAnswers(applicant.getId());
+
+        // then
+        assertAll(
+                () -> assertThat(response.answerByNarrativeQuestionId()).containsEntry(1L, "안녕하세요"),
+                () -> assertThat(response.choiceIdsBySelectiveQuestionId()).containsEntry(1L, List.of(1L, 2L))
+        );
     }
 }
