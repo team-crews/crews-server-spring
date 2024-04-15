@@ -1,4 +1,4 @@
-package com.server.crews.environ;
+package com.server.crews.environ.service;
 
 import com.server.crews.applicant.domain.Applicant;
 import com.server.crews.applicant.domain.NarrativeAnswer;
@@ -13,12 +13,12 @@ import static com.server.crews.fixture.ApplicantFixture.DEFAULT_MAJOR;
 import static com.server.crews.fixture.ApplicantFixture.DEFAULT_STUDENT_NUMBER;
 
 public class TestApplicant {
-    private final TestEnviron environ;
+    private final ServiceTestEnviron environ;
     private Applicant applicant;
     private final List<NarrativeAnswer> narrativeAnswers;
     private final List<SelectiveAnswer> selectiveAnswers;
 
-    public TestApplicant(final TestEnviron environ) {
+    public TestApplicant(final ServiceTestEnviron environ) {
         this.environ = environ;
         this.narrativeAnswers = new ArrayList<>();
         this.selectiveAnswers = new ArrayList<>();

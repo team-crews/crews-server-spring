@@ -1,4 +1,4 @@
-package com.server.crews.environ;
+package com.server.crews.environ.repository;
 
 import com.server.crews.recruitment.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;

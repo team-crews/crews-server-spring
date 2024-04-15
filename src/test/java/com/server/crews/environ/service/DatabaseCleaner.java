@@ -1,4 +1,4 @@
-package com.server.crews.environ;
+package com.server.crews.environ.service;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;

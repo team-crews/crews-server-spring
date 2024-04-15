@@ -1,4 +1,4 @@
-package com.server.crews.environ;
+package com.server.crews.environ.service;
 
 import com.server.crews.recruitment.domain.*;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
@@ -10,14 +10,14 @@ import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
 
 public class TestRecruitment {
-    private final TestEnviron environ;
+    private final ServiceTestEnviron environ;
     private final List<Section> sections;
     private final List<NarrativeQuestion> narrativeQuestions;
     private final List<SelectiveQuestion> selectiveQuestions;
     private final List<Choice> choices;
     private Recruitment recruitment;
 
-    public TestRecruitment(final TestEnviron environ) {
+    public TestRecruitment(final ServiceTestEnviron environ) {
         this.environ = environ;
         this.sections = new ArrayList<>();
         this.narrativeQuestions = new ArrayList<>();

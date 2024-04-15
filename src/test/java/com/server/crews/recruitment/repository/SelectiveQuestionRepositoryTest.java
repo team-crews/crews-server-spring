@@ -1,6 +1,6 @@
 package com.server.crews.recruitment.repository;
 
-import com.server.crews.environ.RepositoryTest;
+import com.server.crews.environ.repository.RepositoryTest;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import org.junit.jupiter.api.DisplayName;

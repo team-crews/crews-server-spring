@@ -1,4 +1,4 @@
-package com.server.crews.environ;
+package com.server.crews.environ.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.server.crews.recruitment.repository.RecruitmentDslRepository;

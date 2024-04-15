@@ -1,6 +1,6 @@
 package com.server.crews.recruitment.application;
 
-import com.server.crews.environ.ServiceTest;
+import com.server.crews.environ.service.ServiceTest;
 import com.server.crews.recruitment.domain.Progress;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.dto.request.ProgressStateUpdateRequest;

@@ -11,7 +11,7 @@ import com.server.crews.applicant.event.OutcomeDeterminedEvent;
 import com.server.crews.applicant.repository.ApplicantRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
-import com.server.crews.environ.ServiceTest;
+import com.server.crews.environ.service.ServiceTest;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.dto.request.QuestionType;

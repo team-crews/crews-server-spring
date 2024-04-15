@@ -1,4 +1,4 @@
-package com.server.crews.environ;
+package com.server.crews.environ.service;
 
 import com.server.crews.applicant.repository.ApplicantRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class TestEnviron {
+public class ServiceTestEnviron {
     private final RecruitmentRepository recruitmentRepository;
     private final SectionRepository sectionRepository;
     private final SelectiveQuestionRepository selectiveQuestionRepository;
