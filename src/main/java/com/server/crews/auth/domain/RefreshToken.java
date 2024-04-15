@@ -1,23 +1,25 @@
 package com.server.crews.auth.domain;
 
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
-@Document(collection = "refreshTokens")
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RefreshToken {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
+    @Column(nullable = false)
     private String token;
 
-    private String ownerId;
+    @Column(nullable = false)
+    private Long ownerId;
 
-    public RefreshToken(final String token, final String ownerId) {
+    public RefreshToken(final String token, final Long ownerId) {
         this.token = token;
         this.ownerId = ownerId;
     }

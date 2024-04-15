@@ -5,19 +5,21 @@ import com.server.crews.applicant.repository.ApplicantRepository;
 import com.server.crews.auth.domain.RefreshToken;
 import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.request.LoginRequest;
-import com.server.crews.auth.dto.request.NewSecretCodeRequest;
+import com.server.crews.auth.dto.request.NewApplicantRequest;
+import com.server.crews.auth.dto.request.NewRecruitmentRequest;
 import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.repository.RefreshTokenRepository;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
-import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RecruitmentRepository recruitmentRepository;
@@ -39,72 +41,70 @@ public class AuthService {
         this.refreshTokenValidityInSecond = refreshTokenValidityInMilliseconds / 1000;
     }
 
-    public TokenResponse createRecruitmentCode(final NewSecretCodeRequest request) {
+    @Transactional
+    public TokenResponse createRecruitmentCode(final NewRecruitmentRequest request) {
         String code = request.code();
         validateDuplicatedRecruitmentCode(code);
         Recruitment recruitment = recruitmentRepository.save(new Recruitment(code));
-        String id = recruitment.getId();
+        Long id = recruitment.getId();
 
-        String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, id);
+        String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, String.valueOf(id));
         return new TokenResponse(id, accessToken);
     }
 
-    public ResponseCookie createRefreshToken(Role role, String id) {
-        String refreshToken = jwtTokenProvider.createRefreshToken(role, id);
+    private void validateDuplicatedRecruitmentCode(final String code) {
+        recruitmentRepository.findBySecretCode(code)
+                .orElseThrow(() -> new CrewsException(ErrorCode.DUPLICATE_SECRET_CODE));
+    }
+
+    @Transactional
+    public ResponseCookie createRefreshToken(Role role, Long id) {
+        String refreshToken = jwtTokenProvider.createRefreshToken(role, String.valueOf(id));
         refreshTokenRepository.deleteByOwnerId(id);
         refreshTokenRepository.save(new RefreshToken(refreshToken, id));
 
-        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
+        return ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(true)
                 .path("/auth/refresh")
                 .maxAge(refreshTokenValidityInSecond)
                 .build();
-        return responseCookie;
     }
 
-    private void validateDuplicatedRecruitmentCode(final String code) {
-        Recruitment existing = recruitmentRepository.findBySecretCode(code).orElse(null);
-        validateDuplicated(existing);
-    }
-
-    public TokenResponse createApplicationCode(final NewSecretCodeRequest request) {
+    @Transactional
+    public TokenResponse createApplicationCode(final NewApplicantRequest request) {
         String code = request.code();
+        Recruitment recruitment = findExistingRecruitment(request.recruitmentId());
         validateDuplicatedApplicationCode(code);
-        Applicant applicant = applicantRepository.save(new Applicant(code));
-        String id = applicant.getId();
+        Applicant applicant = applicantRepository.save(new Applicant(code, recruitment.getId()));
+        Long id = applicant.getId();
 
-        String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, id);
+        String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, String.valueOf(id));
         return new TokenResponse(id, accessToken);
     }
 
     private void validateDuplicatedApplicationCode(final String code) {
-        Applicant existing = applicantRepository.findBySecretCode(code).orElse(null);
-        validateDuplicated(existing);
-    }
-
-    private void validateDuplicated(Object existing) {
-        if(Objects.nonNull(existing)) {
-            throw new CrewsException(ErrorCode.DUPLICATE_SECRET_CODE);
-        }
+        applicantRepository.findBySecretCode(code)
+                .orElseThrow(() -> new CrewsException(ErrorCode.DUPLICATE_SECRET_CODE));
     }
 
     public Object findAuthentication(final String accessToken) {
         jwtTokenProvider.validateAccessToken(accessToken);
-        String id = jwtTokenProvider.getPayload(accessToken);
+        String payload = jwtTokenProvider.getPayload(accessToken);
+        long id = Long.parseLong(payload);
         Role role = jwtTokenProvider.getRole(accessToken);
-        if(role.equals(Role.ADMIN)) {
-            return validateExistingRecruitment(id);
+        if (role.equals(Role.ADMIN)) {
+            return findExistingRecruitment(id);
         }
-        return validateExistingApplication(id);
+        return findExistingApplication(id);
     }
 
-    private Recruitment validateExistingRecruitment(final String id) {
+    private Recruitment findExistingRecruitment(final Long id) {
         return recruitmentRepository.findById(id)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
     }
 
-    private Applicant validateExistingApplication(final String id) {
+    private Applicant findExistingApplication(final Long id) {
         return applicantRepository.findById(id)
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
     }
@@ -113,8 +113,8 @@ public class AuthService {
         Recruitment recruitment = recruitmentRepository.findBySecretCode(request.code())
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
 
-        String id = recruitment.getId();
-        String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, id);
+        Long id = recruitment.getId();
+        String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, String.valueOf(id));
         return new TokenResponse(id, accessToken);
     }
 
@@ -122,8 +122,8 @@ public class AuthService {
         Applicant applicant = applicantRepository.findBySecretCode(request.code())
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
 
-        String id = applicant.getId();
-        String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, id);
+        Long id = applicant.getId();
+        String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, String.valueOf(id));
         return new TokenResponse(id, accessToken);
     }
 
@@ -132,9 +132,10 @@ public class AuthService {
         refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new CrewsException(ErrorCode.INVALID_REFRESH_TOKEN));
 
-        String id = jwtTokenProvider.getPayload(refreshToken);
+        String payload = jwtTokenProvider.getPayload(refreshToken);
+        long id = Long.parseLong(payload);
         Role role = jwtTokenProvider.getRole(refreshToken);
-        String accessToken = jwtTokenProvider.createAccessToken(role, id);
+        String accessToken = jwtTokenProvider.createAccessToken(role, payload);
         return new TokenResponse(id, accessToken);
     }
 }

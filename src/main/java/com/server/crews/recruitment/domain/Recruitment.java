@@ -1,27 +1,27 @@
 package com.server.crews.recruitment.domain;
 
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
-@Document(collection = "recruitments")
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class Recruitment {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Indexed(unique = true)
+    @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<Section> sections = new ArrayList<>();
+
+    @Column(unique = true, nullable = false)
     private String secretCode;
 
     private String title;
@@ -32,8 +32,6 @@ public class Recruitment {
 
     private Progress progress;
 
-    private List<Section> sections;
-
     private LocalDateTime deadline;
 
     public Recruitment(final String secretCode) {
@@ -42,20 +40,16 @@ public class Recruitment {
     }
 
     public void updateAll(final RecruitmentSaveRequest request) {
-        setQuestionsOrder(request.sections());
-
-        this.title = request.title();
-        this.clubName = request.clubName();
-        this.description = request.description();
-        this.sections = request.sections();
-        this.deadline = request.deadline();
+        this.title = request.getTitle();
+        this.clubName = request.getClubName();
+        this.description = request.getDescription();
+        this.deadline = request.getDeadline();
+        addSections(request.createSections());
     }
 
-    public void setQuestionsOrder(List<Section> sectionsInRequest) {
-        int sequence = 1;
-        for(Section section: sectionsInRequest) {
-            sequence = section.setQuestionOrder(sequence);
-        }
+    public void addSections(final List<Section> sections) {
+        sections.forEach(section -> section.updateRecruitment(this));
+        this.sections.addAll(sections);
     }
 
     public void updateProgress(final Progress progress) {

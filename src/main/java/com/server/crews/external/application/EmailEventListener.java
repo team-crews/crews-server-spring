@@ -3,22 +3,23 @@ package com.server.crews.external.application;
 import com.server.crews.applicant.domain.Applicant;
 import com.server.crews.applicant.event.OutcomeDeterminedEvent;
 import com.server.crews.recruitment.domain.Recruitment;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class EmailEventListener {
     private final EmailService emailService;
 
-    @EventListener(OutcomeDeterminedEvent.class)
+    @TransactionalEventListener(value = OutcomeDeterminedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void sendEmailToApplicants(final OutcomeDeterminedEvent event) {
         Recruitment recruitment = event.recruitment();
         List<Applicant> applicants = event.applicants();
 
-        applicants.stream()
-                .forEach(applicant -> emailService.send(applicant, recruitment));
+        applicants.forEach(applicant -> emailService.send(applicant, recruitment));
     }
 }

@@ -4,7 +4,7 @@ import com.server.crews.applicant.application.ApplicantService;
 import com.server.crews.applicant.domain.Applicant;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
-import com.server.crews.applicant.dto.response.ApplicantDetailsResponse;
+import com.server.crews.applicant.dto.response.ApplicantAnswersResponse;
 import com.server.crews.applicant.dto.response.ApplicantsResponse;
 import com.server.crews.auth.presentation.Authentication;
 import com.server.crews.auth.presentation.AuthenticationRequired;
@@ -41,16 +41,16 @@ public class ApplicantController {
     @AuthenticationRequired
     @Operation(description = "한 공고의 모든 지원자 목록을 조회한다.")
     public ResponseEntity<List<ApplicantsResponse>> findAllApplicants(
-            @RequestParam(value = "recruitment-id") final String recruitmentId) {
+            @RequestParam(value = "recruitment-id") final Long recruitmentId) {
         return ResponseEntity.ok(applicantService.findAllApplicants(recruitmentId));
     }
 
     @GetMapping("/{applicant-id}")
     @AuthenticationRequired
     @Operation(description = "특정 지원자의 지원서를 조회한다.")
-    public ResponseEntity<ApplicantDetailsResponse> getApplicantDetails(
-            @PathVariable(value = "applicant-id") final String applicantId) {
-        return ResponseEntity.ok(applicantService.getApplicantDetails(applicantId));
+    public ResponseEntity<ApplicantAnswersResponse> findApplicantAnswers(
+            @PathVariable(value = "applicant-id") final Long applicantId) {
+        return ResponseEntity.ok(applicantService.findAllApplicantAnswers(applicantId));
     }
 
     @PatchMapping("/{applicant-id}/evaluation")
@@ -58,7 +58,7 @@ public class ApplicantController {
     @Operation(description = "지원자의 합/불을 결정한다.")
     public ResponseEntity<Void> decideOutcome(
             @RequestBody final EvaluationRequest request,
-            @PathVariable(value = "applicant-id") final String applicantId) {
+            @PathVariable(value = "applicant-id") final Long applicantId) {
         applicantService.decideOutcome(request, applicantId);
         return ResponseEntity.ok().build();
     }

@@ -1,9 +1,7 @@
 package com.server.crews.applicant.dto.request;
 
-import com.server.crews.applicant.domain.Answer;
 import java.util.List;
 
 public record ApplicationSaveRequest(
-        String recruitmentId, Long studentNumber, String major, String email, String name, List<Answer> answers) {
-
+        String studentNumber, String major, String email, String name, List<AnswerSaveRequest> answers) {
 }
