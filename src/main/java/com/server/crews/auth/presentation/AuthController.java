@@ -25,7 +25,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/recruitment/secret-code")
-    @Operation(description = "지원서 양식에 대한 코드를 생성한다.")
+    @Operation(description = "지원서 양식에 대한 코드를 생성하고 토큰을 발급 받는다.")
     public ResponseEntity<TokenResponse> createRecruitmentSecretCode(
             @RequestBody final NewRecruitmentRequest request) {
         TokenResponse tokenResponse = authService.createRecruitmentCode(request);
@@ -35,8 +35,8 @@ public class AuthController {
                 .body(tokenResponse);
     }
 
-    @PostMapping("/application/secret-code")
-    @Operation(description = "지원자에 대한 코드를 생성한다.")
+    @PostMapping("/applicant/secret-code")
+    @Operation(description = "지원서(지원자)에 대한 코드를 생성하고 토큰을 발급 받는다.")
     public ResponseEntity<TokenResponse> createApplicationSecretCode(
             @RequestBody final NewApplicantRequest request) {
         TokenResponse tokenResponse = authService.createApplicationCode(request);

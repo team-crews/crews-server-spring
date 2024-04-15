@@ -54,7 +54,9 @@ public class AuthService {
 
     private void validateDuplicatedRecruitmentCode(final String code) {
         recruitmentRepository.findBySecretCode(code)
-                .orElseThrow(() -> new CrewsException(ErrorCode.DUPLICATE_SECRET_CODE));
+                .ifPresent(recruitment -> {
+                    throw new CrewsException(ErrorCode.DUPLICATE_SECRET_CODE);
+                });
     }
 
     @Transactional
@@ -85,7 +87,9 @@ public class AuthService {
 
     private void validateDuplicatedApplicationCode(final String code) {
         applicantRepository.findBySecretCode(code)
-                .orElseThrow(() -> new CrewsException(ErrorCode.DUPLICATE_SECRET_CODE));
+                .ifPresent(applicant -> {
+                    throw new CrewsException(ErrorCode.DUPLICATE_SECRET_CODE);
+                });
     }
 
     public Object findAuthentication(final String accessToken) {

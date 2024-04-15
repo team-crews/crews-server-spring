@@ -10,8 +10,8 @@ import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_SECRET_CODE;
 
 public class TokenFixture {
 
-    public static String RECRUITMENT_ACCESS_TOKEN() {
-        TokenResponse tokenResponse = RestAssured.given().log().all()
+    public static TokenResponse RECRUITMENT_ID_AND_ACCESS_TOKEN() {
+        return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(new NewRecruitmentRequest(DEFAULT_SECRET_CODE))
                 .when().post("/auth/recruitment/secret-code")
@@ -19,10 +19,9 @@ public class TokenFixture {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()
                 .as(TokenResponse.class);
-        return tokenResponse.accessToken();
     }
 
-    public static String APPLICANT_ACCESS_TOKEN() {
+    public static String APPLICANT_ID_AND_ACCESS_TOKEN() {
         TokenResponse tokenResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(new NewRecruitmentRequest(DEFAULT_SECRET_CODE))
