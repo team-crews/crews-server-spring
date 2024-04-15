@@ -1,5 +1,6 @@
 package com.server.crews.fixture;
 
+import com.server.crews.auth.dto.request.NewApplicantRequest;
 import com.server.crews.auth.dto.request.NewRecruitmentRequest;
 import com.server.crews.auth.dto.response.TokenResponse;
 import io.restassured.RestAssured;
@@ -21,10 +22,10 @@ public class TokenFixture {
                 .as(TokenResponse.class);
     }
 
-    public static String APPLICANT_ID_AND_ACCESS_TOKEN() {
+    public static String APPLICANT_ID_AND_ACCESS_TOKEN(final Long recruitmentId) {
         TokenResponse tokenResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(new NewRecruitmentRequest(DEFAULT_SECRET_CODE))
+                .body(new NewApplicantRequest(DEFAULT_SECRET_CODE, recruitmentId))
                 .when().post("/auth/applicant/secret-code")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())

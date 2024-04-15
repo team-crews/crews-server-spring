@@ -15,7 +15,9 @@ import org.springframework.http.MediaType;
 import java.util.Map;
 
 import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode201;
+import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode400;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_SECRET_CODE;
+import static com.server.crews.fixture.TokenFixture.APPLICANT_ID_AND_ACCESS_TOKEN;
 import static com.server.crews.fixture.TokenFixture.RECRUITMENT_ID_AND_ACCESS_TOKEN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -65,5 +67,40 @@ public class AuthAcceptanceTest extends AcceptanceTest {
             assertThat(tokenResponse.accessToken()).isNotEmpty();
             assertThat(cookies.get("refreshToken")).isNotNull();
         });
+    }
+
+    @Test
+    @DisplayName("중복된 지원서 양식 코드 생성을 요청할 경우 상태코드 401를 반환한다.")
+    void createDuplicatedRecruitmentSecretCode() {
+        // given & when
+        RECRUITMENT_ID_AND_ACCESS_TOKEN();
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new NewRecruitmentRequest(DEFAULT_SECRET_CODE))
+                .when().post("/auth/recruitment/secret-code")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract();
+
+        // then
+        checkStatusCode400(response);
+    }
+
+    @Test
+    @DisplayName("중복된 지원서 양식 코드 생성을 요청할 경우 상태코드 401를 반환한다.")
+    void createDuplicatedApplicationSecretCode() {
+        // given & when
+        Long recruitmentId = RECRUITMENT_ID_AND_ACCESS_TOKEN().id();
+        APPLICANT_ID_AND_ACCESS_TOKEN(recruitmentId);
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new NewApplicantRequest(DEFAULT_SECRET_CODE, recruitmentId))
+                .when().post("/auth/applicant/secret-code")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract();
+
+        // then
+        checkStatusCode400(response);
     }
 }
