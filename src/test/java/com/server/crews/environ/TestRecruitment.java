@@ -1,10 +1,12 @@
 package com.server.crews.environ;
 
 import com.server.crews.recruitment.domain.*;
+import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
 
 public class TestRecruitment {
@@ -23,8 +25,9 @@ public class TestRecruitment {
         this.choices = new ArrayList<>();
     }
 
-    public TestRecruitment create(final String secretCode) {
+    public TestRecruitment create(final String secretCode, final String clubName) {
         Recruitment recruitment = new Recruitment(secretCode);
+        recruitment.updateAll(new RecruitmentSaveRequest(clubName + " 99기 모집", clubName, DEFAULT_DESCRIPTION, null, DEFAULT_DEADLINE));
         this.recruitment = environ.recruitmentRepository().save(recruitment);
         return this;
     }
@@ -61,21 +64,5 @@ public class TestRecruitment {
 
     public Recruitment recruitment() {
         return this.recruitment;
-    }
-
-    public List<Section> sections() {
-        return this.sections;
-    }
-
-    public List<NarrativeQuestion> narrativeQuestions() {
-        return this.narrativeQuestions;
-    }
-
-    public List<SelectiveQuestion> selectiveQuestions() {
-        return this.selectiveQuestions;
-    }
-
-    public List<Choice> choices() {
-        return this.choices;
     }
 }

@@ -17,6 +17,9 @@ public class RecruitmentSaveRequest {
     private final LocalDateTime deadline;
 
     public List<Section> createSections() {
+        if (sections == null) {
+            return List.of();
+        }
         return sections.stream()
                 .map(SectionsSaveRequest::toEntity)
                 .toList();

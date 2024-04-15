@@ -27,7 +27,7 @@ public abstract class ServiceTest {
 
     protected TestRecruitment LIKE_LION_RECRUITMENT() {
         var testRecruitment = new TestRecruitment(testEnviron);
-        testRecruitment.create(DEFAULT_SECRET_CODE);
+        testRecruitment.create(DEFAULT_SECRET_CODE, "LIKE LION");
         return testRecruitment;
     }
 

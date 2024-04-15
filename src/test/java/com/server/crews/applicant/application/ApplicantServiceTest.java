@@ -2,10 +2,12 @@ package com.server.crews.applicant.application;
 
 import com.server.crews.applicant.domain.Applicant;
 import com.server.crews.applicant.domain.NarrativeAnswer;
+import com.server.crews.applicant.domain.Outcome;
 import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.response.ApplicantAnswersResponse;
+import com.server.crews.applicant.event.OutcomeDeterminedEvent;
 import com.server.crews.applicant.repository.ApplicantRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
@@ -19,6 +21,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -32,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+@RecordApplicationEvents
 class ApplicantServiceTest extends ServiceTest {
     @Autowired
     private ApplicantService applicantService;
@@ -44,6 +49,9 @@ class ApplicantServiceTest extends ServiceTest {
 
     @Autowired
     private SelectiveAnswerRepository selectiveAnswerRepository;
+
+    @Autowired
+    ApplicationEvents events;
 
     @ParameterizedTest
     @MethodSource("provideAnswersAndCount")
@@ -128,6 +136,33 @@ class ApplicantServiceTest extends ServiceTest {
         assertAll(
                 () -> assertThat(response.answerByNarrativeQuestionId()).containsEntry(1L, "안녕하세요"),
                 () -> assertThat(response.choiceIdsBySelectiveQuestionId()).containsEntry(1L, List.of(1L, 2L))
+        );
+    }
+
+    @Test
+    @DisplayName("지원 결과를 저장하고 지원 결과 이메일을 전송한다.")
+    void sendOutcomeEmail() {
+        // given
+        Recruitment recruitment = LIKE_LION_RECRUITMENT()
+                .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
+                .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
+                .recruitment();
+        Applicant jongmeeApplicant = JONGMEE(recruitment.getId())
+                .updateInformation("jp3869@naver.com", "Jongmee")
+                .decideOutcome(Outcome.PASS)
+                .applicant();
+        Applicant kyunghoApplicant = KYUNGHO(recruitment.getId())
+                .updateInformation("jp3869@naver.com", "Kyungho")
+                .applicant();
+
+        // when
+        applicantService.sendOutcomeEmail(recruitment);
+
+        // then
+        Applicant updatedKyunhoApplicant = applicantRepository.findById(kyunghoApplicant.getId()).get();
+        assertAll(
+                () -> assertThat(updatedKyunhoApplicant.getOutcome()).isEqualTo(Outcome.FAIL),
+                () -> assertThat(events.stream(OutcomeDeterminedEvent.class).count()).isSameAs(1L)
         );
     }
 }
