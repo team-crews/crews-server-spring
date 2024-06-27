@@ -1,8 +1,8 @@
-package com.server.crews.auth.dto.response;
+package com.server.crews.auth.dto;
 
 import org.springframework.http.ResponseCookie;
 
-public record RefreshTokenDto(long validity, String token) {
+public record RefreshTokenWithValidity(long validity, String token) {
 
     public ResponseCookie toCookie() {
         return ResponseCookie.from("refreshToken", token)

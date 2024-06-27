@@ -42,7 +42,7 @@ public class ApplicantService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public void saveApplication(final Applicant accessedApplicant, final ApplicationSaveRequest request) {
+    public void saveApplication(Applicant accessedApplicant, final ApplicationSaveRequest request) {
         accessedApplicant.updateAll(request);
 
         List<AnswerSaveRequest> answerSaveRequests = request.answers();

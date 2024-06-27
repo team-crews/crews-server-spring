@@ -33,19 +33,17 @@ public class RecruitmentService {
     private final SelectiveQuestionRepository selectiveQuestionRepository;
 
     @Transactional
-    public void saveRecruitment(
-            final Recruitment accessedRecruitment,
-            final RecruitmentSaveRequest request) {
-        accessedRecruitment.updateAll(request);
-        recruitmentRepository.save(accessedRecruitment);
+    public void saveRecruitment(Long recruitmentId, RecruitmentSaveRequest request) {
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+        recruitment.updateAll(request);
     }
 
     @Transactional
-    public void updateProgressState(
-            final Recruitment accessedRecruitment,
-            final ProgressStateUpdateRequest request) {
-        accessedRecruitment.updateProgress(request.progress());
-        recruitmentRepository.save(accessedRecruitment);
+    public void updateProgressState(Long recruitmentId, ProgressStateUpdateRequest request) {
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+        recruitment.updateProgress(request.progress());
     }
 
     public RecruitmentDetailsResponse getRecruitmentDetails(final Long recruitmentId) {
@@ -63,10 +61,9 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public void updateDeadline(
-            final Recruitment accessedRecruitment,
-            final DeadlineUpdateRequest request) {
-        accessedRecruitment.updateDeadline(request.deadline());
-        recruitmentRepository.save(accessedRecruitment);
+    public void updateDeadline(Long recruitmentId, DeadlineUpdateRequest request) {
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+        recruitment.updateDeadline(request.deadline());
     }
 }

@@ -36,7 +36,7 @@ class RecruitmentServiceTest extends ServiceTest {
         Recruitment recruitment = LIKE_LION_RECRUITMENT().recruitment();
 
         // when
-        recruitmentService.saveRecruitment(recruitment, RECRUITMENT_SAVE_REQUEST);
+        recruitmentService.saveRecruitment(recruitment.getId(), RECRUITMENT_SAVE_REQUEST);
 
         // then
         Recruitment savedRecruitment = recruitmentRepository.findById(recruitment.getId()).get();
@@ -51,7 +51,7 @@ class RecruitmentServiceTest extends ServiceTest {
         ProgressStateUpdateRequest request = new ProgressStateUpdateRequest(Progress.COMPLETION);
 
         // when
-        recruitmentService.updateProgressState(recruitment, request);
+        recruitmentService.updateProgressState(recruitment.getId(), request);
 
         // then
         Recruitment updatedRecruitment = recruitmentRepository.findById(recruitment.getId()).get();
