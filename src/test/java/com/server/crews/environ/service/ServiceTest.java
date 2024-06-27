@@ -36,9 +36,15 @@ public abstract class ServiceTest {
         return testRecruitment;
     }
 
-    protected TestMember JONGMEE_ADMIN(Recruitment recruitment) {
+    protected TestMember MEORU_ADMIN(Recruitment recruitment) {
         TestMember testMember = new TestMember(serviceTestEnviron);
-        testMember.create("JONGMEE@gmail.com", TEST_PASSWORD, Role.ADMIN, recruitment);
+        testMember.create("MEORU@gmail.com", TEST_PASSWORD, Role.ADMIN, recruitment);
+        return testMember;
+    }
+
+    protected TestMember JONGMEE_APPLICANT(Recruitment recruitment) {
+        TestMember testMember = new TestMember(serviceTestEnviron);
+        testMember.create("JONGMEE@gmail.com", TEST_PASSWORD, Role.APPLICANT, recruitment);
         return testMember;
     }
 

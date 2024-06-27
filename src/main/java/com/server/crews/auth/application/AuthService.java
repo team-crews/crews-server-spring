@@ -62,6 +62,24 @@ public class AuthService {
     }
 
     @Transactional
+    public AccessTokenResponse loginForApplicant(ApplicantLoginRequest request) {
+        String email = request.email();
+        String password = request.password();
+        Recruitment recruitment = recruitmentRepository.findBySecretCode(request.recruitmentCode())
+                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+
+        Member member = memberRepository.findByEmailAndRecruitment(email, recruitment)
+                .orElseGet(() -> createApplicant(email, password, recruitment));
+        String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, email);
+        return new AccessTokenResponse(member.getId(), accessToken);
+    }
+
+    public Member createApplicant(String email, String password, Recruitment recruitment) {
+        Member member = new Member(email, password, Role.APPLICANT, recruitment);
+        return memberRepository.save(member);
+    }
+
+    @Transactional
     public RefreshTokenDto createRefreshToken(Role role, Long id) {
         String refreshToken = jwtTokenProvider.createRefreshToken(role, String.valueOf(id));
         refreshTokenRepository.deleteByOwnerId(id);

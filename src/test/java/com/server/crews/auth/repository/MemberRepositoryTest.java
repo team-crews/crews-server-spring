@@ -9,7 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.util.Optional;
+
 import static com.server.crews.fixture.MemberFixture.TEST_PASSWORD;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MemberRepositoryTest extends RepositoryTest {
@@ -28,5 +31,19 @@ class MemberRepositoryTest extends RepositoryTest {
         // when & then
         assertThatThrownBy(() -> memberRepository.save(new Member(email, TEST_PASSWORD, Role.APPLICANT, recruitment)))
                 .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    @DisplayName("이메일과 모집 공고 id로 사용자를 조회한다.")
+    void findByEmailAndRecruitment() {
+        // given
+        Recruitment recruitment = saveDefaultRecruitment();
+        Member applicant = saveDefaultApplicant(recruitment);
+
+        // when
+        Optional<Member> foundMember = memberRepository.findByEmailAndRecruitment(applicant.getEmail(), recruitment);
+
+        // then
+        assertThat(foundMember).isNotEmpty();
     }
 }

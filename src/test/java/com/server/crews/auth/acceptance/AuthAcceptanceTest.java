@@ -50,7 +50,7 @@ public class AuthAcceptanceTest extends AcceptanceTest {
     @DisplayName("지원서(지원자)에 대한 코드를 생성하고 토큰을 발급 받는다.")
     void createApplicationSecretCode() {
         // given & when
-        Long recruitmentId = RECRUITMENT_ID_AND_ACCESS_TOKEN().id();
+        Long recruitmentId = RECRUITMENT_ID_AND_ACCESS_TOKEN().memberId();
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(new NewApplicantRequest(DEFAULT_SECRET_CODE, recruitmentId))
@@ -90,7 +90,7 @@ public class AuthAcceptanceTest extends AcceptanceTest {
     @DisplayName("중복된 지원서 양식 코드 생성을 요청할 경우 상태코드 401를 반환한다.")
     void createDuplicatedApplicationSecretCode() {
         // given & when
-        Long recruitmentId = RECRUITMENT_ID_AND_ACCESS_TOKEN().id();
+        Long recruitmentId = RECRUITMENT_ID_AND_ACCESS_TOKEN().memberId();
         APPLICANT_ID_AND_ACCESS_TOKEN(recruitmentId);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

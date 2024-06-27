@@ -3,6 +3,7 @@ package com.server.crews.auth.presentation;
 import com.server.crews.auth.application.AuthService;
 import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
+import com.server.crews.auth.dto.request.ApplicantLoginRequest;
 import com.server.crews.auth.dto.request.NewApplicantRequest;
 import com.server.crews.auth.dto.response.AccessTokenResponse;
 import com.server.crews.auth.dto.response.RefreshTokenDto;
@@ -25,10 +26,10 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/recruitment/login")
-    @Operation(description = "[동아리 관리자] 로그인 해 토큰을 발급 받는다.")
+    @Operation(description = "[동아리 관리자] 로그인 해 토큰을 발급 받는다. 모집 공고가 존재하지 않는다면 모집 공고를 새로 생성한다.")
     public ResponseEntity<AccessTokenResponse> createRecruitmentSecretCode(@RequestBody AdminLoginRequest request) {
         AccessTokenResponse accessTokenResponse = authService.loginForAdmin(request);
-        RefreshTokenDto refreshTokenDto = authService.createRefreshToken(Role.ADMIN, accessTokenResponse.id());
+        RefreshTokenDto refreshTokenDto = authService.createRefreshToken(Role.ADMIN, accessTokenResponse.memberId());
         ResponseCookie cookie = refreshTokenDto.toCookie();
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -37,9 +38,9 @@ public class AuthController {
 
     @PostMapping("/applicant/login")
     @Operation(description = "[지원자] 로그인 해 토큰을 발급 받는다.")
-    public ResponseEntity<AccessTokenResponse> createApplicationSecretCode(@RequestBody NewApplicantRequest request) {
-        AccessTokenResponse accessTokenResponse = authService.createApplicationCode(request);
-        RefreshTokenDto refreshTokenDto = authService.createRefreshToken(Role.APPLICANT, accessTokenResponse.id());
+    public ResponseEntity<AccessTokenResponse> createApplicationSecretCode(@RequestBody ApplicantLoginRequest request) {
+        AccessTokenResponse accessTokenResponse = authService.loginForApplicant(request);
+        RefreshTokenDto refreshTokenDto = authService.createRefreshToken(Role.APPLICANT, accessTokenResponse.memberId());
         ResponseCookie cookie = refreshTokenDto.toCookie();
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())

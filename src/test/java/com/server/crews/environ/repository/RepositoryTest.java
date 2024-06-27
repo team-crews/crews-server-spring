@@ -1,5 +1,7 @@
 package com.server.crews.environ.repository;
 
+import com.server.crews.auth.domain.Member;
+import com.server.crews.auth.domain.Role;
 import com.server.crews.recruitment.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -8,6 +10,8 @@ import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
+import static com.server.crews.fixture.MemberFixture.TEST_EMAIL;
+import static com.server.crews.fixture.MemberFixture.TEST_PASSWORD;
 import static com.server.crews.fixture.QuestionFixture.*;
 import static com.server.crews.fixture.RecruitmentFixture.RECRUITMENT;
 import static com.server.crews.fixture.SectionFixture.*;
@@ -58,5 +62,11 @@ public abstract class RepositoryTest {
         List<Choice> choices = CHOICES();
         questions.forEach(question -> choices.forEach(choice -> choice.updateSelectiveQuestion(question)));
         return choices;
+    }
+
+    protected Member saveDefaultApplicant(Recruitment recruitment) {
+        Member member = new Member(TEST_EMAIL, TEST_PASSWORD, Role.APPLICANT, recruitment);
+        testRepository.save(member);
+        return member;
     }
 }
