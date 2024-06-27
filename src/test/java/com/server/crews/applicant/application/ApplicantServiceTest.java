@@ -62,7 +62,7 @@ class ApplicantServiceTest extends ServiceTest {
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment();
-        Applicant applicant = JONGMEE(recruitment.getId())
+        Applicant applicant = JONGMEE_APPLICATION(recruitment.getId())
                 .applicant();
 
         ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(
@@ -102,7 +102,7 @@ class ApplicantServiceTest extends ServiceTest {
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment();
-        Applicant applicant = JONGMEE(recruitment.getId())
+        Applicant applicant = JONGMEE_APPLICATION(recruitment.getId())
                 .applicant();
 
         List<AnswerSaveRequest> invalidAnswerSaveRequests = List.of(
@@ -123,7 +123,7 @@ class ApplicantServiceTest extends ServiceTest {
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment();
-        Applicant applicant = JONGMEE(recruitment.getId())
+        Applicant applicant = JONGMEE_APPLICATION(recruitment.getId())
                 .addNarrativeAnswers(1L, "안녕하세요")
                 .saveSelectiveAnswers(1L, 1L)
                 .saveSelectiveAnswers(1L, 2L)
@@ -147,11 +147,11 @@ class ApplicantServiceTest extends ServiceTest {
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment();
-        Applicant jongmeeApplicant = JONGMEE(recruitment.getId())
+        Applicant jongmeeApplicant = JONGMEE_APPLICATION(recruitment.getId())
                 .updateInformation("jp3869@naver.com", "Jongmee")
                 .decideOutcome(Outcome.PASS)
                 .applicant();
-        Applicant kyunghoApplicant = KYUNGHO(recruitment.getId())
+        Applicant kyunghoApplicant = KYUNGHO_APPLICATION(recruitment.getId())
                 .updateInformation("jp3869@naver.com", "Kyungho")
                 .applicant();
 

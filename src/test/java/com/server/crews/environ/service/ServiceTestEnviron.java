@@ -3,6 +3,7 @@ package com.server.crews.environ.service;
 import com.server.crews.applicant.repository.ApplicantRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
+import com.server.crews.auth.repository.MemberRepository;
 import com.server.crews.recruitment.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ServiceTestEnviron {
+    private final MemberRepository memberRepository;
     private final RecruitmentRepository recruitmentRepository;
     private final SectionRepository sectionRepository;
     private final SelectiveQuestionRepository selectiveQuestionRepository;
@@ -18,6 +20,10 @@ public class ServiceTestEnviron {
     private final ApplicantRepository applicantRepository;
     private final NarrativeAnswerRepository narrativeAnswerRepository;
     private final SelectiveAnswerRepository selectiveAnswerRepository;
+
+    public MemberRepository memberRepository() {
+        return memberRepository;
+    }
 
     public RecruitmentRepository recruitmentRepository() {
         return recruitmentRepository;

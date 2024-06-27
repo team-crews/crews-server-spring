@@ -2,7 +2,7 @@ package com.server.crews.auth.acceptance;
 
 import com.server.crews.auth.dto.request.NewApplicantRequest;
 import com.server.crews.auth.dto.request.NewRecruitmentRequest;
-import com.server.crews.auth.dto.response.TokenResponse;
+import com.server.crews.auth.dto.response.AccessTokenResponse;
 import com.server.crews.environ.acceptance.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -35,13 +35,13 @@ public class AuthAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
-        TokenResponse tokenResponse = response.as(TokenResponse.class);
+        AccessTokenResponse accessTokenResponse = response.as(AccessTokenResponse.class);
         Map<String, String> cookies = response.cookies();
 
         // then
         assertAll(() -> {
             checkStatusCode201(response);
-            assertThat(tokenResponse.accessToken()).isNotEmpty();
+            assertThat(accessTokenResponse.accessToken()).isNotEmpty();
             assertThat(cookies.get("refreshToken")).isNotNull();
         });
     }
@@ -58,13 +58,13 @@ public class AuthAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
-        TokenResponse tokenResponse = response.as(TokenResponse.class);
+        AccessTokenResponse accessTokenResponse = response.as(AccessTokenResponse.class);
         Map<String, String> cookies = response.cookies();
 
         // then
         assertAll(() -> {
             checkStatusCode201(response);
-            assertThat(tokenResponse.accessToken()).isNotEmpty();
+            assertThat(accessTokenResponse.accessToken()).isNotEmpty();
             assertThat(cookies.get("refreshToken")).isNotNull();
         });
     }

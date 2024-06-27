@@ -1,8 +1,5 @@
 package com.server.crews.auth.application;
 
-import static io.jsonwebtoken.SignatureAlgorithm.HS256;
-import static io.jsonwebtoken.SignatureAlgorithm.HS384;
-
 import com.server.crews.auth.domain.Role;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
@@ -14,12 +11,14 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import static io.jsonwebtoken.SignatureAlgorithm.HS256;
+import static io.jsonwebtoken.SignatureAlgorithm.HS384;
 
 @Component
 public class JwtTokenProvider {
@@ -31,34 +30,28 @@ public class JwtTokenProvider {
     private final long refreshTokenValidityInMilliseconds;
 
     public JwtTokenProvider(
-            @Value("${jwt.secret}") final String secret,
-            @Value("${jwt.access-token-validity}") final long accessTokenValidityInMilliseconds,
-            @Value("${jwt.refresh-token-validity}") final long refreshTokenValidityInMilliseconds) {
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.access-token-validity}") long accessTokenValidityInMilliseconds,
+            @Value("${jwt.refresh-token-validity}") long refreshTokenValidityInMilliseconds) {
         this.key = decodeSecretKey(secret);
         this.accessTokenValidityInMilliseconds = accessTokenValidityInMilliseconds;
         this.refreshTokenValidityInMilliseconds = refreshTokenValidityInMilliseconds;
     }
 
-    private Key decodeSecretKey(final String secret) {
+    private Key decodeSecretKey(String secret) {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createAccessToken(final Role role, final String payload) {
-        return createToken(
-                role, payload, accessTokenValidityInMilliseconds, ACCESS_TOKEN_ALGORITHM);
+    public String createAccessToken(Role role, String payload) {
+        return createToken(role, payload, accessTokenValidityInMilliseconds, ACCESS_TOKEN_ALGORITHM);
     }
 
-    public String createRefreshToken(final Role role, final String payload) {
-        return createToken(
-                role, payload, refreshTokenValidityInMilliseconds, REFRESH_TOKEN_ALGORITHM);
+    public String createRefreshToken(Role role, String payload) {
+        return createToken(role, payload, refreshTokenValidityInMilliseconds, REFRESH_TOKEN_ALGORITHM);
     }
 
-    private String createToken(
-            final Role role,
-            final String payload,
-            final long validityInMilliseconds,
-            final SignatureAlgorithm algorithm) {
+    private String createToken(Role role, String payload, long validityInMilliseconds, SignatureAlgorithm algorithm) {
         Claims claims = Jwts.claims().setSubject(payload);
         claims.put("role", role.name());
 
@@ -72,7 +65,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getPayload(final String token) {
+    public String getPayload(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
@@ -81,7 +74,7 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
-    public Role getRole(final String token) {
+    public Role getRole(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
