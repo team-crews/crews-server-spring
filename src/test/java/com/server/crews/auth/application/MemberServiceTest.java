@@ -16,9 +16,9 @@ import java.util.List;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-class AuthServiceTest extends ServiceTest {
+class MemberServiceTest extends ServiceTest {
     @Autowired
-    private AuthService authService;
+    private MemberService memberService;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -35,7 +35,7 @@ class AuthServiceTest extends ServiceTest {
         AdminLoginRequest request = new AdminLoginRequest(email, password);
 
         // when
-        AccessTokenResponse accessTokenResponse = authService.loginForAdmin(request);
+        AccessTokenResponse accessTokenResponse = memberService.loginForAdmin(request);
 
         // then
         checkLoginSuccess(accessTokenResponse);
@@ -50,7 +50,7 @@ class AuthServiceTest extends ServiceTest {
         AdminLoginRequest request = new AdminLoginRequest(member.getEmail(), member.getPassword());
 
         // when
-        AccessTokenResponse accessTokenResponse = authService.loginForAdmin(request);
+        AccessTokenResponse accessTokenResponse = memberService.loginForAdmin(request);
 
         // then
         checkLoginSuccess(accessTokenResponse);
@@ -66,7 +66,7 @@ class AuthServiceTest extends ServiceTest {
         ApplicantLoginRequest request = new ApplicantLoginRequest(recruitment.getSecretCode(), email, password);
 
         // when
-        AccessTokenResponse accessTokenResponse = authService.loginForApplicant(request);
+        AccessTokenResponse accessTokenResponse = memberService.loginForApplicant(request);
 
         // then
         checkLoginSuccess(accessTokenResponse);
@@ -81,7 +81,7 @@ class AuthServiceTest extends ServiceTest {
         ApplicantLoginRequest request = new ApplicantLoginRequest(recruitment.getSecretCode(), member.getEmail(), member.getPassword());
 
         // when
-        AccessTokenResponse accessTokenResponse = authService.loginForApplicant(request);
+        AccessTokenResponse accessTokenResponse = memberService.loginForApplicant(request);
 
         // then
         checkLoginSuccess(accessTokenResponse);
