@@ -15,7 +15,7 @@ public class TokenFixture {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(new NewRecruitmentRequest(DEFAULT_CODE))
-                .when().post("/auth/recruitment/secret-code")
+                .when().post("/auth/admin/secret-code")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()

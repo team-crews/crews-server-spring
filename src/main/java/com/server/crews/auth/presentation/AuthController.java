@@ -26,13 +26,13 @@ public class AuthController {
     private final AuthService authService;
     private final MemberService memberService;
 
-    @PostMapping("/recruitment/login")
+    @PostMapping("/admin/login")
     @Operation(description = "[동아리 관리자] 로그인 해 토큰을 발급 받는다. 모집 공고가 존재하지 않는다면 모집 공고를 새로 생성한다.")
     public ResponseEntity<AccessTokenResponse> loginForAdmin(@RequestBody AdminLoginRequest request) {
         AccessTokenResponse accessTokenResponse = memberService.loginForAdmin(request);
         RefreshTokenWithValidity refreshTokenWithValidity = authService.createRefreshToken(Role.ADMIN, accessTokenResponse.memberId());
         ResponseCookie cookie = refreshTokenWithValidity.toCookie();
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(accessTokenResponse);
     }
@@ -43,14 +43,14 @@ public class AuthController {
         AccessTokenResponse accessTokenResponse = memberService.loginForApplicant(request);
         RefreshTokenWithValidity refreshTokenWithValidity = authService.createRefreshToken(Role.APPLICANT, accessTokenResponse.memberId());
         ResponseCookie cookie = refreshTokenWithValidity.toCookie();
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(accessTokenResponse);
     }
 
     @PostMapping("/refresh")
     @Operation(description = "access token을 재발급 받는다.")
-    public ResponseEntity<AccessTokenResponse> renew(@CookieValue("refreshToken") final String refreshToken) {
+    public ResponseEntity<AccessTokenResponse> renew(@CookieValue("refreshToken") String refreshToken) {
         return ResponseEntity.ok(authService.renew(refreshToken));
     }
 }
