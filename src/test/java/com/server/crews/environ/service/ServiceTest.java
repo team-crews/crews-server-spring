@@ -1,5 +1,6 @@
 package com.server.crews.environ.service;
 
+import com.server.crews.auth.domain.Member;
 import com.server.crews.auth.domain.Role;
 import com.server.crews.environ.DatabaseCleaner;
 import com.server.crews.environ.repository.TestRepository;
@@ -11,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static com.server.crews.fixture.MemberFixture.TEST_PASSWORD;
-import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_SECRET_CODE;
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CODE;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -32,7 +33,7 @@ public abstract class ServiceTest {
 
     protected TestRecruitment LIKE_LION_RECRUITMENT() {
         TestRecruitment testRecruitment = new TestRecruitment(serviceTestEnviron);
-        testRecruitment.create(DEFAULT_SECRET_CODE, "LIKE LION");
+        testRecruitment.create(DEFAULT_CODE, "LIKE LION");
         return testRecruitment;
     }
 
@@ -48,15 +49,21 @@ public abstract class ServiceTest {
         return testMember;
     }
 
-    protected TestApplicant JONGMEE_APPLICATION(Long recruitmentId) {
-        TestApplicant testApplicant = new TestApplicant(serviceTestEnviron);
-        testApplicant.create(DEFAULT_SECRET_CODE + " JONGMEE", recruitmentId);
-        return testApplicant;
+    protected TestMember KYUNGHO_APPLICANT(Recruitment recruitment) {
+        TestMember testMember = new TestMember(serviceTestEnviron);
+        testMember.create("KYUNGHO@gmail.com", TEST_PASSWORD, Role.APPLICANT, recruitment);
+        return testMember;
     }
 
-    protected TestApplicant KYUNGHO_APPLICATION(Long recruitmentId) {
-        TestApplicant testApplicant = new TestApplicant(serviceTestEnviron);
-        testApplicant.create(DEFAULT_SECRET_CODE + " KYUNGHO", recruitmentId);
-        return testApplicant;
+    protected TestApplication JONGMEE_APPLICATION(Member member) {
+        TestApplication testApplication = new TestApplication(serviceTestEnviron);
+        testApplication.create(member, "20202020", "생명과학", "종미");
+        return testApplication;
+    }
+
+    protected TestApplication KYUNGHO_APPLICATION(Member member) {
+        TestApplication testApplication = new TestApplication(serviceTestEnviron);
+        testApplication.create(member, "20202021", "컴퓨터공학", "경호");
+        return testApplication;
     }
 }

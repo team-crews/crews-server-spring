@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Builder
 public record RecruitmentDetailsResponse(
-        String title, String description, Progress progress, List<SectionResponse> sections, LocalDateTime deadline) {
+        String title, String description, Progress progress, List<SectionResponse> sections, LocalDateTime closingDate) {
 
     public static RecruitmentDetailsResponse from(
             final Recruitment recruitment,
@@ -20,7 +20,7 @@ public record RecruitmentDetailsResponse(
                 .description(recruitment.getDescription())
                 .progress(recruitment.getProgress())
                 .sections(sectionResponses(recruitment.getSections(), narrativeQuestionsBySection, selectiveQuestionsBySection))
-                .deadline(recruitment.getDeadline())
+                .closingDate(recruitment.getClosingDate())
                 .build();
     }
 

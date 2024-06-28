@@ -6,7 +6,7 @@ import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
-import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
+import com.server.crews.recruitment.dto.request.ClosingDateUpdateRequest;
 import com.server.crews.recruitment.dto.request.ProgressStateUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
@@ -36,7 +36,8 @@ public class RecruitmentService {
     public void saveRecruitment(Long recruitmentId, RecruitmentSaveRequest request) {
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
-        recruitment.updateAll(request);
+        List<Section> sections = request.createSections();
+        recruitment.updateAll(request.getTitle(), recruitment.getDescription(), request.getClosingDate(), sections);
     }
 
     @Transactional
@@ -61,9 +62,9 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public void updateDeadline(Long recruitmentId, DeadlineUpdateRequest request) {
+    public void updateClosingDate(Long recruitmentId, ClosingDateUpdateRequest request) {
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
-        recruitment.updateDeadline(request.deadline());
+        recruitment.updateClosingDate(request.closingDate());
     }
 }

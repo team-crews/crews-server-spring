@@ -16,7 +16,7 @@ import java.util.Map;
 
 import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode201;
 import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode400;
-import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_SECRET_CODE;
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CODE;
 import static com.server.crews.fixture.TokenFixture.APPLICANT_ID_AND_ACCESS_TOKEN;
 import static com.server.crews.fixture.TokenFixture.RECRUITMENT_ID_AND_ACCESS_TOKEN;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,7 +30,7 @@ public class AuthAcceptanceTest extends AcceptanceTest {
         // given & when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(new NewRecruitmentRequest(DEFAULT_SECRET_CODE))
+                .body(new NewRecruitmentRequest(DEFAULT_CODE))
                 .when().post("/auth/recruitment/secret-code")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
@@ -53,7 +53,7 @@ public class AuthAcceptanceTest extends AcceptanceTest {
         Long recruitmentId = RECRUITMENT_ID_AND_ACCESS_TOKEN().memberId();
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(new NewApplicantRequest(DEFAULT_SECRET_CODE, recruitmentId))
+                .body(new NewApplicantRequest(DEFAULT_CODE, recruitmentId))
                 .when().post("/auth/applicant/secret-code")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
@@ -76,7 +76,7 @@ public class AuthAcceptanceTest extends AcceptanceTest {
         RECRUITMENT_ID_AND_ACCESS_TOKEN();
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(new NewRecruitmentRequest(DEFAULT_SECRET_CODE))
+                .body(new NewRecruitmentRequest(DEFAULT_CODE))
                 .when().post("/auth/recruitment/secret-code")
                 .then().log().all()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -94,7 +94,7 @@ public class AuthAcceptanceTest extends AcceptanceTest {
         APPLICANT_ID_AND_ACCESS_TOKEN(recruitmentId);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(new NewApplicantRequest(DEFAULT_SECRET_CODE, recruitmentId))
+                .body(new NewApplicantRequest(DEFAULT_CODE, recruitmentId))
                 .when().post("/auth/applicant/secret-code")
                 .then().log().all()
                 .statusCode(HttpStatus.BAD_REQUEST.value())

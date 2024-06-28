@@ -14,8 +14,8 @@ import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
 import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
 
 public class RecruitmentFixture {
-    public static final LocalDateTime DEFAULT_DEADLINE = LocalDateTime.now().plusMonths(1L);
-    public static final String DEFAULT_SECRET_CODE = "SECRET_CODE";
+    public static final LocalDateTime DEFAULT_CLOSING_DATE = LocalDateTime.now().plusMonths(1L);
+    public static final String DEFAULT_CODE = "SECRET_CODE";
     public static final String DEFAULT_TITLE = "TITLE";
     public static final String DEFAULT_CLUB_NAME = "CLUB_NAME";
     public static final String DEFAULT_DESCRIPTION = "DESCRIPTION";
@@ -34,15 +34,11 @@ public class RecruitmentFixture {
             .description(DEFAULT_DESCRIPTION)
             .build();
     public static final List<SectionsSaveRequest> SECTION_REQUESTS = List.of(BACKEND_SECTION_REQUEST, FRONTEND_SECTION_REQUEST);
-    public static final RecruitmentSaveRequest RECRUITMENT_SAVE_REQUEST = new RecruitmentSaveRequest(DEFAULT_TITLE, DEFAULT_CLUB_NAME, DEFAULT_DESCRIPTION, SECTION_REQUESTS, DEFAULT_DEADLINE);
+    public static final RecruitmentSaveRequest RECRUITMENT_SAVE_REQUEST = new RecruitmentSaveRequest(DEFAULT_TITLE, DEFAULT_DESCRIPTION, SECTION_REQUESTS, DEFAULT_CLOSING_DATE);
 
     public static Recruitment RECRUITMENT() {
-        return Recruitment.builder()
-                .secretCode(DEFAULT_SECRET_CODE)
-                .title(DEFAULT_TITLE)
-                .clubName(DEFAULT_CLUB_NAME)
-                .description(DEFAULT_DESCRIPTION)
-                .deadline(DEFAULT_DEADLINE)
-                .build();
+        Recruitment recruitment = new Recruitment(DEFAULT_CODE);
+        recruitment.updateAll(DEFAULT_TITLE, DEFAULT_DESCRIPTION, DEFAULT_CLOSING_DATE, List.of());
+        return recruitment;
     }
 }

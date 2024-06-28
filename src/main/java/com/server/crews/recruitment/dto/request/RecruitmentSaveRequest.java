@@ -11,10 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 public class RecruitmentSaveRequest {
     private final String title;
-    private final String clubName;
     private final String description;
     private final List<SectionsSaveRequest> sections;
-    private final LocalDateTime deadline;
+    private final LocalDateTime closingDate;
 
     public List<Section> createSections() {
         if (sections == null) {

@@ -28,7 +28,7 @@ public class AuthController {
 
     @PostMapping("/recruitment/login")
     @Operation(description = "[동아리 관리자] 로그인 해 토큰을 발급 받는다. 모집 공고가 존재하지 않는다면 모집 공고를 새로 생성한다.")
-    public ResponseEntity<AccessTokenResponse> createRecruitmentSecretCode(@RequestBody AdminLoginRequest request) {
+    public ResponseEntity<AccessTokenResponse> loginForAdmin(@RequestBody AdminLoginRequest request) {
         AccessTokenResponse accessTokenResponse = memberService.loginForAdmin(request);
         RefreshTokenWithValidity refreshTokenWithValidity = authService.createRefreshToken(Role.ADMIN, accessTokenResponse.memberId());
         ResponseCookie cookie = refreshTokenWithValidity.toCookie();
@@ -39,7 +39,7 @@ public class AuthController {
 
     @PostMapping("/applicant/login")
     @Operation(description = "[지원자] 로그인 해 토큰을 발급 받는다.")
-    public ResponseEntity<AccessTokenResponse> createApplicationSecretCode(@RequestBody ApplicantLoginRequest request) {
+    public ResponseEntity<AccessTokenResponse> loginForApplicant(@RequestBody ApplicantLoginRequest request) {
         AccessTokenResponse accessTokenResponse = memberService.loginForApplicant(request);
         RefreshTokenWithValidity refreshTokenWithValidity = authService.createRefreshToken(Role.APPLICANT, accessTokenResponse.memberId());
         ResponseCookie cookie = refreshTokenWithValidity.toCookie();

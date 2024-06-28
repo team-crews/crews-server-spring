@@ -1,6 +1,6 @@
 package com.server.crews.applicant.application;
 
-import com.server.crews.applicant.domain.Applicant;
+import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;
 import com.server.crews.applicant.domain.Outcome;
 import com.server.crews.applicant.domain.SelectiveAnswer;
@@ -8,9 +8,10 @@ import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.response.ApplicantAnswersResponse;
 import com.server.crews.applicant.event.OutcomeDeterminedEvent;
-import com.server.crews.applicant.repository.ApplicantRepository;
+import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
+import com.server.crews.auth.domain.Member;
 import com.server.crews.environ.service.ServiceTest;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.recruitment.domain.Recruitment;
@@ -27,7 +28,10 @@ import org.springframework.test.context.event.RecordApplicationEvents;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.server.crews.fixture.ApplicantFixture.*;
+import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
+import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
+import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NARRATIVE_ANSWER;
+import static com.server.crews.fixture.ApplicationFixture.DEFAULT_STUDENT_NUMBER;
 import static com.server.crews.fixture.QuestionFixture.NARRATIVE_QUESTION;
 import static com.server.crews.fixture.QuestionFixture.SELECTIVE_QUESTION;
 import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
@@ -37,12 +41,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @RecordApplicationEvents
-class ApplicantServiceTest extends ServiceTest {
+class ApplicationServiceTest extends ServiceTest {
     @Autowired
-    private ApplicantService applicantService;
+    private ApplicationService applicationService;
 
     @Autowired
-    private ApplicantRepository applicantRepository;
+    private ApplicationRepository applicationRepository;
 
     @Autowired
     private NarrativeAnswerRepository narrativeAnswerRepository;
@@ -62,21 +66,19 @@ class ApplicantServiceTest extends ServiceTest {
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment();
-        Applicant applicant = JONGMEE_APPLICATION(recruitment.getId())
-                .applicant();
+        Member member = JONGMEE_APPLICANT(recruitment).member();
+        Application application = JONGMEE_APPLICATION(member).applicant();
 
         ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(
-                DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_EMAIL, DEFAULT_NAME, answerSaveRequests);
+                DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
 
         // when
-        applicantService.saveApplication(applicant, saveRequest);
+        applicationService.saveApplication(member.getId(), saveRequest);
 
         // then
-        Applicant udpatedApplicant = applicantRepository.findById(applicant.getId()).get();
-        List<NarrativeAnswer> savedNarrativeAnswers = narrativeAnswerRepository.findAllByApplicantId(applicant.getId());
-        List<SelectiveAnswer> savedSelectiveAnswers = selectiveAnswerRepository.findAllByApplicantId(applicant.getId());
+        List<NarrativeAnswer> savedNarrativeAnswers = narrativeAnswerRepository.findAllByApplicantId(application.getId());
+        List<SelectiveAnswer> savedSelectiveAnswers = selectiveAnswerRepository.findAllByApplicantId(application.getId());
         assertAll(
-                () -> assertThat(udpatedApplicant.getEmail()).isEqualTo(DEFAULT_EMAIL),
                 () -> assertThat(savedNarrativeAnswers).hasSize(expectedSavedNarrativeAnsCount),
                 () -> assertThat(savedSelectiveAnswers).hasSize(expectedSavedSelectiveAnsCount)
         );
@@ -102,16 +104,16 @@ class ApplicantServiceTest extends ServiceTest {
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment();
-        Applicant applicant = JONGMEE_APPLICATION(recruitment.getId())
-                .applicant();
+        Member member = JONGMEE_APPLICANT(recruitment).member();
+        Application application = JONGMEE_APPLICATION(member).applicant();
 
         List<AnswerSaveRequest> invalidAnswerSaveRequests = List.of(
                 new AnswerSaveRequest(QuestionType.NARRATIVE, 3L, DEFAULT_NARRATIVE_ANSWER, null));
         ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(
-                DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_EMAIL, DEFAULT_NAME, invalidAnswerSaveRequests);
+                DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, invalidAnswerSaveRequests);
 
         // when & then
-        assertThatThrownBy(() -> applicantService.saveApplication(applicant, saveRequest))
+        assertThatThrownBy(() -> applicationService.saveApplication(member.getId(), saveRequest))
                 .isInstanceOf(CrewsException.class);
     }
 
@@ -123,14 +125,15 @@ class ApplicantServiceTest extends ServiceTest {
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment();
-        Applicant applicant = JONGMEE_APPLICATION(recruitment.getId())
+        Member member = JONGMEE_APPLICANT(recruitment).member();
+        Application application = JONGMEE_APPLICATION(member)
                 .addNarrativeAnswers(1L, "안녕하세요")
                 .saveSelectiveAnswers(1L, 1L)
                 .saveSelectiveAnswers(1L, 2L)
                 .applicant();
 
         // when
-        ApplicantAnswersResponse response = applicantService.findAllApplicantAnswers(applicant.getId());
+        ApplicantAnswersResponse response = applicationService.findAllApplicantAnswers(application.getId());
 
         // then
         assertAll(
@@ -147,21 +150,21 @@ class ApplicantServiceTest extends ServiceTest {
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment();
-        Applicant jongmeeApplicant = JONGMEE_APPLICATION(recruitment.getId())
-                .updateInformation("jp3869@naver.com", "Jongmee")
+        Member jongmee = JONGMEE_APPLICANT(recruitment).member();
+        Application jongmeeApplication = JONGMEE_APPLICATION(jongmee)
                 .decideOutcome(Outcome.PASS)
                 .applicant();
-        Applicant kyunghoApplicant = KYUNGHO_APPLICATION(recruitment.getId())
-                .updateInformation("jp3869@naver.com", "Kyungho")
+        Member kyungho = KYUNGHO_APPLICANT(recruitment).member();
+        Application kyunghoApplication = KYUNGHO_APPLICATION(kyungho)
                 .applicant();
 
         // when
-        applicantService.sendOutcomeEmail(recruitment);
+        applicationService.sendOutcomeEmail(recruitment);
 
         // then
-        Applicant updatedKyunhoApplicant = applicantRepository.findById(kyunghoApplicant.getId()).get();
+        Application updatedKyunhoApplication = applicationRepository.findById(kyunghoApplication.getId()).get();
         assertAll(
-                () -> assertThat(updatedKyunhoApplicant.getOutcome()).isEqualTo(Outcome.FAIL),
+                () -> assertThat(updatedKyunhoApplication.getOutcome()).isEqualTo(Outcome.FAIL),
                 () -> assertThat(events.stream(OutcomeDeterminedEvent.class).count()).isSameAs(1L)
         );
     }

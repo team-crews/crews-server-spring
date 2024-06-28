@@ -44,7 +44,7 @@ public class MemberService {
     public AccessTokenResponse loginForApplicant(ApplicantLoginRequest request) {
         String email = request.email();
         String password = request.password();
-        Recruitment recruitment = recruitmentRepository.findBySecretCode(request.recruitmentCode())
+        Recruitment recruitment = recruitmentRepository.findByCode(request.recruitmentCode())
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
 
         Member member = memberRepository.findByEmailAndRecruitment(email, recruitment)

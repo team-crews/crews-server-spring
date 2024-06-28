@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface RecruitmentRepository extends JpaRepository<Recruitment, Long>, RecruitmentDslRepository {
-    Optional<Recruitment> findBySecretCode(String code);
+    Optional<Recruitment> findByCode(String code);
 }

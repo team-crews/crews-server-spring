@@ -3,7 +3,7 @@ package com.server.crews.recruitment.presentation;
 import com.server.crews.auth.dto.LoginMember;
 import com.server.crews.auth.presentation.Authentication;
 import com.server.crews.recruitment.application.RecruitmentService;
-import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
+import com.server.crews.recruitment.dto.request.ClosingDateUpdateRequest;
 import com.server.crews.recruitment.dto.request.ProgressStateUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
@@ -48,11 +48,11 @@ public class RecruitmentController {
         return ResponseEntity.ok(recruitmentService.getRecruitmentDetails(recruitmentId));
     }
 
-    @PatchMapping("/deadline")
+    @PatchMapping("/closing-date")
     @Operation(description = "지원서 양식의 마감기한을 변경한다.")
     public ResponseEntity<Void> updateProgressState(@Authentication LoginMember loginMember,
-                                                    @RequestBody DeadlineUpdateRequest request) {
-        recruitmentService.updateDeadline(loginMember.recruitmentId(), request);
+                                                    @RequestBody ClosingDateUpdateRequest request) {
+        recruitmentService.updateClosingDate(loginMember.recruitmentId(), request);
         return ResponseEntity.ok().build();
     }
 }

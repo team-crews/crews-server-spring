@@ -63,7 +63,7 @@ class MemberServiceTest extends ServiceTest {
         Recruitment recruitment = LIKE_LION_RECRUITMENT().recruitment();
         String email = "new@gamil.com";
         String password = "new password";
-        ApplicantLoginRequest request = new ApplicantLoginRequest(recruitment.getSecretCode(), email, password);
+        ApplicantLoginRequest request = new ApplicantLoginRequest(recruitment.getCode(), email, password);
 
         // when
         AccessTokenResponse accessTokenResponse = memberService.loginForApplicant(request);
@@ -78,7 +78,7 @@ class MemberServiceTest extends ServiceTest {
         // given
         Recruitment recruitment = LIKE_LION_RECRUITMENT().recruitment();
         Member member = JONGMEE_APPLICANT(recruitment).member();
-        ApplicantLoginRequest request = new ApplicantLoginRequest(recruitment.getSecretCode(), member.getEmail(), member.getPassword());
+        ApplicantLoginRequest request = new ApplicantLoginRequest(recruitment.getCode(), member.getEmail(), member.getPassword());
 
         // when
         AccessTokenResponse accessTokenResponse = memberService.loginForApplicant(request);

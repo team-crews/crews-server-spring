@@ -1,6 +1,6 @@
 package com.server.crews.environ.service;
 
-import com.server.crews.applicant.repository.ApplicantRepository;
+import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
 import com.server.crews.auth.repository.MemberRepository;
@@ -17,7 +17,7 @@ public class ServiceTestEnviron {
     private final SelectiveQuestionRepository selectiveQuestionRepository;
     private final NarrativeQuestionRepository narrativeQuestionRepository;
     private final ChoiceRepository choiceRepository;
-    private final ApplicantRepository applicantRepository;
+    private final ApplicationRepository applicationRepository;
     private final NarrativeAnswerRepository narrativeAnswerRepository;
     private final SelectiveAnswerRepository selectiveAnswerRepository;
 
@@ -45,8 +45,8 @@ public class ServiceTestEnviron {
         return choiceRepository;
     }
 
-    public ApplicantRepository applicantRepository() {
-        return applicantRepository;
+    public ApplicationRepository applicantRepository() {
+        return applicationRepository;
     }
 
     public NarrativeAnswerRepository narrativeAnswerRepository() {

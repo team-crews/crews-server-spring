@@ -1,12 +1,11 @@
 package com.server.crews.environ.service;
 
 import com.server.crews.recruitment.domain.*;
-import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CLOSING_DATE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
 
 public class TestRecruitment {
@@ -25,9 +24,9 @@ public class TestRecruitment {
         this.choices = new ArrayList<>();
     }
 
-    public TestRecruitment create(final String secretCode, final String clubName) {
-        Recruitment recruitment = new Recruitment(secretCode);
-        recruitment.updateAll(new RecruitmentSaveRequest(clubName + " 99기 모집", clubName, DEFAULT_DESCRIPTION, null, DEFAULT_DEADLINE));
+    public TestRecruitment create(final String code, final String clubName) {
+        Recruitment recruitment = new Recruitment(code);
+        recruitment.updateAll(clubName + " 99기 모집", DEFAULT_DESCRIPTION, DEFAULT_CLOSING_DATE, List.of());
         this.recruitment = environ.recruitmentRepository().save(recruitment);
         return this;
     }
