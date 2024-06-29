@@ -2,46 +2,61 @@ package com.server.crews.auth.application;
 
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.domain.Applicant;
-import com.server.crews.auth.domain.RefreshToken;
 import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.LoginUser;
-import com.server.crews.auth.dto.RefreshTokenWithValidity;
+import com.server.crews.auth.dto.request.AdminLoginRequest;
+import com.server.crews.auth.dto.request.ApplicantLoginRequest;
 import com.server.crews.auth.dto.response.AccessTokenResponse;
 import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.auth.repository.ApplicantRepository;
-import com.server.crews.auth.repository.RefreshTokenRepository;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
-import org.springframework.beans.factory.annotation.Value;
+import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.recruitment.repository.RecruitmentRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class AuthService {
-    private final JwtTokenProvider jwtTokenProvider;
     private final AdministratorRepository administratorRepository;
     private final ApplicantRepository applicantRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RecruitmentRepository recruitmentRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    private final int refreshTokenValidityInSecond;
+    @Transactional
+    public AccessTokenResponse loginForAdmin(AdminLoginRequest request) {
+        String clubName = request.clubName();
+        String password = request.password();
 
-    public AuthService(JwtTokenProvider jwtTokenProvider, AdministratorRepository administratorRepository,
-                       ApplicantRepository applicantRepository, RefreshTokenRepository refreshTokenRepository,
-                       @Value("${jwt.refresh-token-validity}") int refreshTokenValidityInMilliseconds) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.administratorRepository = administratorRepository;
-        this.applicantRepository = applicantRepository;
-        this.refreshTokenRepository = refreshTokenRepository;
-        this.refreshTokenValidityInSecond = refreshTokenValidityInMilliseconds / 1000;
+        Administrator administrator = administratorRepository.findByClubName(clubName)
+                .orElseGet(() -> createAdmin(clubName, password));
+        String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, clubName);
+        return new AccessTokenResponse(administrator.getId(), accessToken);
+    }
+
+    private Administrator createAdmin(String clubName, String password) {
+        Administrator administrator = new Administrator(clubName, password);
+        return administratorRepository.save(administrator);
     }
 
     @Transactional
-    public RefreshTokenWithValidity createRefreshToken(Role role, Long id) {
-        String refreshToken = jwtTokenProvider.createRefreshToken(role, String.valueOf(id));
-        refreshTokenRepository.deleteByOwnerId(id);
-        refreshTokenRepository.save(new RefreshToken(refreshToken, id));
-        return new RefreshTokenWithValidity(refreshTokenValidityInSecond, refreshToken);
+    public AccessTokenResponse loginForApplicant(ApplicantLoginRequest request) {
+        String email = request.email();
+        String password = request.password();
+        Recruitment recruitment = recruitmentRepository.findByCode(request.recruitmentCode())
+                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+
+        Applicant applicant = applicantRepository.findByEmailAndRecruitment(email, recruitment)
+                .orElseGet(() -> createApplicant(email, password, recruitment));
+        String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, email);
+        return new AccessTokenResponse(applicant.getId(), accessToken);
+    }
+
+    public Applicant createApplicant(String email, String password, Recruitment recruitment) {
+        Applicant applicant = new Applicant(email, password, recruitment);
+        return applicantRepository.save(applicant);
     }
 
     public LoginUser findAuthentication(String accessToken) {
@@ -56,17 +71,5 @@ public class AuthService {
         Applicant applicant = applicantRepository.findByEmail(payload)
                 .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
         return new LoginUser(applicant.getId(), Role.APPLICANT);
-    }
-
-    public AccessTokenResponse renew(String refreshToken) {
-        jwtTokenProvider.validateRefreshToken(refreshToken);
-        refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new CrewsException(ErrorCode.INVALID_REFRESH_TOKEN));
-
-        String payload = jwtTokenProvider.getPayload(refreshToken);
-        long id = Long.parseLong(payload);
-        Role role = jwtTokenProvider.getRole(refreshToken);
-        String accessToken = jwtTokenProvider.createAccessToken(role, payload);
-        return new AccessTokenResponse(id, accessToken);
     }
 }

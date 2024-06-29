@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, String> {
     void deleteByOwnerId(Long id);
+
     Optional<RefreshToken> findByToken(String token);
 }
