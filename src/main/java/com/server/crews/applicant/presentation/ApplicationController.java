@@ -5,7 +5,7 @@ import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.ApplicantAnswersResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
-import com.server.crews.auth.dto.LoginMember;
+import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.presentation.Authentication;
 import com.server.crews.auth.presentation.AuthenticationRequired;
 import com.server.crews.recruitment.domain.Recruitment;
@@ -31,9 +31,9 @@ public class ApplicationController {
     @PostMapping
     @Operation(description = "지원자가 지원서를 처음으로 저장한다.")
     public ResponseEntity<Void> saveApplication(
-            @Authentication LoginMember loginMember,
+            @Authentication LoginUser loginUser,
             @RequestBody ApplicationSaveRequest request) {
-        applicationService.saveApplication(loginMember.recruitmentId(), request);
+//        applicationService.saveApplication(loginUser.recruitmentId(), request);
         return ResponseEntity.ok().build();
     }
 

@@ -13,8 +13,8 @@ import com.server.crews.applicant.event.OutcomeDeterminedEvent;
 import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
-import com.server.crews.auth.domain.Member;
-import com.server.crews.auth.repository.MemberRepository;
+import com.server.crews.auth.domain.Applicant;
+import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.Recruitment;
@@ -37,7 +37,7 @@ import static java.util.stream.Collectors.groupingBy;
 @RequiredArgsConstructor
 public class ApplicationService {
     private final ApplicationRepository applicationRepository;
-    private final MemberRepository memberRepository;
+    private final ApplicantRepository applicantRepository;
     private final SelectiveQuestionRepository selectiveQuestionRepository;
     private final NarrativeQuestionRepository narrativeQuestionRepository;
     private final SelectiveAnswerRepository selectiveAnswerRepository;
@@ -45,10 +45,10 @@ public class ApplicationService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public void saveApplication(Long memberId, ApplicationSaveRequest request) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.MEMBER_NOT_FOUND));
-        Application application = new Application(member, request.studentNumber(), request.major(), request.name());
+    public void createApplication(Long applicantId, ApplicationSaveRequest request) {
+        Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
+        Application application = new Application(applicant, request.studentNumber(), request.major(), request.name());
 
         List<AnswerSaveRequest> answerSaveRequests = request.answers();
         Long applicationId = application.getId();

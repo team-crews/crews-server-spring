@@ -14,8 +14,8 @@ import org.springframework.http.MediaType;
 import java.util.Map;
 
 import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode200;
-import static com.server.crews.fixture.MemberFixture.TEST_EMAIL;
-import static com.server.crews.fixture.MemberFixture.TEST_PASSWORD;
+import static com.server.crews.fixture.UserFixture.TEST_EMAIL;
+import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 public class AuthAcceptanceTest extends AcceptanceTest {

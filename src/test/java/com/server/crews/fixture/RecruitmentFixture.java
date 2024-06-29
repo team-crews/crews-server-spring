@@ -1,5 +1,6 @@
 package com.server.crews.fixture;
 
+import com.server.crews.auth.domain.Administrator;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
 import com.server.crews.recruitment.dto.request.QuestionType;
@@ -36,9 +37,7 @@ public class RecruitmentFixture {
     public static final List<SectionsSaveRequest> SECTION_REQUESTS = List.of(BACKEND_SECTION_REQUEST, FRONTEND_SECTION_REQUEST);
     public static final RecruitmentSaveRequest RECRUITMENT_SAVE_REQUEST = new RecruitmentSaveRequest(DEFAULT_TITLE, DEFAULT_DESCRIPTION, SECTION_REQUESTS, DEFAULT_CLOSING_DATE);
 
-    public static Recruitment RECRUITMENT() {
-        Recruitment recruitment = new Recruitment(DEFAULT_CODE);
-        recruitment.updateAll(DEFAULT_TITLE, DEFAULT_DESCRIPTION, DEFAULT_CLOSING_DATE, List.of());
-        return recruitment;
+    public static Recruitment TEST_RECRUITMENT(Administrator publisher) {
+        return new Recruitment(DEFAULT_CODE, DEFAULT_TITLE, DEFAULT_DESCRIPTION, DEFAULT_CLOSING_DATE, publisher, List.of());
     }
 }

@@ -1,8 +1,9 @@
 package com.server.crews.auth.application;
 
-import com.server.crews.auth.domain.Member;
+import com.server.crews.auth.domain.Administrator;
+import com.server.crews.auth.domain.Applicant;
 import com.server.crews.auth.domain.Role;
-import com.server.crews.auth.dto.LoginMember;
+import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.environ.service.ServiceTest;
 import com.server.crews.recruitment.domain.Recruitment;
 import org.junit.jupiter.api.DisplayName;
@@ -22,14 +23,15 @@ class AuthServiceTest extends ServiceTest {
     @DisplayName("액세스 토큰으로 인증된 사용자를 조회한다.")
     void findAuthentication() {
         // given
-        Recruitment recruitment = LIKE_LION_RECRUITMENT().recruitment();
-        Member member = JONGMEE_APPLICANT(recruitment).member();
-        String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, member.getEmail());
+        Administrator publisher = LIKE_LION_ADMIN().administrator();
+        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
+        Applicant applicant = JONGMEE_APPLICANT(recruitment).applicant();
+        String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, applicant.getEmail());
 
         // when
-        LoginMember loginMember = authService.findAuthentication(accessToken);
+        LoginUser loginUser = authService.findAuthentication(accessToken);
 
         // then
-        assertThat(loginMember.email()).isEqualTo(member.getEmail());
+        assertThat(loginUser.userId()).isEqualTo(applicant.getId());
     }
 }

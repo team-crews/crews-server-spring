@@ -1,5 +1,6 @@
 package com.server.crews.recruitment.application;
 
+import com.server.crews.auth.domain.Administrator;
 import com.server.crews.environ.service.ServiceTest;
 import com.server.crews.recruitment.domain.Progress;
 import com.server.crews.recruitment.domain.Recruitment;
@@ -33,7 +34,8 @@ class RecruitmentServiceTest extends ServiceTest {
     @DisplayName("지원서 양식을 저장한다.")
     void saveRecruitment() {
         // given
-        Recruitment recruitment = LIKE_LION_RECRUITMENT().recruitment();
+        Administrator publisher = LIKE_LION_ADMIN().administrator();
+        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
 
         // when
         recruitmentService.saveRecruitment(recruitment.getId(), RECRUITMENT_SAVE_REQUEST);
@@ -47,7 +49,8 @@ class RecruitmentServiceTest extends ServiceTest {
     @DisplayName("지원서 양식의 진행 상태를 변경한다.")
     void updateProgressState() {
         // given
-        Recruitment recruitment = LIKE_LION_RECRUITMENT().recruitment();
+        Administrator publisher = LIKE_LION_ADMIN().administrator();
+        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
         ProgressStateUpdateRequest request = new ProgressStateUpdateRequest(Progress.COMPLETION);
 
         // when
@@ -62,7 +65,8 @@ class RecruitmentServiceTest extends ServiceTest {
     @DisplayName("지원서 양식의 모든 상세정보를 조회한다.")
     void getRecruitmentDetails() {
         // given
-        Long recruitmentId = LIKE_LION_RECRUITMENT()
+        Administrator publisher = LIKE_LION_ADMIN().administrator();
+        Long recruitmentId = LIKE_LION_RECRUITMENT(publisher)
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment()

@@ -1,7 +1,7 @@
 package com.server.crews.auth.presentation;
 
 import com.server.crews.auth.application.AuthService;
-import com.server.crews.auth.application.MemberService;
+import com.server.crews.auth.application.LoginService;
 import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
@@ -24,13 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    private final MemberService memberService;
+    private final LoginService loginService;
 
     @PostMapping("/admin/login")
     @Operation(description = "[동아리 관리자] 로그인 해 토큰을 발급 받는다. 모집 공고가 존재하지 않는다면 모집 공고를 새로 생성한다.")
     public ResponseEntity<AccessTokenResponse> loginForAdmin(@RequestBody AdminLoginRequest request) {
-        AccessTokenResponse accessTokenResponse = memberService.loginForAdmin(request);
-        RefreshTokenWithValidity refreshTokenWithValidity = authService.createRefreshToken(Role.ADMIN, accessTokenResponse.memberId());
+        AccessTokenResponse accessTokenResponse = loginService.loginForAdmin(request);
+        RefreshTokenWithValidity refreshTokenWithValidity = authService.createRefreshToken(Role.ADMIN, accessTokenResponse.userId());
         ResponseCookie cookie = refreshTokenWithValidity.toCookie();
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -40,8 +40,8 @@ public class AuthController {
     @PostMapping("/applicant/login")
     @Operation(description = "[지원자] 로그인 해 토큰을 발급 받는다.")
     public ResponseEntity<AccessTokenResponse> loginForApplicant(@RequestBody ApplicantLoginRequest request) {
-        AccessTokenResponse accessTokenResponse = memberService.loginForApplicant(request);
-        RefreshTokenWithValidity refreshTokenWithValidity = authService.createRefreshToken(Role.APPLICANT, accessTokenResponse.memberId());
+        AccessTokenResponse accessTokenResponse = loginService.loginForApplicant(request);
+        RefreshTokenWithValidity refreshTokenWithValidity = authService.createRefreshToken(Role.APPLICANT, accessTokenResponse.userId());
         ResponseCookie cookie = refreshTokenWithValidity.toCookie();
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())

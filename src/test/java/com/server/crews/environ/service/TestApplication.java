@@ -4,8 +4,7 @@ import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;
 import com.server.crews.applicant.domain.Outcome;
 import com.server.crews.applicant.domain.SelectiveAnswer;
-import com.server.crews.auth.domain.Member;
-import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.auth.domain.Applicant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +21,9 @@ public class TestApplication {
         this.selectiveAnswers = new ArrayList<>();
     }
 
-    public TestApplication create(Member member, String studentNumber, String major, String name) {
-        Application application = new Application(member, studentNumber, major, name);
-        this.application = environ.applicantRepository().save(application);
+    public TestApplication create(Applicant applicant, String studentNumber, String major, String name) {
+        Application application = new Application(applicant, studentNumber, major, name);
+        this.application = environ.applicationRepository().save(application);
         return this;
     }
 
@@ -52,11 +51,11 @@ public class TestApplication {
 
     public TestApplication decideOutcome(Outcome outcome) {
         application.decideOutcome(outcome);
-        this.application = environ.applicantRepository().save(application);
+        this.application = environ.applicationRepository().save(application);
         return this;
     }
 
-    public Application applicant() {
+    public Application application() {
         return application;
     }
 }

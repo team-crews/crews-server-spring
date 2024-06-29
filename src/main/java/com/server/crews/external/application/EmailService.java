@@ -40,7 +40,7 @@ public class EmailService {
 
         MimeMessagePreparator preparator = mimeMessage -> {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-            helper.setTo(application.getMember().getEmail());
+            helper.setTo(application.getApplicant().getEmail());
             helper.setSubject(TITLE);
             String htmlContent = templateEngine.process(htmlName, context);
             helper.setText(htmlContent, true);

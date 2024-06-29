@@ -1,7 +1,7 @@
 package com.server.crews.auth.presentation;
 
 import com.server.crews.auth.application.AuthService;
-import com.server.crews.auth.dto.LoginMember;
+import com.server.crews.auth.dto.LoginUser;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -22,7 +22,7 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
     }
 
     @Override
-    public LoginMember resolveArgument(
+    public LoginUser resolveArgument(
             final MethodParameter parameter, final ModelAndViewContainer mavContainer,
             final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);

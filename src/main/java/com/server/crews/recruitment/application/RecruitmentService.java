@@ -1,5 +1,7 @@
 package com.server.crews.recruitment.application;
 
+import com.server.crews.auth.domain.Administrator;
+import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -31,13 +34,15 @@ public class RecruitmentService {
     private final RecruitmentRepository recruitmentRepository;
     private final NarrativeQuestionRepository narrativeQuestionRepository;
     private final SelectiveQuestionRepository selectiveQuestionRepository;
+    private final AdministratorRepository administratorRepository;
 
     @Transactional
-    public void saveRecruitment(Long recruitmentId, RecruitmentSaveRequest request) {
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
-        List<Section> sections = request.createSections();
-        recruitment.updateAll(request.getTitle(), recruitment.getDescription(), request.getClosingDate(), sections);
+    public void saveRecruitment(Long publisherId, RecruitmentSaveRequest request) {
+        Administrator publisher = administratorRepository.findById(publisherId)
+                .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
+        String code = UUID.randomUUID().toString();
+        Recruitment recruitment = request.toRecruitment(code, publisher);
+        recruitmentRepository.save(recruitment);
     }
 
     @Transactional

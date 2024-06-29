@@ -1,7 +1,6 @@
 package com.server.crews.applicant.domain;
 
-import com.server.crews.auth.domain.Member;
-import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.auth.domain.Applicant;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -11,7 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,9 +29,9 @@ public class Application {
     @Column(name = "outcome", nullable = false)
     private Outcome outcome;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Member member;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "applicant_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Applicant applicant;
 
     @Column(name = "student_number", nullable = false)
     private String studentNumber;
@@ -43,11 +42,11 @@ public class Application {
     @Column(name = "name", nullable = false)
     private String name;
 
-    public Application(Member member, String studentNumber, String major, String name) {
+    public Application(Applicant applicant, String studentNumber, String major, String name) {
+        this.applicant = applicant;
         this.studentNumber = studentNumber;
         this.major = major;
         this.name = name;
-        this.member = member;
         this.outcome = Outcome.PENDING;
     }
 

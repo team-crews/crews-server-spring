@@ -1,8 +1,7 @@
 package com.server.crews.auth.dto.request;
 
 public record AdminLoginRequest(
-        String email,
+        String clubName,
         String password
 ) {
-
 }

@@ -1,6 +1,11 @@
 package com.server.crews.environ.service;
 
-import com.server.crews.recruitment.domain.*;
+import com.server.crews.auth.domain.Administrator;
+import com.server.crews.recruitment.domain.Choice;
+import com.server.crews.recruitment.domain.NarrativeQuestion;
+import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.recruitment.domain.Section;
+import com.server.crews.recruitment.domain.SelectiveQuestion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +21,7 @@ public class TestRecruitment {
     private final List<Choice> choices;
     private Recruitment recruitment;
 
-    public TestRecruitment(final ServiceTestEnviron environ) {
+    public TestRecruitment(ServiceTestEnviron environ) {
         this.environ = environ;
         this.sections = new ArrayList<>();
         this.narrativeQuestions = new ArrayList<>();
@@ -24,17 +29,15 @@ public class TestRecruitment {
         this.choices = new ArrayList<>();
     }
 
-    public TestRecruitment create(final String code, final String clubName) {
-        Recruitment recruitment = new Recruitment(code);
-        recruitment.updateAll(clubName + " 99기 모집", DEFAULT_DESCRIPTION, DEFAULT_CLOSING_DATE, List.of());
+    public TestRecruitment create(String code, String clubName, Administrator publisher) {
+        Recruitment recruitment = new Recruitment(code, clubName + " 99기 모집", DEFAULT_DESCRIPTION,
+                DEFAULT_CLOSING_DATE, publisher, List.of());
         this.recruitment = environ.recruitmentRepository().save(recruitment);
         return this;
     }
 
-    public TestRecruitment addSection(
-            final String name,
-            final List<NarrativeQuestion> narrativeQuestions,
-            final List<SelectiveQuestion> selectiveQuestions) {
+    public TestRecruitment addSection(String name, List<NarrativeQuestion> narrativeQuestions,
+                                      List<SelectiveQuestion> selectiveQuestions) {
         Section section = Section.builder()
                 .name(name)
                 .description(DEFAULT_DESCRIPTION)
@@ -54,7 +57,7 @@ public class TestRecruitment {
         return this;
     }
 
-    private List<Choice> choicesInSelectiveQuestions(final List<SelectiveQuestion> selectiveQuestions) {
+    private List<Choice> choicesInSelectiveQuestions(List<SelectiveQuestion> selectiveQuestions) {
         return selectiveQuestions.stream()
                 .map(SelectiveQuestion::getChoices)
                 .flatMap(List::stream)

@@ -1,5 +1,6 @@
 package com.server.crews.recruitment.repository;
 
+import com.server.crews.auth.domain.Administrator;
 import com.server.crews.environ.repository.RepositoryTest;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
@@ -20,7 +21,8 @@ class SelectiveQuestionRepositoryTest extends RepositoryTest {
     @DisplayName("선택형 문항을 조회할 때 선택지들도 함께 조회한다.")
     void findAllWithChoicesBySection() {
         // given
-        Recruitment recruitment = saveDefaultRecruitment();
+        Administrator publisher = createDefaultAdmin();
+        Recruitment recruitment = saveDefaultRecruitment(publisher);
 
         // when
         List<SelectiveQuestion> selectiveQuestions = selectiveQuestionRepository.findAllWithChoicesInSections(recruitment.getSections());

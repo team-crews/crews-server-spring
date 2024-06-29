@@ -3,7 +3,8 @@ package com.server.crews.environ.service;
 import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
-import com.server.crews.auth.repository.MemberRepository;
+import com.server.crews.auth.repository.AdministratorRepository;
+import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.recruitment.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ServiceTestEnviron {
-    private final MemberRepository memberRepository;
+    private final ApplicantRepository applicantRepository;
+    private final AdministratorRepository administratorRepository;
     private final RecruitmentRepository recruitmentRepository;
     private final SectionRepository sectionRepository;
     private final SelectiveQuestionRepository selectiveQuestionRepository;
@@ -21,8 +23,12 @@ public class ServiceTestEnviron {
     private final NarrativeAnswerRepository narrativeAnswerRepository;
     private final SelectiveAnswerRepository selectiveAnswerRepository;
 
-    public MemberRepository memberRepository() {
-        return memberRepository;
+    public ApplicantRepository applicantRepository() {
+        return applicantRepository;
+    }
+
+    public AdministratorRepository administratorRepository() {
+        return administratorRepository;
     }
 
     public RecruitmentRepository recruitmentRepository() {
@@ -45,7 +51,7 @@ public class ServiceTestEnviron {
         return choiceRepository;
     }
 
-    public ApplicationRepository applicantRepository() {
+    public ApplicationRepository applicationRepository() {
         return applicationRepository;
     }
 
