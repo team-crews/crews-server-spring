@@ -121,7 +121,7 @@ class AuthServiceTest extends ServiceTest {
         String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, applicant.getEmail());
 
         // when
-        LoginUser loginUser = authService.findAuthentication(accessToken);
+        LoginUser loginUser = authService.findApplicantAuthentication(accessToken);
 
         // then
         assertThat(loginUser.userId()).isEqualTo(applicant.getId());

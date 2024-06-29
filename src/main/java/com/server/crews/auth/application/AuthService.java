@@ -54,22 +54,40 @@ public class AuthService {
         return new AccessTokenResponse(applicant.getId(), accessToken);
     }
 
-    public Applicant createApplicant(String email, String password, Recruitment recruitment) {
+    private Applicant createApplicant(String email, String password, Recruitment recruitment) {
         Applicant applicant = new Applicant(email, password, recruitment);
         return applicantRepository.save(applicant);
     }
 
-    public LoginUser findAuthentication(String accessToken) {
+    public LoginUser findAdminAuthentication(String accessToken) {
         jwtTokenProvider.validateAccessToken(accessToken);
-        String payload = jwtTokenProvider.getPayload(accessToken);
+        validateAdminAuthorization(accessToken);
+        String clubName = jwtTokenProvider.getPayload(accessToken);
+        Administrator administrator = administratorRepository.findByClubName(clubName)
+                .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
+        return new LoginUser(administrator.getId(), Role.ADMIN);
+    }
+
+    private void validateAdminAuthorization(String accessToken) {
         Role role = jwtTokenProvider.getRole(accessToken);
-        if (role == Role.ADMIN) {
-            Administrator administrator = administratorRepository.findByClubName(payload)
-                    .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
-            return new LoginUser(administrator.getId(), Role.ADMIN);
+        if (role != Role.ADMIN) {
+            throw new CrewsException(ErrorCode.UNAUTHORIZED_USER);
         }
-        Applicant applicant = applicantRepository.findByEmail(payload)
+    }
+
+    public LoginUser findApplicantAuthentication(String accessToken) {
+        jwtTokenProvider.validateAccessToken(accessToken);
+        validateApplicantAuthorization(accessToken);
+        String email = jwtTokenProvider.getPayload(accessToken);
+        Applicant applicant = applicantRepository.findByEmail(email)
                 .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
         return new LoginUser(applicant.getId(), Role.APPLICANT);
+    }
+
+    private void validateApplicantAuthorization(String accessToken) {
+        Role role = jwtTokenProvider.getRole(accessToken);
+        if (role != Role.APPLICANT) {
+            throw new CrewsException(ErrorCode.UNAUTHORIZED_USER);
+        }
     }
 }

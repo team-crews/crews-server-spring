@@ -1,7 +1,7 @@
 package com.server.crews.recruitment.presentation;
 
 import com.server.crews.auth.dto.LoginUser;
-import com.server.crews.auth.presentation.Authentication;
+import com.server.crews.auth.presentation.AdminAuthentication;
 import com.server.crews.recruitment.application.RecruitmentService;
 import com.server.crews.recruitment.dto.request.ClosingDateUpdateRequest;
 import com.server.crews.recruitment.dto.request.ProgressStateUpdateRequest;
@@ -27,7 +27,7 @@ public class RecruitmentController {
 
     @PostMapping
     @Operation(description = "지원서 양식을 저장한다.")
-    public ResponseEntity<Void> saveRecruitment(@Authentication LoginUser loginUser,
+    public ResponseEntity<Void> saveRecruitment(@AdminAuthentication LoginUser loginUser,
                                                 @RequestBody RecruitmentSaveRequest request) {
         recruitmentService.saveRecruitment(loginUser.userId(), request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -35,7 +35,7 @@ public class RecruitmentController {
 
     @PatchMapping("/progress")
     @Operation(description = "모집 상태를 변경한다.")
-    public ResponseEntity<Void> updateProgressState(@Authentication LoginUser loginUser,
+    public ResponseEntity<Void> updateProgressState(@AdminAuthentication LoginUser loginUser,
                                                     @RequestBody ProgressStateUpdateRequest request) {
 //        recruitmentService.updateProgressState(loginUser.(), request);
         return ResponseEntity.ok().build();
@@ -50,7 +50,7 @@ public class RecruitmentController {
 
     @PatchMapping("/closing-date")
     @Operation(description = "지원서 양식의 마감기한을 변경한다.")
-    public ResponseEntity<Void> updateProgressState(@Authentication LoginUser loginUser,
+    public ResponseEntity<Void> updateProgressState(@AdminAuthentication LoginUser loginUser,
                                                     @RequestBody ClosingDateUpdateRequest request) {
 //        recruitmentService.updateClosingDate(loginUser.recruitmentId(), request);
         return ResponseEntity.ok().build();
