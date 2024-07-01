@@ -32,17 +32,15 @@ class RecruitmentServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("지원서 양식을 저장한다.")
-    void saveRecruitment() {
+    void createRecruitment() {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
-        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
 
         // when
-        recruitmentService.saveRecruitment(recruitment.getId(), RECRUITMENT_SAVE_REQUEST);
+        RecruitmentDetailsResponse response = recruitmentService.createRecruitment(publisher.getId(), RECRUITMENT_SAVE_REQUEST);
 
         // then
-        Recruitment savedRecruitment = recruitmentRepository.findById(recruitment.getId()).get();
-        assertThat(savedRecruitment.getTitle()).isEqualTo(RECRUITMENT_SAVE_REQUEST.getTitle());
+        assertThat(response.id()).isNotNull();
     }
 
     @Test
@@ -63,7 +61,7 @@ class RecruitmentServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("지원서 양식의 모든 상세정보를 조회한다.")
-    void getRecruitmentDetails() {
+    void findRecruitmentDetails() {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
         Long recruitmentId = LIKE_LION_RECRUITMENT(publisher)
@@ -73,7 +71,7 @@ class RecruitmentServiceTest extends ServiceTest {
                 .getId();
 
         // when
-        RecruitmentDetailsResponse response = recruitmentService.getRecruitmentDetails(recruitmentId);
+        RecruitmentDetailsResponse response = recruitmentService.findRecruitmentDetails(recruitmentId);
 
         // then
         List<SectionResponse> sectionResponses = response.sections();

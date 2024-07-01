@@ -19,22 +19,10 @@ public class QuestionFixture {
     }
 
     public static NarrativeQuestion NARRATIVE_QUESTION() {
-        return NarrativeQuestion.builder()
-                .content(INTRODUCTION_QUESTION)
-                .necessity(true)
-                .order(1)
-                .wordLimit(100)
-                .build();
+        return new NarrativeQuestion(INTRODUCTION_QUESTION, true, 1, 100);
     }
 
     public static SelectiveQuestion SELECTIVE_QUESTION() {
-        return SelectiveQuestion.builder()
-                .content(STRENGTH_QUESTION)
-                .necessity(true)
-                .order(1)
-                .minimumSelection(1)
-                .maximumSelection(1)
-                .choices(CHOICES())
-                .build();
+        return new SelectiveQuestion(CHOICES(), STRENGTH_QUESTION, true, 1, 1, 1);
     }
 }

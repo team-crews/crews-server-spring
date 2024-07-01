@@ -38,7 +38,7 @@ public class Recruitment {
     private Long id;
 
     @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> sections;
+    private List<Section> sections = new ArrayList<>();
 
     @Column(name = "code", nullable = false)
     private String code;
@@ -56,7 +56,7 @@ public class Recruitment {
     private LocalDateTime closingDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "publisher_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(name = "publisher_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Administrator publisher;
 
     @CreatedDate
@@ -70,14 +70,7 @@ public class Recruitment {
         this.description = description;
         this.closingDate = closingDate;
         this.publisher = publisher;
-        this.sections = new ArrayList<>(sections);
         this.progress = Progress.IN_PROGRESS;
-    }
-
-    public void updateAll(String title, String description, LocalDateTime closingDate, List<Section> sections) {
-        this.title = title;
-        this.description = description;
-        this.closingDate = closingDate;
         addSections(sections);
     }
 
@@ -86,11 +79,11 @@ public class Recruitment {
         this.sections.addAll(sections);
     }
 
-    public void updateProgress(final Progress progress) {
+    public void updateProgress(Progress progress) {
         this.progress = progress;
     }
 
-    public void updateClosingDate(final LocalDateTime closingDate) {
+    public void updateClosingDate(LocalDateTime closingDate) {
         this.closingDate = closingDate;
     }
 }

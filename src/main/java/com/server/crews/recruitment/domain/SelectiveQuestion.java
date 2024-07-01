@@ -1,13 +1,28 @@
 package com.server.crews.recruitment.domain;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Entity
+@Table(name = "selective_question")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SelectiveQuestion {
     @Id
@@ -15,32 +30,30 @@ public class SelectiveQuestion {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "section_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Section section;
 
     @OneToMany(mappedBy = "selectiveQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Choice> choices;
 
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(name = "necessity", nullable = false)
     private Boolean necessity;
 
-    @Column(nullable = false)
+    @Column(name = "order", nullable = false)
     private Integer order;
 
-    @Column(nullable = false)
+    @Column(name = "minimum_selection", nullable = false)
     private Integer minimumSelection;
 
-    @Column(nullable = false)
+    @Column(name = "maximum_selection", nullable = false)
     private Integer maximumSelection;
 
-    @Builder
     public SelectiveQuestion(
-            final List<Choice> choices, final String content,
-            final Boolean necessity, final Integer order,
-            final Integer minimumSelection, final Integer maximumSelection) {
+            List<Choice> choices, String content, Boolean necessity,
+            Integer order, Integer minimumSelection, Integer maximumSelection) {
         choices.forEach(choice -> choice.updateSelectiveQuestion(this));
         this.choices = new ArrayList<>(choices);
         this.content = content;

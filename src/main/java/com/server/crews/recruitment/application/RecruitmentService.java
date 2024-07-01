@@ -37,12 +37,13 @@ public class RecruitmentService {
     private final AdministratorRepository administratorRepository;
 
     @Transactional
-    public void saveRecruitment(Long publisherId, RecruitmentSaveRequest request) {
+    public RecruitmentDetailsResponse createRecruitment(Long publisherId, RecruitmentSaveRequest request) {
         Administrator publisher = administratorRepository.findById(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
         String code = UUID.randomUUID().toString();
         Recruitment recruitment = request.toRecruitment(code, publisher);
         recruitmentRepository.save(recruitment);
+        return RecruitmentDetailsResponse.from(recruitment);
     }
 
     @Transactional
@@ -52,7 +53,7 @@ public class RecruitmentService {
         recruitment.updateProgress(request.progress());
     }
 
-    public RecruitmentDetailsResponse getRecruitmentDetails(final Long recruitmentId) {
+    public RecruitmentDetailsResponse findRecruitmentDetails(Long recruitmentId) {
         Recruitment recruitment = recruitmentRepository.findWithSectionsById(recruitmentId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
         List<Section> sections = recruitment.getSections();

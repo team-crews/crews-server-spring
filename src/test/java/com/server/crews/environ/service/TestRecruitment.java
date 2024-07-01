@@ -38,12 +38,7 @@ public class TestRecruitment {
 
     public TestRecruitment addSection(String name, List<NarrativeQuestion> narrativeQuestions,
                                       List<SelectiveQuestion> selectiveQuestions) {
-        Section section = Section.builder()
-                .name(name)
-                .description(DEFAULT_DESCRIPTION)
-                .narrativeQuestions(narrativeQuestions)
-                .selectiveQuestions(selectiveQuestions)
-                .build();
+        Section section = new Section(name, DEFAULT_DESCRIPTION, narrativeQuestions, selectiveQuestions);
         section.updateRecruitment(this.recruitment);
         Section savedSection = environ.sectionRepository().save(section);
         List<NarrativeQuestion> savedNarrativeQuestions = environ.narrativeQuestionRepository().saveAll(narrativeQuestions);
