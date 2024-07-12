@@ -24,7 +24,8 @@ public enum ErrorCode {
 
     RECRUITMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 모집 지원서 양식입니다."),
     APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 지원서입니다."),
-    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 문항입니다.");
+    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 문항입니다."),
+    CHOICE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 선택지입니다.");
 
     private HttpStatus httpStatus;
     private String message;

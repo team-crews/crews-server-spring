@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface NarrativeQuestionRepository extends JpaRepository<NarrativeQuestion, Long> {
     List<NarrativeQuestion> findAllBySectionIn(List<Section> sections);
-    boolean existsAllByIdIn(List<Long> questionIds);
+    List<NarrativeQuestion> findAllByIdIn(List<Long> questionIds);
 }

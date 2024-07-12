@@ -2,6 +2,7 @@ package com.server.crews.applicant.dto.response;
 
 import com.server.crews.applicant.domain.NarrativeAnswer;
 import com.server.crews.applicant.domain.SelectiveAnswer;
+import com.server.crews.recruitment.domain.Choice;
 import lombok.Builder;
 
 import java.util.List;
@@ -35,7 +36,8 @@ public record ApplicantAnswersResponse(Map<Long, List<Long>> choiceIdsBySelectiv
 
     private static List<Long> choiceIds(final List<SelectiveAnswer> selectiveAnswers) {
         return selectiveAnswers.stream()
-                .map(SelectiveAnswer::getChoiceId)
+                .map(SelectiveAnswer::getChoice)
+                .map(Choice::getId)
                 .toList();
     }
 }

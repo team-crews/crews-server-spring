@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SelectiveQuestionRepository extends JpaRepository<SelectiveQuestion, Long>, SelectiveQuestionDslRepository {
-    boolean existsAllByIdIn(List<Long> questionIds);
+    List<SelectiveQuestion> findAllByIdIn(List<Long> questionIds);
 }
