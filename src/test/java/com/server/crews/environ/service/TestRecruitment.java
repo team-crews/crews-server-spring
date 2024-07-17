@@ -62,4 +62,16 @@ public class TestRecruitment {
     public Recruitment recruitment() {
         return this.recruitment;
     }
+
+    public List<NarrativeQuestion> narrativeQuestions() {
+        return this.narrativeQuestions;
+    }
+
+    public List<SelectiveQuestion> selectiveQuestions() {
+        return this.selectiveQuestions;
+    }
+
+    public List<Choice> choices(int questionIndex) {
+        return this.selectiveQuestions.get(questionIndex).getChoices();
+    }
 }

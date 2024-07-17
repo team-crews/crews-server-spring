@@ -14,8 +14,12 @@ import com.server.crews.applicant.repository.SelectiveAnswerRepository;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.environ.service.ServiceTest;
+import com.server.crews.environ.service.TestRecruitment;
 import com.server.crews.global.exception.CrewsException;
+import com.server.crews.recruitment.domain.Choice;
+import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.dto.request.QuestionType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -125,15 +129,17 @@ class ApplicationServiceTest extends ServiceTest {
     void findAllApplicantAnswers() {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
-        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher)
+        TestRecruitment testRecruitment = LIKE_LION_RECRUITMENT(publisher)
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
-                .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
-                .recruitment();
-        Applicant applicant = JONGMEE_APPLICANT(recruitment).applicant();
+                .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()));
+        Applicant applicant = JONGMEE_APPLICANT(testRecruitment.recruitment()).applicant();
+        NarrativeQuestion narrativeQuestion = testRecruitment.narrativeQuestions().get(0);
+        SelectiveQuestion selectiveQuestion = testRecruitment.selectiveQuestions().get(0);
+        List<Choice> choices = testRecruitment.choices(0);
         Application application = JONGMEE_APPLICATION(applicant)
-                .addNarrativeAnswers(1L, "안녕하세요")
-                .saveSelectiveAnswers(1L, 1L)
-                .saveSelectiveAnswers(1L, 2L)
+                .addNarrativeAnswers(narrativeQuestion, "안녕하세요")
+                .saveSelectiveAnswers(selectiveQuestion, choices.get(0))
+                .saveSelectiveAnswers(selectiveQuestion, choices.get(1))
                 .application();
 
         // when
