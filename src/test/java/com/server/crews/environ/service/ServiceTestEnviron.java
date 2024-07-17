@@ -1,23 +1,35 @@
-package com.server.crews.environ;
+package com.server.crews.environ.service;
 
-import com.server.crews.applicant.repository.ApplicantRepository;
+import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
+import com.server.crews.auth.repository.AdministratorRepository;
+import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.recruitment.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class TestEnviron {
+public class ServiceTestEnviron {
+    private final ApplicantRepository applicantRepository;
+    private final AdministratorRepository administratorRepository;
     private final RecruitmentRepository recruitmentRepository;
     private final SectionRepository sectionRepository;
     private final SelectiveQuestionRepository selectiveQuestionRepository;
     private final NarrativeQuestionRepository narrativeQuestionRepository;
     private final ChoiceRepository choiceRepository;
-    private final ApplicantRepository applicantRepository;
+    private final ApplicationRepository applicationRepository;
     private final NarrativeAnswerRepository narrativeAnswerRepository;
     private final SelectiveAnswerRepository selectiveAnswerRepository;
+
+    public ApplicantRepository applicantRepository() {
+        return applicantRepository;
+    }
+
+    public AdministratorRepository administratorRepository() {
+        return administratorRepository;
+    }
 
     public RecruitmentRepository recruitmentRepository() {
         return recruitmentRepository;
@@ -39,8 +51,8 @@ public class TestEnviron {
         return choiceRepository;
     }
 
-    public ApplicantRepository applicantRepository() {
-        return applicantRepository;
+    public ApplicationRepository applicationRepository() {
+        return applicationRepository;
     }
 
     public NarrativeAnswerRepository narrativeAnswerRepository() {

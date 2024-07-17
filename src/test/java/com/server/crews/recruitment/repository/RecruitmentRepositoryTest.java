@@ -1,6 +1,7 @@
 package com.server.crews.recruitment.repository;
 
-import com.server.crews.environ.RepositoryTest;
+import com.server.crews.auth.domain.Administrator;
+import com.server.crews.environ.repository.RepositoryTest;
 import com.server.crews.recruitment.domain.Recruitment;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,8 @@ class RecruitmentRepositoryTest extends RepositoryTest {
     @DisplayName("지원서 양식 조회시 섹션 목록도 함께 조회한다.")
     void findWithSectionsById() {
         // given
-        Long recruitmentId = saveDefaultRecruitment().getId();
+        Administrator publisher = createDefaultAdmin();
+        Long recruitmentId = saveDefaultRecruitment(publisher).getId();
 
         // when
         Recruitment recruitment = recruitmentRepository.findWithSectionsById(recruitmentId).get();

@@ -21,14 +21,7 @@ public class QuestionSaveRequest {
     private final List<String> choices;
 
     public SelectiveQuestion createSelectiveQuestion() {
-        return SelectiveQuestion.builder()
-                .content(content)
-                .necessity(necessity)
-                .order(order)
-                .minimumSelection(minimumSelection)
-                .maximumSelection(maximumSelection)
-                .choices(choices())
-                .build();
+        return new SelectiveQuestion(choices(), content, necessity, order, minimumSelection, maximumSelection);
     }
 
     private List<Choice> choices() {
@@ -38,12 +31,7 @@ public class QuestionSaveRequest {
     }
 
     public NarrativeQuestion createNarrativeQuestion() {
-        return NarrativeQuestion.builder()
-                .content(content)
-                .necessity(necessity)
-                .order(order)
-                .wordLimit(wordLimit)
-                .build();
+        return new NarrativeQuestion(content, necessity, order, wordLimit);
     }
 
     public boolean isSelective() {

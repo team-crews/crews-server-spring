@@ -1,6 +1,6 @@
 package com.server.crews.external.application;
 
-import com.server.crews.applicant.domain.Applicant;
+import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.event.OutcomeDeterminedEvent;
 import com.server.crews.recruitment.domain.Recruitment;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,8 @@ public class EmailEventListener {
     @TransactionalEventListener(value = OutcomeDeterminedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void sendEmailToApplicants(final OutcomeDeterminedEvent event) {
         Recruitment recruitment = event.recruitment();
-        List<Applicant> applicants = event.applicants();
+        List<Application> applications = event.applications();
 
-        applicants.forEach(applicant -> emailService.send(applicant, recruitment));
+        applications.forEach(applicant -> emailService.send(applicant, recruitment));
     }
 }

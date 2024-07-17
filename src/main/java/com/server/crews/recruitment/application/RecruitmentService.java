@@ -1,12 +1,14 @@
 package com.server.crews.recruitment.application;
 
+import com.server.crews.auth.domain.Administrator;
+import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
-import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
+import com.server.crews.recruitment.dto.request.ClosingDateUpdateRequest;
 import com.server.crews.recruitment.dto.request.ProgressStateUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -31,24 +34,26 @@ public class RecruitmentService {
     private final RecruitmentRepository recruitmentRepository;
     private final NarrativeQuestionRepository narrativeQuestionRepository;
     private final SelectiveQuestionRepository selectiveQuestionRepository;
+    private final AdministratorRepository administratorRepository;
 
     @Transactional
-    public void saveRecruitment(
-            final Recruitment accessedRecruitment,
-            final RecruitmentSaveRequest request) {
-        accessedRecruitment.updateAll(request);
-        recruitmentRepository.save(accessedRecruitment);
+    public RecruitmentDetailsResponse createRecruitment(Long publisherId, RecruitmentSaveRequest request) {
+        Administrator publisher = administratorRepository.findById(publisherId)
+                .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
+        String code = UUID.randomUUID().toString();
+        Recruitment recruitment = request.toRecruitment(code, publisher);
+        recruitmentRepository.save(recruitment);
+        return RecruitmentDetailsResponse.from(recruitment);
     }
 
     @Transactional
-    public void updateProgressState(
-            final Recruitment accessedRecruitment,
-            final ProgressStateUpdateRequest request) {
-        accessedRecruitment.updateProgress(request.progress());
-        recruitmentRepository.save(accessedRecruitment);
+    public void updateProgressState(Long recruitmentId, ProgressStateUpdateRequest request) {
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+        recruitment.updateProgress(request.progress());
     }
 
-    public RecruitmentDetailsResponse getRecruitmentDetails(final Long recruitmentId) {
+    public RecruitmentDetailsResponse findRecruitmentDetails(Long recruitmentId) {
         Recruitment recruitment = recruitmentRepository.findWithSectionsById(recruitmentId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
         List<Section> sections = recruitment.getSections();
@@ -63,10 +68,9 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public void updateDeadline(
-            final Recruitment accessedRecruitment,
-            final DeadlineUpdateRequest request) {
-        accessedRecruitment.updateDeadline(request.deadline());
-        recruitmentRepository.save(accessedRecruitment);
+    public void updateClosingDate(Long recruitmentId, ClosingDateUpdateRequest request) {
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+        recruitment.updateClosingDate(request.closingDate());
     }
 }

@@ -1,35 +1,45 @@
 package com.server.crews.recruitment.dto.response;
 
-import com.server.crews.recruitment.domain.*;
-import lombok.Builder;
+import com.server.crews.recruitment.domain.NarrativeQuestion;
+import com.server.crews.recruitment.domain.Progress;
+import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.recruitment.domain.Section;
+import com.server.crews.recruitment.domain.SelectiveQuestion;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-@Builder
 public record RecruitmentDetailsResponse(
-        String title, String description, Progress progress, List<SectionResponse> sections, LocalDateTime deadline) {
+        Long id, String title, String description, Progress progress, List<SectionResponse> sections,
+        LocalDateTime closingDate) {
+
+    public static RecruitmentDetailsResponse from(Recruitment recruitment) {
+        return new RecruitmentDetailsResponse(recruitment.getId(), recruitment.getTitle(), recruitment.getDescription(),
+                recruitment.getProgress(), sectionResponses(recruitment.getSections()), recruitment.getClosingDate());
+    }
+
+    private static List<SectionResponse> sectionResponses(List<Section> sections) {
+        return sections.stream()
+                .map(SectionResponse::of)
+                .toList();
+    }
 
     public static RecruitmentDetailsResponse from(
-            final Recruitment recruitment,
-            final Map<Section, List<NarrativeQuestion>> narrativeQuestionsBySection,
-            final Map<Section, List<SelectiveQuestion>> selectiveQuestionsBySection) {
-        return RecruitmentDetailsResponse.builder()
-                .title(recruitment.getTitle())
-                .description(recruitment.getDescription())
-                .progress(recruitment.getProgress())
-                .sections(sectionResponses(recruitment.getSections(), narrativeQuestionsBySection, selectiveQuestionsBySection))
-                .deadline(recruitment.getDeadline())
-                .build();
+            Recruitment recruitment, Map<Section, List<NarrativeQuestion>> narrativeQuestionsBySection,
+            Map<Section, List<SelectiveQuestion>> selectiveQuestionsBySection) {
+        List<SectionResponse> sectionResponses = sectionResponses(recruitment.getSections(),
+                narrativeQuestionsBySection, selectiveQuestionsBySection);
+        return new RecruitmentDetailsResponse(recruitment.getId(), recruitment.getTitle(), recruitment.getDescription(),
+                recruitment.getProgress(), sectionResponses, recruitment.getClosingDate());
     }
 
     private static List<SectionResponse> sectionResponses(
-            final List<Section> sections,
-            final Map<Section, List<NarrativeQuestion>> narrativeQuestionsBySection,
-            final Map<Section, List<SelectiveQuestion>> selectiveQuestionsBySection) {
+            List<Section> sections, Map<Section, List<NarrativeQuestion>> narrativeQuestionsBySection,
+            Map<Section, List<SelectiveQuestion>> selectiveQuestionsBySection) {
         return sections.stream()
-                .map(section -> SectionResponse.of(section, narrativeQuestionsBySection.getOrDefault(section, List.of()), selectiveQuestionsBySection.getOrDefault(section, List.of())))
+                .map(section -> SectionResponse.of(section, narrativeQuestionsBySection.getOrDefault(section, List.of()),
+                        selectiveQuestionsBySection.getOrDefault(section, List.of())))
                 .toList();
     }
 }

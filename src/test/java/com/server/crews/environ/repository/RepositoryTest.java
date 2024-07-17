@@ -1,6 +1,12 @@
-package com.server.crews.environ;
+package com.server.crews.environ.repository;
 
-import com.server.crews.recruitment.domain.*;
+import com.server.crews.auth.domain.Administrator;
+import com.server.crews.auth.domain.Applicant;
+import com.server.crews.recruitment.domain.Choice;
+import com.server.crews.recruitment.domain.NarrativeQuestion;
+import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.recruitment.domain.Section;
+import com.server.crews.recruitment.domain.SelectiveQuestion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -8,9 +14,16 @@ import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
-import static com.server.crews.fixture.QuestionFixture.*;
-import static com.server.crews.fixture.RecruitmentFixture.RECRUITMENT;
-import static com.server.crews.fixture.SectionFixture.*;
+import static com.server.crews.fixture.QuestionFixture.CHOICES;
+import static com.server.crews.fixture.QuestionFixture.NARRATIVE_QUESTION;
+import static com.server.crews.fixture.QuestionFixture.SELECTIVE_QUESTION;
+import static com.server.crews.fixture.RecruitmentFixture.TEST_RECRUITMENT;
+import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
+import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
+import static com.server.crews.fixture.SectionFixture.SECTION;
+import static com.server.crews.fixture.UserFixture.TEST_CLUB_NAME;
+import static com.server.crews.fixture.UserFixture.TEST_EMAIL;
+import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 
 @DataJpaTest
 @Import(RepositoryTestConfig.class)
@@ -19,8 +32,20 @@ public abstract class RepositoryTest {
     @Autowired
     protected TestRepository testRepository;
 
-    protected Recruitment saveDefaultRecruitment() {
-        Recruitment recruitment = RECRUITMENT();
+    protected Administrator createDefaultAdmin() {
+        Administrator administrator = new Administrator(TEST_CLUB_NAME, TEST_PASSWORD);
+        testRepository.save(administrator);
+        return administrator;
+    }
+
+    protected Applicant createDefaultApplicant(Recruitment recruitment) {
+        Applicant applicant = new Applicant(TEST_EMAIL, TEST_PASSWORD, recruitment);
+        testRepository.save(applicant);
+        return applicant;
+    }
+
+    protected Recruitment saveDefaultRecruitment(Administrator publisher) {
+        Recruitment recruitment = TEST_RECRUITMENT(publisher);
         Section BESection = createSection(BACKEND_SECTION_NAME, recruitment);
         Section FESection = createSection(FRONTEND_SECTION_NAME, recruitment);
         NarrativeQuestion BENarrativeQuestion = createNarrativeQuestion(BESection);

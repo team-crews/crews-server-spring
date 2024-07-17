@@ -1,6 +1,7 @@
 package com.server.crews.recruitment.repository;
 
-import com.server.crews.environ.RepositoryTest;
+import com.server.crews.auth.domain.Administrator;
+import com.server.crews.environ.repository.RepositoryTest;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.Section;
@@ -20,7 +21,8 @@ class NarrativeQuestionRepositoryTest extends RepositoryTest {
     @DisplayName("섹션들의 모든 서술형 문항을 조회한다.")
     void findAllBySectionIn() {
         // given
-        Recruitment recruitment = saveDefaultRecruitment();
+        Administrator publisher = createDefaultAdmin();
+        Recruitment recruitment = saveDefaultRecruitment(publisher);
         List<Section> sections = recruitment.getSections();
 
         // when

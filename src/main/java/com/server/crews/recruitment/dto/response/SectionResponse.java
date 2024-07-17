@@ -13,10 +13,12 @@ public record SectionResponse(
         List<NarrativeQuestionResponse> narrativeQuestions,
         List<SelectiveQuestionResponse> selectiveQuestions) {
 
+    public static SectionResponse of(Section section) {
+        return of(section, section.getNarrativeQuestions(), section.getSelectiveQuestions());
+    }
+
     public static SectionResponse of(
-            final Section section,
-            final List<NarrativeQuestion> narrativeQuestions,
-            final List<SelectiveQuestion> selectiveQuestions) {
+            Section section, List<NarrativeQuestion> narrativeQuestions, List<SelectiveQuestion> selectiveQuestions) {
         return SectionResponse.builder()
                 .name(section.getName())
                 .description(section.getDescription())
@@ -25,13 +27,13 @@ public record SectionResponse(
                 .build();
     }
 
-    private static List<NarrativeQuestionResponse> narrativeQuestionResponses(final List<NarrativeQuestion> narrativeQuestions) {
+    private static List<NarrativeQuestionResponse> narrativeQuestionResponses(List<NarrativeQuestion> narrativeQuestions) {
         return narrativeQuestions.stream()
                 .map(NarrativeQuestionResponse::from)
                 .toList();
     }
 
-    private static List<SelectiveQuestionResponse> selectiveQuestionResponses(final List<SelectiveQuestion> selectiveQuestions) {
+    private static List<SelectiveQuestionResponse> selectiveQuestionResponses(List<SelectiveQuestion> selectiveQuestions) {
         return selectiveQuestions.stream()
                 .map(SelectiveQuestionResponse::from)
                 .toList();

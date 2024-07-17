@@ -1,6 +1,7 @@
 package com.server.crews.auth.presentation;
 
 import com.server.crews.auth.application.AuthService;
+import com.server.crews.auth.dto.LoginUser;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -16,16 +17,19 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
     private final AuthService authService;
 
     @Override
-    public boolean supportsParameter(final MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(Authentication.class);
+    public boolean supportsParameter(MethodParameter parameter) {
+        return parameter.hasParameterAnnotation(AdminAuthentication.class) ||
+                parameter.hasParameterAnnotation(ApplicantAuthentication.class);
     }
 
     @Override
-    public Object resolveArgument(
-            final MethodParameter parameter, final ModelAndViewContainer mavContainer,
-            final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
+    public LoginUser resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+                                     NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String accessToken = AuthorizationExtractor.extract(request);
-        return authService.findAuthentication(accessToken);
+        if (parameter.hasParameterAnnotation(AdminAuthentication.class)) {
+            return authService.findAdminAuthentication(accessToken);
+        }
+        return authService.findApplicantAuthentication(accessToken);
     }
 }
