@@ -123,16 +123,16 @@ public class ApplicationService {
     }
 
     public ApplicantAnswersResponse findAllApplicantAnswers(Long applicantId) {
-        validateApplicantId(applicantId);
-        List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplicantId(applicantId);
-        Map<Long, List<SelectiveAnswer>> selectiveAnswers = selectiveAnswerRepository.findAllByApplicantId(applicantId)
+        Application application = findApplication(applicantId);
+        List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
+        Map<Long, List<SelectiveAnswer>> selectiveAnswers = selectiveAnswerRepository.findAllByApplication(application)
                 .stream()
                 .collect(groupingBy(selectiveAnswer -> selectiveAnswer.getSelectiveQuestion().getId()));
         return ApplicantAnswersResponse.of(narrativeAnswers, selectiveAnswers);
     }
 
-    private void validateApplicantId(Long applicantId) {
-        applicationRepository.findById(applicantId)
+    private Application findApplication(Long applicantId) {
+        return applicationRepository.findByApplicant(applicantId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
     }
 

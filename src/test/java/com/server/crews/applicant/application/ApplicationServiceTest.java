@@ -82,8 +82,8 @@ class ApplicationServiceTest extends ServiceTest {
         applicationService.createApplication(applicant.getId(), saveRequest);
 
         // then
-        List<NarrativeAnswer> savedNarrativeAnswers = narrativeAnswerRepository.findAllByApplicantId(application.getId());
-        List<SelectiveAnswer> savedSelectiveAnswers = selectiveAnswerRepository.findAllByApplicantId(application.getId());
+        List<NarrativeAnswer> savedNarrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
+        List<SelectiveAnswer> savedSelectiveAnswers = selectiveAnswerRepository.findAllByApplication(application);
         assertAll(
                 () -> assertThat(savedNarrativeAnswers).hasSize(expectedSavedNarrativeAnsCount),
                 () -> assertThat(savedSelectiveAnswers).hasSize(expectedSavedSelectiveAnsCount)
