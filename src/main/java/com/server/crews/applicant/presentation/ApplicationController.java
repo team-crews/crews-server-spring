@@ -11,6 +11,7 @@ import com.server.crews.auth.presentation.ApplicantAuthentication;
 import com.server.crews.auth.presentation.AuthenticationRequired;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -34,8 +35,8 @@ public class ApplicationController {
     public ResponseEntity<Void> saveApplication(
             @ApplicantAuthentication LoginUser loginUser,
             @RequestBody ApplicationSaveRequest request) {
-//        applicationService.saveApplication(loginUser.recruitmentId(), request);
-        return ResponseEntity.ok().build();
+        applicationService.createApplication(loginUser.userId(), request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // Todo: 지원서 수정 api 추가

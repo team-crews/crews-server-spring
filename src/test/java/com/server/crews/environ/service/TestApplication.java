@@ -32,6 +32,7 @@ public class TestApplication {
 
     public TestApplication addNarrativeAnswers(NarrativeQuestion question, String content) {
         NarrativeAnswer narrativeAnswer = new NarrativeAnswer(question, content);
+        narrativeAnswer.updateApplication(this.application);
         NarrativeAnswer savedNarrativeAnswer = environ.narrativeAnswerRepository().save(narrativeAnswer);
         this.application.updateNarrativeAnswers(List.of(narrativeAnswer));
         this.narrativeAnswers.add(savedNarrativeAnswer);
@@ -40,6 +41,7 @@ public class TestApplication {
 
     public TestApplication saveSelectiveAnswers(SelectiveQuestion question, Choice choice) {
         SelectiveAnswer selectiveAnswer = new SelectiveAnswer(choice, question);
+        selectiveAnswer.updateApplication(this.application);
         SelectiveAnswer savedSelectiveAnswer = environ.selectiveAnswerRepository().save(selectiveAnswer);
         this.selectiveAnswers.add(savedSelectiveAnswer);
         return this;

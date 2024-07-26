@@ -52,7 +52,7 @@ public class ApplicationService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public void createApplication(Long applicantId, ApplicationSaveRequest request) {
+    public Application createApplication(Long applicantId, ApplicationSaveRequest request) {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
 
@@ -63,7 +63,7 @@ public class ApplicationService {
         Application application = new Application(applicant, request.studentNumber(), request.major(), request.name(),
                 narrativeAnswers, selectiveAnswers);
 
-        applicationRepository.save(application);
+        return applicationRepository.save(application);
     }
 
     private List<SelectiveAnswer> toSelectiveAnswers(Map<Long, AnswerSaveRequest> answerSaveRequestsByQuestionId) {
