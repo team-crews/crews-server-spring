@@ -1,5 +1,9 @@
 package com.server.crews.recruitment.application;
 
+import com.server.crews.applicant.domain.Application;
+import com.server.crews.applicant.domain.Outcome;
+import com.server.crews.applicant.event.OutcomeDeterminedEvent;
+import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.global.exception.CrewsException;
@@ -17,6 +21,7 @@ import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +40,8 @@ public class RecruitmentService {
     private final NarrativeQuestionRepository narrativeQuestionRepository;
     private final SelectiveQuestionRepository selectiveQuestionRepository;
     private final AdministratorRepository administratorRepository;
+    private final ApplicationRepository applicationRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public RecruitmentDetailsResponse createRecruitment(Long publisherId, RecruitmentSaveRequest request) {
@@ -72,5 +79,17 @@ public class RecruitmentService {
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
         recruitment.updateClosingDate(request.closingDate());
+    }
+
+    @Transactional
+    public void sendOutcomeEmail(Long adminId) {
+        Recruitment recruitment = recruitmentRepository.findByPublisher(adminId)
+                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+        List<Application> applications = applicationRepository.findAllWithApplicantByRecruitment(recruitment);
+
+        applications.stream().filter(Application::isNotDetermined)
+                .forEach(applicant -> applicant.decideOutcome(Outcome.FAIL));
+
+        eventPublisher.publishEvent(new OutcomeDeterminedEvent(applications, recruitment));
     }
 }

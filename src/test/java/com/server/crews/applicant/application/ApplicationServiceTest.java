@@ -2,18 +2,14 @@ package com.server.crews.applicant.application;
 
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;
-import com.server.crews.applicant.domain.Outcome;
 import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.response.ApplicantAnswersResponse;
-import com.server.crews.applicant.event.OutcomeDeterminedEvent;
-import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.domain.Applicant;
-import com.server.crews.environ.TestEmailConfig;
 import com.server.crews.environ.service.ServiceTest;
 import com.server.crews.environ.service.TestRecruitment;
 import com.server.crews.global.exception.CrewsException;
@@ -22,16 +18,12 @@ import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.dto.request.QuestionType;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.event.ApplicationEvents;
-import org.springframework.test.context.event.RecordApplicationEvents;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -48,23 +40,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@Import(TestEmailConfig.class)
-@RecordApplicationEvents
 class ApplicationServiceTest extends ServiceTest {
     @Autowired
     private ApplicationService applicationService;
-
-    @Autowired
-    private ApplicationRepository applicationRepository;
 
     @Autowired
     private NarrativeAnswerRepository narrativeAnswerRepository;
 
     @Autowired
     private SelectiveAnswerRepository selectiveAnswerRepository;
-
-    @Autowired
-    ApplicationEvents events;
 
     @ParameterizedTest
     @MethodSource("provideAnswersAndCount")
@@ -152,35 +136,6 @@ class ApplicationServiceTest extends ServiceTest {
         assertAll(
                 () -> assertThat(response.answerByNarrativeQuestionId()).containsEntry(1L, "안녕하세요"),
                 () -> assertThat(response.choiceIdsBySelectiveQuestionId()).containsEntry(1L, List.of(1L, 2L))
-        );
-    }
-
-    @Test
-    @Disabled
-    @DisplayName("지원 결과를 저장하고 지원 결과 이메일을 전송한다.")
-    void sendOutcomeEmail() {
-        // given
-        Administrator publisher = LIKE_LION_ADMIN().administrator();
-        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher)
-                .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
-                .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
-                .recruitment();
-        Applicant jongmee = JONGMEE_APPLICANT(recruitment).applicant();
-        Application jongmeeApplication = JONGMEE_APPLICATION(jongmee)
-                .decideOutcome(Outcome.PASS)
-                .application();
-        Applicant kyungho = KYUNGHO_APPLICANT(recruitment).applicant();
-        Application kyunghoApplication = KYUNGHO_APPLICATION(kyungho)
-                .application();
-
-        // when
-        applicationService.sendOutcomeEmail(recruitment);
-
-        // then
-        Application updatedKyunhoApplication = applicationRepository.findById(kyunghoApplication.getId()).get();
-        assertAll(
-                () -> assertThat(updatedKyunhoApplication.getOutcome()).isEqualTo(Outcome.FAIL),
-                () -> assertThat(events.stream(OutcomeDeterminedEvent.class).count()).isSameAs(1L)
         );
     }
 }

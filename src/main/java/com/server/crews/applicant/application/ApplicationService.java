@@ -2,14 +2,12 @@ package com.server.crews.applicant.application;
 
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;
-import com.server.crews.applicant.domain.Outcome;
 import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.ApplicantAnswersResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
-import com.server.crews.applicant.event.OutcomeDeterminedEvent;
 import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
@@ -19,13 +17,11 @@ import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
-import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.repository.ChoiceRepository;
 import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +45,6 @@ public class ApplicationService {
     private final ChoiceRepository choiceRepository;
     private final SelectiveAnswerRepository selectiveAnswerRepository;
     private final NarrativeAnswerRepository narrativeAnswerRepository;
-    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Application createApplication(Long applicantId, ApplicationSaveRequest request) {
@@ -115,7 +110,7 @@ public class ApplicationService {
         }
     }
 
-    public List<ApplicationsResponse> findAllApplicants(Long recruitmentId) {
+    public List<ApplicationsResponse> findAllApplications(Long recruitmentId) {
         List<Application> applications = applicationRepository.findAllByRecruitmentId(recruitmentId);
         return applications.stream()
                 .map(ApplicationsResponse::from)
@@ -141,16 +136,5 @@ public class ApplicationService {
         Application application = applicationRepository.findById(applicantId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
         application.decideOutcome(request.outcome());
-    }
-
-    @Transactional
-    public void sendOutcomeEmail(Recruitment accessedRecruitment) {
-        Long recruitmentId = accessedRecruitment.getId();
-        List<Application> applications = applicationRepository.findAllByRecruitmentId(recruitmentId);
-
-        applications.stream().filter(Application::isNotDetermined)
-                .forEach(applicant -> applicant.decideOutcome(Outcome.FAIL));
-
-        eventPublisher.publishEvent(new OutcomeDeterminedEvent(applications, accessedRecruitment));
     }
 }

@@ -20,7 +20,7 @@ class RecruitmentRepositoryTest extends RepositoryTest {
     void findWithSectionsById() {
         // given
         Administrator publisher = createDefaultAdmin();
-        Long recruitmentId = saveDefaultRecruitment(publisher).getId();
+        Long recruitmentId = createDefaultRecruitment(publisher).getId();
 
         // when
         Recruitment recruitment = recruitmentRepository.findWithSectionsById(recruitmentId).get();

@@ -25,7 +25,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
         // given
         Administrator publisher = createDefaultAdmin();
         String email = "email@gmail.com";
-        Recruitment recruitment = saveDefaultRecruitment(publisher);
+        Recruitment recruitment = createDefaultRecruitment(publisher);
 
         applicantRepository.save(new Applicant(email, TEST_PASSWORD, recruitment));
 
@@ -39,7 +39,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
     void findByEmailAndRecruitment() {
         // given
         Administrator publisher = createDefaultAdmin();
-        Recruitment recruitment = saveDefaultRecruitment(publisher);
+        Recruitment recruitment = createDefaultRecruitment(publisher);
         Applicant applicant = createDefaultApplicant(recruitment);
 
         // when

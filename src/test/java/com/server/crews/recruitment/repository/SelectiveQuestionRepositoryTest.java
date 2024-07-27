@@ -22,7 +22,7 @@ class SelectiveQuestionRepositoryTest extends RepositoryTest {
     void findAllWithChoicesBySection() {
         // given
         Administrator publisher = createDefaultAdmin();
-        Recruitment recruitment = saveDefaultRecruitment(publisher);
+        Recruitment recruitment = createDefaultRecruitment(publisher);
 
         // when
         List<SelectiveQuestion> selectiveQuestions = selectiveQuestionRepository.findAllWithChoicesInSections(recruitment.getSections());

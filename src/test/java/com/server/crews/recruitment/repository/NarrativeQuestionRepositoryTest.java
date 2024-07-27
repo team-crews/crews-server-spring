@@ -22,7 +22,7 @@ class NarrativeQuestionRepositoryTest extends RepositoryTest {
     void findAllBySectionIn() {
         // given
         Administrator publisher = createDefaultAdmin();
-        Recruitment recruitment = saveDefaultRecruitment(publisher);
+        Recruitment recruitment = createDefaultRecruitment(publisher);
         List<Section> sections = recruitment.getSections();
 
         // when

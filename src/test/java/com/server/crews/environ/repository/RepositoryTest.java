@@ -1,5 +1,6 @@
 package com.server.crews.environ.repository;
 
+import com.server.crews.applicant.domain.Application;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.recruitment.domain.Choice;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
+import static com.server.crews.fixture.ApplicationFixture.APPLICATION;
 import static com.server.crews.fixture.QuestionFixture.CHOICES;
 import static com.server.crews.fixture.QuestionFixture.NARRATIVE_QUESTION;
 import static com.server.crews.fixture.QuestionFixture.SELECTIVE_QUESTION;
@@ -44,7 +46,7 @@ public abstract class RepositoryTest {
         return applicant;
     }
 
-    protected Recruitment saveDefaultRecruitment(Administrator publisher) {
+    protected Recruitment createDefaultRecruitment(Administrator publisher) {
         Recruitment recruitment = TEST_RECRUITMENT(publisher);
         Section BESection = createSection(BACKEND_SECTION_NAME, recruitment);
         Section FESection = createSection(FRONTEND_SECTION_NAME, recruitment);
@@ -83,5 +85,11 @@ public abstract class RepositoryTest {
         List<Choice> choices = CHOICES();
         questions.forEach(question -> choices.forEach(choice -> choice.updateSelectiveQuestion(question)));
         return choices;
+    }
+
+    protected Application createDefaultApplication(Applicant applicant) {
+        Application application = APPLICATION(applicant, List.of(), List.of());
+        testRepository.save(application);
+        return application;
     }
 }

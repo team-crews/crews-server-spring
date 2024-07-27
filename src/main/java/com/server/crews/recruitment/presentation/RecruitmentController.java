@@ -60,4 +60,11 @@ public class RecruitmentController {
         recruitmentService.updateClosingDate(recruitmentId, request);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/announcement")
+    @Operation(description = "모든 지원자에게 지원 결과 메일을 전송한다.")
+    public ResponseEntity<Void> sendOutcomeEmail(@AdminAuthentication LoginUser loginUser) {
+        recruitmentService.sendOutcomeEmail(loginUser.userId());
+        return ResponseEntity.ok().build();
+    }
 }
