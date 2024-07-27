@@ -6,6 +6,8 @@ import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
+import com.server.crews.applicant.dto.response.NarrativeAnswerResponse;
+import com.server.crews.applicant.dto.response.SelectiveAnswerResponse;
 import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
@@ -138,9 +140,9 @@ class ApplicationServiceTest extends ServiceTest {
         ApplicationDetailsResponse response = applicationService.findAllApplicantAnswers(application.getId());
 
         // then
-        assertAll(
-                () -> assertThat(response.answerByNarrativeQuestionId()).containsEntry(1L, "안녕하세요"),
-                () -> assertThat(response.choiceIdsBySelectiveQuestionId()).containsEntry(1L, List.of(1L, 2L))
-        );
+        assertAll(() -> {
+            assertThat(response.narrativeAnswers()).contains(new NarrativeAnswerResponse(1L, "안녕하세요"));
+            assertThat(response.selectiveAnswers()).contains(new SelectiveAnswerResponse(1L, List.of(1L, 2L)));
+        });
     }
 }

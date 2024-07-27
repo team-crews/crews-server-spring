@@ -19,7 +19,6 @@ import org.springframework.http.MediaType;
 
 import java.util.List;
 
-import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode200;
 import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode201;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
@@ -59,9 +58,9 @@ public class ApplicantAcceptanceTest extends AcceptanceTest {
         ApplicationDetailsResponse applicationDetailsResponse = response.as(ApplicationDetailsResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode201(response, softAssertions);
-            assertThat(applicationDetailsResponse.id()).isNotNull();
-            assertThat(applicationDetailsResponse.answerByNarrativeQuestionId().values()).hasSize(1);
-            assertThat(applicationDetailsResponse.choiceIdsBySelectiveQuestionId().values()).hasSize(1);
+            softAssertions.assertThat(applicationDetailsResponse.id()).isNotNull();
+            softAssertions.assertThat(applicationDetailsResponse.narrativeAnswers()).hasSize(1);
+            softAssertions.assertThat(applicationDetailsResponse.selectiveAnswers()).hasSize(1);
         });
     }
 }
