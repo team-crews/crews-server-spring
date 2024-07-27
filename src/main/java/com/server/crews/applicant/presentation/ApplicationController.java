@@ -31,7 +31,7 @@ public class ApplicationController {
 
     @PostMapping
     @Operation(description = "지원자가 지원서를 처음으로 저장한다.")
-    public ResponseEntity<ApplicationDetailsResponse> saveApplication(
+    public ResponseEntity<ApplicationDetailsResponse> createApplication(
             @ApplicantAuthentication LoginUser loginUser,
             @RequestBody ApplicationSaveRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)

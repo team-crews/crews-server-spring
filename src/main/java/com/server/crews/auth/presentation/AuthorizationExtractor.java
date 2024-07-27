@@ -8,7 +8,7 @@ import org.springframework.http.HttpHeaders;
 import java.util.Objects;
 
 public class AuthorizationExtractor {
-    private static final String BEARER_TYPE = "Bearer ";
+    public static final String BEARER_TYPE = "Bearer ";
 
     public static String extract(final HttpServletRequest request) {
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);

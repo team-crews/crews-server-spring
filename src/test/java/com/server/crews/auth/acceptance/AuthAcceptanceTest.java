@@ -1,8 +1,10 @@
 package com.server.crews.auth.acceptance;
 
 import com.server.crews.auth.dto.request.AdminLoginRequest;
+import com.server.crews.auth.dto.request.ApplicantLoginRequest;
 import com.server.crews.auth.dto.response.AccessTokenResponse;
 import com.server.crews.environ.acceptance.AcceptanceTest;
+import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -18,6 +20,7 @@ import static com.server.crews.fixture.UserFixture.TEST_EMAIL;
 import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+// Todo: 실패 케이스 테스트 추가
 public class AuthAcceptanceTest extends AcceptanceTest {
 
     @Test
@@ -71,5 +74,31 @@ public class AuthAcceptanceTest extends AcceptanceTest {
         });
     }
 
-    // Todo: 동아리 지원자 로그인 테스트 (성공, 실패 모두)
+    @Test
+    @DisplayName("[지원자] 가입하지 않은 지원자가 로그인 해 토큰을 발급 받는다.")
+    void loginNotSignedUpApplicant() {
+        // given
+        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+
+        ApplicantLoginRequest applicantLoginRequest = new ApplicantLoginRequest(recruitmentDetailsResponse.code(), TEST_EMAIL, TEST_PASSWORD);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(applicantLoginRequest)
+                .when().post("/auth/applicant/login")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        AccessTokenResponse applicantTokenResponse = response.as(AccessTokenResponse.class);
+        Map<String, String> cookies = response.cookies();
+        assertSoftly(softAssertions -> {
+            checkStatusCode200(response, softAssertions);
+            softAssertions.assertThat(applicantTokenResponse.accessToken()).isNotEmpty();
+            softAssertions.assertThat(cookies.get("refreshToken")).isNotNull();
+        });
+    }
 }
