@@ -10,11 +10,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StatusCodeChecker {
 
     public static void checkStatusCode200(ExtractableResponse<Response> response, SoftAssertions softAssertions) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        softAssertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    public static void checkStatusCode201(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    public static void checkStatusCode201(ExtractableResponse<Response> response, SoftAssertions softAssertions) {
+        softAssertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     public static void checkStatusCode400(ExtractableResponse<Response> response) {
