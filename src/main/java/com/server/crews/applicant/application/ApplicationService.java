@@ -6,7 +6,7 @@ import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
-import com.server.crews.applicant.dto.response.ApplicantAnswersResponse;
+import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
 import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
@@ -47,7 +47,7 @@ public class ApplicationService {
     private final NarrativeAnswerRepository narrativeAnswerRepository;
 
     @Transactional
-    public Application createApplication(Long applicantId, ApplicationSaveRequest request) {
+    public ApplicationDetailsResponse createApplication(Long applicantId, ApplicationSaveRequest request) {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
 
@@ -58,7 +58,9 @@ public class ApplicationService {
         Application application = new Application(applicant, request.studentNumber(), request.major(), request.name(),
                 narrativeAnswers, selectiveAnswers);
 
-        return applicationRepository.save(application);
+        applicationRepository.save(application);
+
+        return ApplicationDetailsResponse.of(application, narrativeAnswers, collectSelectiveAnswersByQuestion(selectiveAnswers));
     }
 
     private List<SelectiveAnswer> toSelectiveAnswers(Map<Long, AnswerSaveRequest> answerSaveRequestsByQuestionId) {
@@ -117,18 +119,18 @@ public class ApplicationService {
                 .toList();
     }
 
-    public ApplicantAnswersResponse findAllApplicantAnswers(Long applicantId) {
-        Application application = findApplication(applicantId);
+    public ApplicationDetailsResponse findAllApplicantAnswers(Long applicationId) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
         List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
-        Map<Long, List<SelectiveAnswer>> selectiveAnswers = selectiveAnswerRepository.findAllByApplication(application)
-                .stream()
-                .collect(groupingBy(selectiveAnswer -> selectiveAnswer.getSelectiveQuestion().getId()));
-        return ApplicantAnswersResponse.of(narrativeAnswers, selectiveAnswers);
+        Map<Long, List<SelectiveAnswer>> selectiveAnswers = collectSelectiveAnswersByQuestion(
+                selectiveAnswerRepository.findAllByApplication(application));
+        return ApplicationDetailsResponse.of(application, narrativeAnswers, selectiveAnswers);
     }
 
-    private Application findApplication(Long applicantId) {
-        return applicationRepository.findByApplicant(applicantId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
+    private Map<Long, List<SelectiveAnswer>> collectSelectiveAnswersByQuestion(List<SelectiveAnswer> selectiveAnswers) {
+        return selectiveAnswers.stream()
+                .collect(groupingBy(selectiveAnswer -> selectiveAnswer.getSelectiveQuestion().getId()));
     }
 
     @Transactional

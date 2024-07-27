@@ -3,7 +3,7 @@ package com.server.crews.applicant.presentation;
 import com.server.crews.applicant.application.ApplicationService;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
-import com.server.crews.applicant.dto.response.ApplicantAnswersResponse;
+import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
 import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.presentation.ApplicantAuthentication;
@@ -31,11 +31,11 @@ public class ApplicationController {
 
     @PostMapping
     @Operation(description = "지원자가 지원서를 처음으로 저장한다.")
-    public ResponseEntity<Void> saveApplication(
+    public ResponseEntity<ApplicationDetailsResponse> saveApplication(
             @ApplicantAuthentication LoginUser loginUser,
             @RequestBody ApplicationSaveRequest request) {
-        applicationService.createApplication(loginUser.userId(), request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(applicationService.createApplication(loginUser.userId(), request));
     }
 
     // Todo: 지원서 수정 api 추가
@@ -48,12 +48,12 @@ public class ApplicationController {
         return ResponseEntity.ok(applicationService.findAllApplications(recruitmentId));
     }
 
-    @GetMapping("/{applicant-id}")
+    @GetMapping("/{application-id}")
     @AuthenticationRequired
     @Operation(description = "특정 지원자의 지원서를 조회한다.")
-    public ResponseEntity<ApplicantAnswersResponse> findApplicantAnswers(
-            @PathVariable(value = "applicant-id") Long applicantId) {
-        return ResponseEntity.ok(applicationService.findAllApplicantAnswers(applicantId));
+    public ResponseEntity<ApplicationDetailsResponse> findApplicantAnswers(
+            @PathVariable(value = "application-id") Long applicationId) {
+        return ResponseEntity.ok(applicationService.findAllApplicantAnswers(applicationId));
     }
 
     @PatchMapping("/{applicant-id}/evaluation")

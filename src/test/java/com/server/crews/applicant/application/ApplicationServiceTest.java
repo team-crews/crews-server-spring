@@ -5,7 +5,8 @@ import com.server.crews.applicant.domain.NarrativeAnswer;
 import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
-import com.server.crews.applicant.dto.response.ApplicantAnswersResponse;
+import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
+import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
 import com.server.crews.auth.domain.Administrator;
@@ -50,6 +51,9 @@ class ApplicationServiceTest extends ServiceTest {
     @Autowired
     private SelectiveAnswerRepository selectiveAnswerRepository;
 
+    @Autowired
+    private ApplicationRepository applicationRepository;
+
     @ParameterizedTest
     @MethodSource("provideAnswersAndCount")
     @DisplayName("답변을 작성한 지원서를 저장한다.")
@@ -66,15 +70,16 @@ class ApplicationServiceTest extends ServiceTest {
                 DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
 
         // when
-        Application application = applicationService.createApplication(applicant.getId(), saveRequest);
+        ApplicationDetailsResponse applicationDetailsResponse = applicationService.createApplication(applicant.getId(), saveRequest);
 
         // then
+        Application application = applicationRepository.findById(applicationDetailsResponse.id()).get();
         List<NarrativeAnswer> savedNarrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
         List<SelectiveAnswer> savedSelectiveAnswers = selectiveAnswerRepository.findAllByApplication(application);
-        assertAll(
-                () -> assertThat(savedNarrativeAnswers).hasSize(expectedSavedNarrativeAnsCount),
-                () -> assertThat(savedSelectiveAnswers).hasSize(expectedSavedSelectiveAnsCount)
-        );
+        assertAll(() -> {
+            assertThat(savedNarrativeAnswers).hasSize(expectedSavedNarrativeAnsCount);
+            assertThat(savedSelectiveAnswers).hasSize(expectedSavedSelectiveAnsCount);
+        });
     }
 
     private static Stream<Arguments> provideAnswersAndCount() {
@@ -130,7 +135,7 @@ class ApplicationServiceTest extends ServiceTest {
                 .application();
 
         // when
-        ApplicantAnswersResponse response = applicationService.findAllApplicantAnswers(application.getId());
+        ApplicationDetailsResponse response = applicationService.findAllApplicantAnswers(application.getId());
 
         // then
         assertAll(
