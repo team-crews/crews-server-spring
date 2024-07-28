@@ -2,9 +2,11 @@ package com.server.crews.applicant.application;
 
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;
+import com.server.crews.applicant.domain.Outcome;
 import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
+import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.NarrativeAnswerResponse;
 import com.server.crews.applicant.dto.response.SelectiveAnswerResponse;
@@ -28,6 +30,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -120,7 +123,7 @@ class ApplicationServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("지원자의 모든 서술형, 선택형 문항 답변을 조회한다.")
-    void findAllApplicantAnswers() {
+    void findApplicationDetails() {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
         TestRecruitment testRecruitment = LIKE_LION_RECRUITMENT(publisher)
@@ -144,5 +147,30 @@ class ApplicationServiceTest extends ServiceTest {
             assertThat(response.narrativeAnswers()).contains(new NarrativeAnswerResponse(1L, "안녕하세요"));
             assertThat(response.selectiveAnswers()).contains(new SelectiveAnswerResponse(1L, List.of(1L, 2L)));
         });
+    }
+
+    @Test
+    @DisplayName("지원자들을 평가한다.")
+    void decideOutcome() {
+        // given
+        Administrator publisher = LIKE_LION_ADMIN().administrator();
+        Recruitment testRecruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
+        Applicant jongmeeAppicant = JONGMEE_APPLICANT(testRecruitment).applicant();
+        Application jongmeeApplication = JONGMEE_APPLICATION(jongmeeAppicant).application();
+        Applicant kyunghoApplicant = KYUNGHO_APPLICANT(testRecruitment).applicant();
+        Application kyunghoApplication = KYUNGHO_APPLICATION(kyunghoApplicant).application();
+
+        EvaluationRequest evaluationRequest = new EvaluationRequest(
+                testRecruitment.getId(), List.of(kyunghoApplication.getId()));
+
+        // when
+        applicationService.decideOutcome(evaluationRequest);
+
+        // then
+        List<Application> applications = applicationRepository.findAllWithApplicantByRecruitmentId(testRecruitment.getId());
+        applications.sort(Comparator.comparingLong(Application::getId));
+        assertThat(applications).hasSize(2)
+                .extracting(Application::getOutcome)
+                .containsExactly(Outcome.FAIL, Outcome.PASS);
     }
 }

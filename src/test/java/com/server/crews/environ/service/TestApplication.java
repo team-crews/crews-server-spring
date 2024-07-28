@@ -2,7 +2,6 @@ package com.server.crews.environ.service;
 
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;
-import com.server.crews.applicant.domain.Outcome;
 import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.recruitment.domain.Choice;
@@ -47,8 +46,8 @@ public class TestApplication {
         return this;
     }
 
-    public TestApplication decideOutcome(Outcome outcome) {
-        application.decideOutcome(outcome);
+    public TestApplication pass() {
+        application.pass();
         this.application = environ.applicationRepository().save(application);
         return this;
     }

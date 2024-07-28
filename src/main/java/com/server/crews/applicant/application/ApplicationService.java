@@ -26,8 +26,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -134,9 +136,19 @@ public class ApplicationService {
     }
 
     @Transactional
-    public void decideOutcome(EvaluationRequest request, Long applicantId) {
-        Application application = applicationRepository.findById(applicantId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
-        application.decideOutcome(request.outcome());
+    public void decideOutcome(EvaluationRequest request) {
+        List<Application> applications = applicationRepository.findAllWithApplicantByRecruitmentId(request.recruitmentId());
+        Set<Long> passApplicationIds = new HashSet<>(request.passApplicationIds());
+
+        applications.stream()
+                .filter(application -> containedInPassList(application, passApplicationIds))
+                .forEach(Application::pass);
+        applications.stream()
+                .filter(application -> !containedInPassList(application, passApplicationIds))
+                .forEach(Application::reject);
+    }
+
+    private boolean containedInPassList(Application application, Set<Long> passApplicationIds) {
+        return passApplicationIds.contains(application.getId());
     }
 }

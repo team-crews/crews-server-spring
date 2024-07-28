@@ -112,7 +112,7 @@ class RecruitmentServiceTest extends ServiceTest {
                 .recruitment();
         Applicant jongmee = JONGMEE_APPLICANT(recruitment).applicant();
         Application jongmeeApplication = JONGMEE_APPLICATION(jongmee)
-                .decideOutcome(Outcome.PASS)
+                .pass()
                 .application();
         Applicant kyungho = KYUNGHO_APPLICANT(recruitment).applicant();
         Application kyunghoApplication = KYUNGHO_APPLICATION(kyungho)

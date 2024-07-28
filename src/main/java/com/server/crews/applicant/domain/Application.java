@@ -74,8 +74,12 @@ public class Application {
         selectiveAnswers.forEach(selectiveAnswer -> selectiveAnswer.updateApplication(this));
     }
 
-    public void decideOutcome(Outcome outcome) {
-        this.outcome = outcome;
+    public void pass() {
+        this.outcome = Outcome.PASS;
+    }
+
+    public void reject() {
+        this.outcome = Outcome.FAIL;
     }
 
     public boolean isNotDetermined() {

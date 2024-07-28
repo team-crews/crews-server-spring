@@ -88,7 +88,7 @@ public class RecruitmentService {
         List<Application> applications = applicationRepository.findAllWithApplicantByRecruitmentId(recruitment.getId());
 
         applications.stream().filter(Application::isNotDetermined)
-                .forEach(applicant -> applicant.decideOutcome(Outcome.FAIL));
+                .forEach(Application::reject);
 
         eventPublisher.publishEvent(new OutcomeDeterminedEvent(applications, recruitment));
     }

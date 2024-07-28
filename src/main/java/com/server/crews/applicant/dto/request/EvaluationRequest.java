@@ -1,7 +1,6 @@
 package com.server.crews.applicant.dto.request;
 
-import com.server.crews.applicant.domain.Outcome;
+import java.util.List;
 
-public record EvaluationRequest(Outcome outcome) {
-
+public record EvaluationRequest(Long recruitmentId, List<Long> passApplicationIds) {
 }

@@ -56,13 +56,11 @@ public class ApplicationController {
         return ResponseEntity.ok(applicationService.findAllApplicationsByRecruitment(recruitmentId));
     }
 
-    @PatchMapping("/{applicant-id}/evaluation")
+    @PatchMapping("/evaluation")
     @AuthenticationRequired
-    @Operation(description = "지원자의 합/불을 결정한다.")
-    public ResponseEntity<Void> decideOutcome(
-            @RequestBody EvaluationRequest request,
-            @PathVariable(value = "applicant-id") Long applicantId) {
-        applicationService.decideOutcome(request, applicantId);
+    @Operation(description = "지원자들을 평가한다.")
+    public ResponseEntity<Void> decideOutcome(@RequestBody EvaluationRequest request) {
+        applicationService.decideOutcome(request);
         return ResponseEntity.ok().build();
     }
 }
