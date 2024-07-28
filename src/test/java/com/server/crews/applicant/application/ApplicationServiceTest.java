@@ -6,16 +6,21 @@ import com.server.crews.applicant.domain.Outcome;
 import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
-import com.server.crews.applicant.dto.response.ApplicantAnswersResponse;
-import com.server.crews.applicant.event.OutcomeDeterminedEvent;
+import com.server.crews.applicant.dto.request.EvaluationRequest;
+import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
+import com.server.crews.applicant.dto.response.NarrativeAnswerResponse;
+import com.server.crews.applicant.dto.response.SelectiveAnswerResponse;
 import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.domain.Applicant;
+import com.server.crews.auth.domain.Role;
+import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.environ.service.ServiceTest;
 import com.server.crews.environ.service.TestRecruitment;
 import com.server.crews.global.exception.CrewsException;
+import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
@@ -27,9 +32,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.event.ApplicationEvents;
-import org.springframework.test.context.event.RecordApplicationEvents;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -42,16 +46,13 @@ import static com.server.crews.fixture.QuestionFixture.SELECTIVE_QUESTION;
 import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
 import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@RecordApplicationEvents
 class ApplicationServiceTest extends ServiceTest {
     @Autowired
     private ApplicationService applicationService;
-
-    @Autowired
-    private ApplicationRepository applicationRepository;
 
     @Autowired
     private NarrativeAnswerRepository narrativeAnswerRepository;
@@ -60,7 +61,7 @@ class ApplicationServiceTest extends ServiceTest {
     private SelectiveAnswerRepository selectiveAnswerRepository;
 
     @Autowired
-    ApplicationEvents events;
+    private ApplicationRepository applicationRepository;
 
     @ParameterizedTest
     @MethodSource("provideAnswersAndCount")
@@ -73,31 +74,31 @@ class ApplicationServiceTest extends ServiceTest {
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment();
         Applicant applicant = JONGMEE_APPLICANT(recruitment).applicant();
-        Application application = JONGMEE_APPLICATION(applicant).application();
 
         ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(
                 DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
 
         // when
-        applicationService.createApplication(applicant.getId(), saveRequest);
+        ApplicationDetailsResponse applicationDetailsResponse = applicationService.createApplication(applicant.getId(), saveRequest);
 
         // then
-        List<NarrativeAnswer> savedNarrativeAnswers = narrativeAnswerRepository.findAllByApplicantId(application.getId());
-        List<SelectiveAnswer> savedSelectiveAnswers = selectiveAnswerRepository.findAllByApplicantId(application.getId());
-        assertAll(
-                () -> assertThat(savedNarrativeAnswers).hasSize(expectedSavedNarrativeAnsCount),
-                () -> assertThat(savedSelectiveAnswers).hasSize(expectedSavedSelectiveAnsCount)
-        );
+        Application application = applicationRepository.findById(applicationDetailsResponse.id()).get();
+        List<NarrativeAnswer> savedNarrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
+        List<SelectiveAnswer> savedSelectiveAnswers = selectiveAnswerRepository.findAllByApplication(application);
+        assertAll(() -> {
+            assertThat(savedNarrativeAnswers).hasSize(expectedSavedNarrativeAnsCount);
+            assertThat(savedSelectiveAnswers).hasSize(expectedSavedSelectiveAnsCount);
+        });
     }
 
     private static Stream<Arguments> provideAnswersAndCount() {
         return Stream.of(
                 Arguments.of(List.of(
-                        new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, null),
+                        new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
                         new AnswerSaveRequest(QuestionType.SELECTIVE, 1L, null, List.of(1L, 2L))
                 ), 1, 2),
                 Arguments.of(List.of(
-                        new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, null)
+                        new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of())
                 ), 1, 0)
         );
     }
@@ -115,7 +116,7 @@ class ApplicationServiceTest extends ServiceTest {
         Application application = JONGMEE_APPLICATION(applicant).application();
 
         List<AnswerSaveRequest> invalidAnswerSaveRequests = List.of(
-                new AnswerSaveRequest(QuestionType.NARRATIVE, 3L, DEFAULT_NARRATIVE_ANSWER, null));
+                new AnswerSaveRequest(QuestionType.NARRATIVE, 3L, DEFAULT_NARRATIVE_ANSWER, List.of()));
         ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(
                 DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, invalidAnswerSaveRequests);
 
@@ -126,7 +127,7 @@ class ApplicationServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("지원자의 모든 서술형, 선택형 문항 답변을 조회한다.")
-    void findAllApplicantAnswers() {
+    void findApplicationDetails() {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
         TestRecruitment testRecruitment = LIKE_LION_RECRUITMENT(publisher)
@@ -142,41 +143,78 @@ class ApplicationServiceTest extends ServiceTest {
                 .saveSelectiveAnswers(selectiveQuestion, choices.get(1))
                 .application();
 
+        LoginUser loginUser = new LoginUser(publisher.getId(), Role.ADMIN);
+
         // when
-        ApplicantAnswersResponse response = applicationService.findAllApplicantAnswers(application.getId());
+        ApplicationDetailsResponse response = applicationService.findApplicationDetails(application.getId(), loginUser);
 
         // then
-        assertAll(
-                () -> assertThat(response.answerByNarrativeQuestionId()).containsEntry(1L, "안녕하세요"),
-                () -> assertThat(response.choiceIdsBySelectiveQuestionId()).containsEntry(1L, List.of(1L, 2L))
-        );
+        assertAll(() -> {
+            assertThat(response.narrativeAnswers()).contains(new NarrativeAnswerResponse(1L, "안녕하세요"));
+            assertThat(response.selectiveAnswers()).contains(new SelectiveAnswerResponse(1L, List.of(1L, 2L)));
+        });
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideRole")
+    @DisplayName("지원서의 작성자 혹은 동아리 관리자만이 지원서 상세 정보를 조회할 수 있다.")
+    void checkApplicationPermission(Role givenRole) {
+        // given
+        Administrator publisher = LIKE_LION_ADMIN().administrator();
+        Recruitment testRecruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
+        Applicant applicant = JONGMEE_APPLICANT(testRecruitment).applicant();
+        Application application = JONGMEE_APPLICATION(applicant).application();
+
+        LoginUser loginUser = new LoginUser(1L, givenRole);
+
+        // when & then
+        assertThatCode(() -> applicationService.findApplicationDetails(application.getId(), loginUser))
+                .doesNotThrowAnyException();
+    }
+
+    private static Stream<Role> provideRole() {
+        return Stream.of(Role.APPLICANT, Role.ADMIN);
     }
 
     @Test
-    @DisplayName("지원 결과를 저장하고 지원 결과 이메일을 전송한다.")
-    void sendOutcomeEmail() {
+    @DisplayName("지원서 작성자가 아닌 지원자는 지원서 상세 정보를 조회할 수 없다.")
+    void checkInvalidApplicationPermission() {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
-        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher)
-                .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
-                .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
-                .recruitment();
-        Applicant jongmee = JONGMEE_APPLICANT(recruitment).applicant();
-        Application jongmeeApplication = JONGMEE_APPLICATION(jongmee)
-                .decideOutcome(Outcome.PASS)
-                .application();
-        Applicant kyungho = KYUNGHO_APPLICANT(recruitment).applicant();
-        Application kyunghoApplication = KYUNGHO_APPLICATION(kyungho)
-                .application();
+        Recruitment testRecruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
+        Applicant jongmeeApplicant = JONGMEE_APPLICANT(testRecruitment).applicant();
+        Application application = JONGMEE_APPLICATION(jongmeeApplicant).application();
+        Applicant kyunghoApplicant = KYUNGHO_APPLICANT(testRecruitment).applicant();
+
+        LoginUser loginUser = new LoginUser(kyunghoApplicant.getId(), Role.APPLICANT);
+
+        // when & then
+        assertThatThrownBy(() -> applicationService.findApplicationDetails(application.getId(), loginUser))
+                .hasMessage(ErrorCode.UNAUTHORIZED_USER.getMessage());
+    }
+
+    @Test
+    @DisplayName("지원자들을 평가한다.")
+    void decideOutcome() {
+        // given
+        Administrator publisher = LIKE_LION_ADMIN().administrator();
+        Recruitment testRecruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
+        Applicant jongmeeAppicant = JONGMEE_APPLICANT(testRecruitment).applicant();
+        Application jongmeeApplication = JONGMEE_APPLICATION(jongmeeAppicant).application();
+        Applicant kyunghoApplicant = KYUNGHO_APPLICANT(testRecruitment).applicant();
+        Application kyunghoApplication = KYUNGHO_APPLICATION(kyunghoApplicant).application();
+
+        EvaluationRequest evaluationRequest = new EvaluationRequest(
+                testRecruitment.getId(), List.of(kyunghoApplication.getId()));
 
         // when
-        applicationService.sendOutcomeEmail(recruitment);
+        applicationService.decideOutcome(evaluationRequest);
 
         // then
-        Application updatedKyunhoApplication = applicationRepository.findById(kyunghoApplication.getId()).get();
-        assertAll(
-                () -> assertThat(updatedKyunhoApplication.getOutcome()).isEqualTo(Outcome.FAIL),
-                () -> assertThat(events.stream(OutcomeDeterminedEvent.class).count()).isSameAs(1L)
-        );
+        List<Application> applications = applicationRepository.findAllWithApplicantByRecruitmentId(testRecruitment.getId());
+        applications.sort(Comparator.comparingLong(Application::getId));
+        assertThat(applications).hasSize(2)
+                .extracting(Application::getOutcome)
+                .containsExactly(Outcome.FAIL, Outcome.PASS);
     }
 }

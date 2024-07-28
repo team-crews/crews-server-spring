@@ -2,36 +2,35 @@ package com.server.crews.applicant.application;
 
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;
-import com.server.crews.applicant.domain.Outcome;
 import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
-import com.server.crews.applicant.dto.response.ApplicantAnswersResponse;
+import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
-import com.server.crews.applicant.event.OutcomeDeterminedEvent;
 import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
 import com.server.crews.auth.domain.Applicant;
+import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
-import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.repository.ChoiceRepository;
 import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -49,10 +48,9 @@ public class ApplicationService {
     private final ChoiceRepository choiceRepository;
     private final SelectiveAnswerRepository selectiveAnswerRepository;
     private final NarrativeAnswerRepository narrativeAnswerRepository;
-    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public void createApplication(Long applicantId, ApplicationSaveRequest request) {
+    public ApplicationDetailsResponse createApplication(Long applicantId, ApplicationSaveRequest request) {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
 
@@ -64,6 +62,8 @@ public class ApplicationService {
                 narrativeAnswers, selectiveAnswers);
 
         applicationRepository.save(application);
+
+        return ApplicationDetailsResponse.of(application, narrativeAnswers, collectSelectiveAnswersByQuestion(selectiveAnswers));
     }
 
     private List<SelectiveAnswer> toSelectiveAnswers(Map<Long, AnswerSaveRequest> answerSaveRequestsByQuestionId) {
@@ -115,42 +115,48 @@ public class ApplicationService {
         }
     }
 
-    public List<ApplicationsResponse> findAllApplicants(Long recruitmentId) {
-        List<Application> applications = applicationRepository.findAllByRecruitmentId(recruitmentId);
+    public List<ApplicationsResponse> findAllApplicationsByRecruitment(Long recruitmentId) {
+        List<Application> applications = applicationRepository.findAllWithApplicantByRecruitmentId(recruitmentId);
         return applications.stream()
                 .map(ApplicationsResponse::from)
                 .toList();
     }
 
-    public ApplicantAnswersResponse findAllApplicantAnswers(Long applicantId) {
-        validateApplicantId(applicantId);
-        List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplicantId(applicantId);
-        Map<Long, List<SelectiveAnswer>> selectiveAnswers = selectiveAnswerRepository.findAllByApplicantId(applicantId)
-                .stream()
+    public ApplicationDetailsResponse findApplicationDetails(Long applicationId, LoginUser loginUser) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
+        checkPermission(application, loginUser);
+        List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
+        Map<Long, List<SelectiveAnswer>> selectiveAnswers = collectSelectiveAnswersByQuestion(
+                selectiveAnswerRepository.findAllByApplication(application));
+        return ApplicationDetailsResponse.of(application, narrativeAnswers, selectiveAnswers);
+    }
+
+    private void checkPermission(Application application, LoginUser loginUser) {
+        if (!application.canBeAccessedBy(loginUser.userId(), loginUser.role())) {
+            throw new CrewsException(ErrorCode.UNAUTHORIZED_USER);
+        }
+    }
+
+    private Map<Long, List<SelectiveAnswer>> collectSelectiveAnswersByQuestion(List<SelectiveAnswer> selectiveAnswers) {
+        return selectiveAnswers.stream()
                 .collect(groupingBy(selectiveAnswer -> selectiveAnswer.getSelectiveQuestion().getId()));
-        return ApplicantAnswersResponse.of(narrativeAnswers, selectiveAnswers);
-    }
-
-    private void validateApplicantId(Long applicantId) {
-        applicationRepository.findById(applicantId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
     }
 
     @Transactional
-    public void decideOutcome(EvaluationRequest request, Long applicantId) {
-        Application application = applicationRepository.findById(applicantId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
-        application.decideOutcome(request.outcome());
+    public void decideOutcome(EvaluationRequest request) {
+        List<Application> applications = applicationRepository.findAllWithApplicantByRecruitmentId(request.recruitmentId());
+        Set<Long> passApplicationIds = new HashSet<>(request.passApplicationIds());
+
+        applications.stream()
+                .filter(application -> containedInPassList(application, passApplicationIds))
+                .forEach(Application::pass);
+        applications.stream()
+                .filter(application -> !containedInPassList(application, passApplicationIds))
+                .forEach(Application::reject);
     }
 
-    @Transactional
-    public void sendOutcomeEmail(Recruitment accessedRecruitment) {
-        Long recruitmentId = accessedRecruitment.getId();
-        List<Application> applications = applicationRepository.findAllByRecruitmentId(recruitmentId);
-
-        applications.stream().filter(Application::isNotDetermined)
-                .forEach(applicant -> applicant.decideOutcome(Outcome.FAIL));
-
-        eventPublisher.publishEvent(new OutcomeDeterminedEvent(applications, accessedRecruitment));
+    private boolean containedInPassList(Application application, Set<Long> passApplicationIds) {
+        return passApplicationIds.contains(application.getId());
     }
 }

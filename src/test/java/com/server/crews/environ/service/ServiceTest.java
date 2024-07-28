@@ -4,6 +4,7 @@ import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.environ.DatabaseCleaner;
 import com.server.crews.environ.repository.TestRepository;
+import com.server.crews.external.application.EmailService;
 import com.server.crews.recruitment.domain.Recruitment;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CODE;
+import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -25,6 +26,9 @@ public abstract class ServiceTest {
 
     @MockBean
     private TestRepository testRepository;
+
+    @MockBean
+    private EmailService emailService;
 
     @BeforeEach
     void setUp() {
