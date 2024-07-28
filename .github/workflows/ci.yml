@@ -4,13 +4,13 @@ on:
   pull_request:
     branches: [ "dev" ]
   push:
-    branches: [ "ci/#11-set-ci" ]
+    branches: [ "dev" ]
 
 permissions:
   contents: read
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
 
