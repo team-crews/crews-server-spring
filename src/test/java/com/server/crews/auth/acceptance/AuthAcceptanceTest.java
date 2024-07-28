@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode200;
+import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode401;
 import static com.server.crews.fixture.UserFixture.TEST_EMAIL;
 import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -129,5 +130,26 @@ public class AuthAcceptanceTest extends AcceptanceTest {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(applicationsResponses).hasSize(0);
         });
+    }
+
+    @Test
+    @DisplayName("[지원자] 지원자 권한으로 지원자 목록을 조회한다.")
+    void authenticateAdminWithApplicantToken() {
+        // given
+        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        AccessTokenResponse applicantTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(), TEST_EMAIL, TEST_PASSWORD);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
+                .when().get("/applications?recruitment-id=" + recruitmentDetailsResponse.id())
+                .then().log().all()
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .extract();
+
+        // then
+        checkStatusCode401(response);
     }
 }
