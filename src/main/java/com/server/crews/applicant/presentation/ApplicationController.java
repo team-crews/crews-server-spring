@@ -40,20 +40,20 @@ public class ApplicationController {
 
     // Todo: 지원서 수정 api 추가
 
-    @GetMapping
-    @AuthenticationRequired
-    @Operation(description = "한 공고의 모든 지원자 목록을 조회한다.")
-    public ResponseEntity<List<ApplicationsResponse>> findAllApplicants(
-            @RequestParam(value = "recruitment-id") Long recruitmentId) {
-        return ResponseEntity.ok(applicationService.findAllApplications(recruitmentId));
-    }
-
     @GetMapping("/{application-id}")
     @AuthenticationRequired
     @Operation(description = "특정 지원자의 지원서를 조회한다.")
     public ResponseEntity<ApplicationDetailsResponse> findApplicantAnswers(
             @PathVariable(value = "application-id") Long applicationId) {
         return ResponseEntity.ok(applicationService.findAllApplicantAnswers(applicationId));
+    }
+
+    @GetMapping
+    @AuthenticationRequired
+    @Operation(description = "한 공고의 모든 지원자 목록을 조회한다.")
+    public ResponseEntity<List<ApplicationsResponse>> findAllApplicants(
+            @RequestParam(value = "recruitment-id") Long recruitmentId) {
+        return ResponseEntity.ok(applicationService.findAllApplications(recruitmentId));
     }
 
     @PatchMapping("/{applicant-id}/evaluation")
