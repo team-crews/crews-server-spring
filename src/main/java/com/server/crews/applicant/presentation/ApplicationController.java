@@ -41,11 +41,11 @@ public class ApplicationController {
     // Todo: 지원서 수정 api 추가
 
     @GetMapping("/{application-id}")
-    @AuthenticationRequired
     @Operation(description = "특정 지원자의 지원서를 조회한다.")
     public ResponseEntity<ApplicationDetailsResponse> findApplicationDetails(
+            @ApplicantAuthentication LoginUser loginUser,
             @PathVariable(value = "application-id") Long applicationId) {
-        return ResponseEntity.ok(applicationService.findApplicationDetails(applicationId));
+        return ResponseEntity.ok(applicationService.findApplicationDetails(applicationId, loginUser));
     }
 
     @GetMapping

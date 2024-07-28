@@ -12,6 +12,7 @@ import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
 import com.server.crews.auth.domain.Applicant;
+import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
@@ -121,13 +122,20 @@ public class ApplicationService {
                 .toList();
     }
 
-    public ApplicationDetailsResponse findApplicationDetails(Long applicationId) {
+    public ApplicationDetailsResponse findApplicationDetails(Long applicationId, LoginUser loginUser) {
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
+        checkPermission(application, loginUser);
         List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
         Map<Long, List<SelectiveAnswer>> selectiveAnswers = collectSelectiveAnswersByQuestion(
                 selectiveAnswerRepository.findAllByApplication(application));
         return ApplicationDetailsResponse.of(application, narrativeAnswers, selectiveAnswers);
+    }
+
+    private void checkPermission(Application application, LoginUser loginUser) {
+        if (!application.canBeAccessedBy(loginUser.userId(), loginUser.role())) {
+            throw new CrewsException(ErrorCode.UNAUTHORIZED_USER);
+        }
     }
 
     private Map<Long, List<SelectiveAnswer>> collectSelectiveAnswersByQuestion(List<SelectiveAnswer> selectiveAnswers) {

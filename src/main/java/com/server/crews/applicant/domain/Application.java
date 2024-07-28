@@ -1,6 +1,7 @@
 package com.server.crews.applicant.domain;
 
 import com.server.crews.auth.domain.Applicant;
+import com.server.crews.auth.domain.Role;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
@@ -84,5 +85,12 @@ public class Application {
 
     public boolean isNotDetermined() {
         return outcome.equals(Outcome.PENDING);
+    }
+
+    public boolean canBeAccessedBy(Long userId, Role role) {
+        if (role == Role.ADMIN) {
+            return true;
+        }
+        return applicant.getId().equals(userId);
     }
 }
