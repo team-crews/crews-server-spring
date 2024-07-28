@@ -19,6 +19,6 @@ public class AuthenticationValidator {
     public void validate() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String accessToken = AuthorizationExtractor.extract(request);
-        authService.findApplicantAuthentication(accessToken);
+        authService.findAdminAuthentication(accessToken);
     }
 }
