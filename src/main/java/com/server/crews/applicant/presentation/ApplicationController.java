@@ -43,17 +43,17 @@ public class ApplicationController {
     @GetMapping("/{application-id}")
     @AuthenticationRequired
     @Operation(description = "특정 지원자의 지원서를 조회한다.")
-    public ResponseEntity<ApplicationDetailsResponse> findApplicantAnswers(
+    public ResponseEntity<ApplicationDetailsResponse> findApplicationDetails(
             @PathVariable(value = "application-id") Long applicationId) {
-        return ResponseEntity.ok(applicationService.findAllApplicantAnswers(applicationId));
+        return ResponseEntity.ok(applicationService.findApplicationDetails(applicationId));
     }
 
     @GetMapping
     @AuthenticationRequired
-    @Operation(description = "한 공고의 모든 지원자 목록을 조회한다.")
-    public ResponseEntity<List<ApplicationsResponse>> findAllApplicants(
+    @Operation(description = "한 공고의 모든 지원서 목록을 조회한다.")
+    public ResponseEntity<List<ApplicationsResponse>> findAllApplicationsByRecruitment(
             @RequestParam(value = "recruitment-id") Long recruitmentId) {
-        return ResponseEntity.ok(applicationService.findAllApplications(recruitmentId));
+        return ResponseEntity.ok(applicationService.findAllApplicationsByRecruitment(recruitmentId));
     }
 
     @PatchMapping("/{applicant-id}/evaluation")

@@ -112,14 +112,14 @@ public class ApplicationService {
         }
     }
 
-    public List<ApplicationsResponse> findAllApplications(Long recruitmentId) {
-        List<Application> applications = applicationRepository.findAllByRecruitmentId(recruitmentId);
+    public List<ApplicationsResponse> findAllApplicationsByRecruitment(Long recruitmentId) {
+        List<Application> applications = applicationRepository.findAllWithApplicantByRecruitmentId(recruitmentId);
         return applications.stream()
                 .map(ApplicationsResponse::from)
                 .toList();
     }
 
-    public ApplicationDetailsResponse findAllApplicantAnswers(Long applicationId) {
+    public ApplicationDetailsResponse findApplicationDetails(Long applicationId) {
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
         List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);

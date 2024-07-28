@@ -1,5 +1,7 @@
 package com.server.crews.environ.acceptance;
 
+import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
+import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
 import com.server.crews.auth.dto.response.AccessTokenResponse;
@@ -66,5 +68,17 @@ public abstract class AcceptanceTest {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
         return response.as(AccessTokenResponse.class);
+    }
+
+    protected ApplicationDetailsResponse createTestApplication(String accessToken, ApplicationSaveRequest applicationSaveRequest) {
+        ExtractableResponse<Response> response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
+                .body(applicationSaveRequest)
+                .when().post("/applications")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract();
+        return response.as(ApplicationDetailsResponse.class);
     }
 }

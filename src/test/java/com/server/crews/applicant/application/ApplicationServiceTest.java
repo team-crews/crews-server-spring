@@ -137,7 +137,7 @@ class ApplicationServiceTest extends ServiceTest {
                 .application();
 
         // when
-        ApplicationDetailsResponse response = applicationService.findAllApplicantAnswers(application.getId());
+        ApplicationDetailsResponse response = applicationService.findApplicationDetails(application.getId());
 
         // then
         assertAll(() -> {

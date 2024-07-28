@@ -27,9 +27,22 @@ class ApplicationRepositoryTest extends RepositoryTest {
         Application application = createDefaultApplication(applicant);
 
         // when
-        List<Application> applications = applicationRepository.findAllWithApplicantByRecruitment(recruitment);
+        List<Application> applications = applicationRepository.findAllWithApplicantByRecruitmentId(recruitment.getId());
 
         // then
         assertThat(applications).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 모집 공고의 모든 [지원서 + 지원자 정보]를 조회한다.")
+    void findAllWithApplicantByNotExistingRecruitment() {
+        // given
+        Long noExistingRecruitmentId = 1L;
+
+        // when
+        List<Application> applications = applicationRepository.findAllWithApplicantByRecruitmentId(noExistingRecruitmentId);
+
+        // then
+        assertThat(applications).hasSize(0);
     }
 }

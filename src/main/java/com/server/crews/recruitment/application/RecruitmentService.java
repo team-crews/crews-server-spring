@@ -85,7 +85,7 @@ public class RecruitmentService {
     public void sendOutcomeEmail(Long adminId) {
         Recruitment recruitment = recruitmentRepository.findByPublisher(adminId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
-        List<Application> applications = applicationRepository.findAllWithApplicantByRecruitment(recruitment);
+        List<Application> applications = applicationRepository.findAllWithApplicantByRecruitmentId(recruitment.getId());
 
         applications.stream().filter(Application::isNotDetermined)
                 .forEach(applicant -> applicant.decideOutcome(Outcome.FAIL));
