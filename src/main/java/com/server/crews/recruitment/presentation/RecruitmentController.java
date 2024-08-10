@@ -5,7 +5,6 @@ import com.server.crews.auth.presentation.AdminAuthentication;
 import com.server.crews.auth.presentation.AuthenticationRequired;
 import com.server.crews.recruitment.application.RecruitmentService;
 import com.server.crews.recruitment.dto.request.ClosingDateUpdateRequest;
-import com.server.crews.recruitment.dto.request.ProgressStateUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,13 +34,10 @@ public class RecruitmentController {
                 .body(recruitmentService.saveRecruitment(loginUser.userId(), request));
     }
 
-    @AuthenticationRequired
-    @PatchMapping("/{recruitment-id}/progress")
-    @Operation(description = "모집 상태를 변경한다.")
-    public ResponseEntity<Void> updateProgressState(
-            @PathVariable(value = "recruitment-id") Long recruitmentId,
-            @RequestBody ProgressStateUpdateRequest request) {
-        recruitmentService.updateProgressState(recruitmentId, request);
+    @PatchMapping("/in-progress")
+    @Operation(description = "모집을 시작한다.")
+    public ResponseEntity<Void> startRecruiting(@AdminAuthentication LoginUser loginUser) {
+        recruitmentService.startRecruiting(loginUser.userId());
         return ResponseEntity.ok().build();
     }
 

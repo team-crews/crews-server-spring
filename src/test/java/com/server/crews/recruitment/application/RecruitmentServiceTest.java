@@ -17,7 +17,6 @@ import com.server.crews.auth.domain.Applicant;
 import com.server.crews.environ.service.ServiceTest;
 import com.server.crews.recruitment.domain.Progress;
 import com.server.crews.recruitment.domain.Recruitment;
-import com.server.crews.recruitment.dto.request.ProgressStateUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.SectionResponse;
@@ -81,19 +80,18 @@ class RecruitmentServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("지원서 양식의 진행 상태를 변경한다.")
-    void updateProgressState() {
+    @DisplayName("모집을 시작한다.")
+    void startRecruiting() {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
         Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
-        ProgressStateUpdateRequest request = new ProgressStateUpdateRequest(Progress.COMPLETION);
 
         // when
-        recruitmentService.updateProgressState(recruitment.getId(), request);
+        recruitmentService.startRecruiting(publisher.getId());
 
         // then
         Recruitment updatedRecruitment = recruitmentRepository.findById(recruitment.getId()).get();
-        assertThat(updatedRecruitment.getProgress()).isEqualTo(Progress.COMPLETION);
+        assertThat(updatedRecruitment.getProgress()).isEqualTo(Progress.IN_PROGRESS);
     }
 
     @Test

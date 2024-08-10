@@ -54,10 +54,10 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public void updateProgressState(Long recruitmentId, ProgressStateUpdateRequest request) {
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+    public void startRecruiting(Long publisherId) {
+        Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
-        recruitment.updateProgress(request.progress());
+        recruitment.start();
     }
 
     public RecruitmentDetailsResponse findRecruitmentDetails(Long recruitmentId) {

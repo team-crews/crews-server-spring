@@ -15,16 +15,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Entity
@@ -70,7 +69,7 @@ public class Recruitment {
         this.description = description;
         this.closingDate = closingDate;
         this.publisher = publisher;
-        this.progress = Progress.IN_PROGRESS;
+        this.progress = Progress.READY;
         addSections(sections);
     }
 
@@ -79,8 +78,8 @@ public class Recruitment {
         this.sections.addAll(sections);
     }
 
-    public void updateProgress(Progress progress) {
-        this.progress = progress;
+    public void start() {
+        this.progress = Progress.IN_PROGRESS;
     }
 
     public void updateClosingDate(LocalDateTime closingDate) {
@@ -89,20 +88,5 @@ public class Recruitment {
 
     public void setByExistingId(Long id) {
         this.id = id;
-    }
-
-    @Override
-    public String toString() {
-        return "Recruitment{" +
-                "id=" + id +
-                ", sections=" + sections +
-                ", code='" + code + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", progress=" + progress +
-                ", closingDate=" + closingDate +
-                ", publisher=" + publisher +
-                ", createdDate=" + createdDate +
-                '}';
     }
 }
