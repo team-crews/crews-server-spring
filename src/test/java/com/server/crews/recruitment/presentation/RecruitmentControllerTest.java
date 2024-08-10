@@ -117,7 +117,7 @@ class RecruitmentControllerTest extends ControllerTest {
 
     @ParameterizedTest
     @MethodSource("invalidQuestionSaveRequests")
-    @DisplayName("모집 공고 질문의 필수 필드(질문 내용, 순서, 필수 응답 여부)를 검증한다.")
+    @DisplayName("모집 공고 질문의 필수 필드(질문 내용, 순서, 필수 응답 여부, 질문 타입)를 검증한다.")
     void validateRecruitmentQuestionNecessaryField(QuestionSaveRequest invalidQuestionSaveRequest, String errorMessage)
             throws Exception {
         // given
@@ -137,12 +137,44 @@ class RecruitmentControllerTest extends ControllerTest {
 
     private static Stream<Arguments> invalidQuestionSaveRequests() {
         return Stream.of(
-                Arguments.of(new QuestionSaveRequest(QuestionType.NARRATIVE, "", true, 1,
+                Arguments.of(new QuestionSaveRequest(null, INTRODUCTION_QUESTION, true, 1,
+                        300, null, null, null), "질문 타입은 공백일 수 없습니다."),
+                Arguments.of(new QuestionSaveRequest(QuestionType.NARRATIVE.name(), "", true, 1,
                         300, null, null, null), "질문 내용은 공백일 수 없습니다."),
-                Arguments.of(new QuestionSaveRequest(QuestionType.NARRATIVE, INTRODUCTION_QUESTION, null, 1,
+                Arguments.of(new QuestionSaveRequest(QuestionType.NARRATIVE.name(), INTRODUCTION_QUESTION, null, 1,
                         300, null, null, null), "필수 항목 여부는 null일 수 없습니다."),
-                Arguments.of(new QuestionSaveRequest(QuestionType.NARRATIVE, INTRODUCTION_QUESTION, true, null,
+                Arguments.of(new QuestionSaveRequest(QuestionType.NARRATIVE.name(), INTRODUCTION_QUESTION, true, null,
                         300, null, null, null), "질문 순서는 null일 수 없습니다.")
         );
+    }
+
+    @Test
+    @DisplayName("모집 공고 질문의 질문 타입 필드 형식을 검증한다.")
+    void validateRecruitmentQuestionTypeFormat() throws Exception {
+        // given
+        String invalidRecruitmentSaveRequest = """
+                        {
+                            "title": "모집 공고 제목",
+                            "closingDate": "2030-09-12T00:00:00",
+                            "sections": [
+                                {
+                                    "name": "파트1",
+                                    "questions": [
+                                        {
+                                            "type": "invalid"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                """;
+
+        // when & then
+        mockMvc.perform(post("/recruitments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidRecruitmentSaveRequest))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
     }
 }

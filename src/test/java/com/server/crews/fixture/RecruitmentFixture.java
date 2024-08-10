@@ -22,8 +22,8 @@ public class RecruitmentFixture {
     public static final String DEFAULT_TITLE = "TITLE";
     public static final String DEFAULT_DESCRIPTION = "DESCRIPTION";
 
-    public static final QuestionSaveRequest NARRATIVE_QUESTION_REQUEST = new QuestionSaveRequest(QuestionType.NARRATIVE, INTRODUCTION_QUESTION, true, 1, 100, null, null, null);
-    public static final QuestionSaveRequest SELECTIVE_QUESTION_REQUEST = new QuestionSaveRequest(QuestionType.SELECTIVE, STRENGTH_QUESTION, true, 2, null, 1, 2, STRENGTH_CHOICES);
+    public static final QuestionSaveRequest NARRATIVE_QUESTION_REQUEST = new QuestionSaveRequest(QuestionType.NARRATIVE.name(), INTRODUCTION_QUESTION, true, 1, 100, null, null, null);
+    public static final QuestionSaveRequest SELECTIVE_QUESTION_REQUEST = new QuestionSaveRequest(QuestionType.SELECTIVE.name(), STRENGTH_QUESTION, true, 2, null, 1, 2, STRENGTH_CHOICES);
     public static final List<QuestionSaveRequest> QUESTION_REQUESTS = List.of(NARRATIVE_QUESTION_REQUEST, SELECTIVE_QUESTION_REQUEST);
     public static final SectionsSaveRequest BACKEND_SECTION_REQUEST = new SectionsSaveRequest(BACKEND_SECTION_NAME, DEFAULT_DESCRIPTION, QUESTION_REQUESTS);
     public static final SectionsSaveRequest FRONTEND_SECTION_REQUEST = new SectionsSaveRequest(FRONTEND_SECTION_NAME, DEFAULT_DESCRIPTION, QUESTION_REQUESTS);
