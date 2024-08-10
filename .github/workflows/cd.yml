@@ -1,0 +1,32 @@
+name: crews backend cd
+
+on:
+  push:
+    branches: [ "cd/#11-build-docker-image" ]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.ACTION_TOKEN }}
+          submodules: true
+
+      - name: Run Test
+        run: ./gradlew clean test
+
+      - name: Build with Gradle
+        run: ./gradlew bootJar
+
+      - name: Build Docker Image And Push
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          
+          docker build -t ${{ secrets.DOCKER_SERVER_IMAGE_NAME }} .
+          docker push ${{ secrets.DOCKER_SERVER_IMAGE_NAME }}
