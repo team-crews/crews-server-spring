@@ -9,6 +9,7 @@ import com.server.crews.recruitment.dto.request.ProgressStateUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class RecruitmentController {
     @PostMapping
     @Operation(description = "지원서 양식을 저장한다.")
     public ResponseEntity<RecruitmentDetailsResponse> saveRecruitment(
-            @AdminAuthentication LoginUser loginUser, @RequestBody RecruitmentSaveRequest request) {
+            @AdminAuthentication LoginUser loginUser, @RequestBody @Valid RecruitmentSaveRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(recruitmentService.createRecruitment(loginUser.userId(), request));
     }
