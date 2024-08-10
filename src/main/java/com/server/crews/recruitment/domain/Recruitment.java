@@ -86,4 +86,23 @@ public class Recruitment {
     public void updateClosingDate(LocalDateTime closingDate) {
         this.closingDate = closingDate;
     }
+
+    public void setByExistingId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "Recruitment{" +
+                "id=" + id +
+                ", sections=" + sections +
+                ", code='" + code + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", progress=" + progress +
+                ", closingDate=" + closingDate +
+                ", publisher=" + publisher +
+                ", createdDate=" + createdDate +
+                '}';
+    }
 }

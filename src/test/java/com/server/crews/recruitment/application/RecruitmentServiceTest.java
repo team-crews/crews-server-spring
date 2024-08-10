@@ -1,5 +1,13 @@
 package com.server.crews.recruitment.application;
 
+import static com.server.crews.fixture.QuestionFixture.NARRATIVE_QUESTION;
+import static com.server.crews.fixture.QuestionFixture.SELECTIVE_QUESTION;
+import static com.server.crews.fixture.RecruitmentFixture.RECRUITMENT_SAVE_REQUEST;
+import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
+import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.Outcome;
 import com.server.crews.applicant.event.OutcomeDeterminedEvent;
@@ -10,25 +18,18 @@ import com.server.crews.environ.service.ServiceTest;
 import com.server.crews.recruitment.domain.Progress;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.dto.request.ProgressStateUpdateRequest;
+import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.SectionResponse;
 import com.server.crews.recruitment.dto.response.SelectiveQuestionResponse;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.event.ApplicationEvents;
 import org.springframework.test.context.event.RecordApplicationEvents;
-
-import java.util.List;
-
-import static com.server.crews.fixture.QuestionFixture.NARRATIVE_QUESTION;
-import static com.server.crews.fixture.QuestionFixture.SELECTIVE_QUESTION;
-import static com.server.crews.fixture.RecruitmentFixture.RECRUITMENT_SAVE_REQUEST;
-import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
-import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @RecordApplicationEvents
 class RecruitmentServiceTest extends ServiceTest {
@@ -45,16 +46,38 @@ class RecruitmentServiceTest extends ServiceTest {
     ApplicationEvents events;
 
     @Test
-    @DisplayName("지원서 양식을 저장한다.")
+    @DisplayName("지원서 양식을 최초로 저장한다.")
     void createRecruitment() {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
 
         // when
-        RecruitmentDetailsResponse response = recruitmentService.createRecruitment(publisher.getId(), RECRUITMENT_SAVE_REQUEST);
+        RecruitmentDetailsResponse response = recruitmentService.saveRecruitment(publisher.getId(),
+                RECRUITMENT_SAVE_REQUEST);
 
         // then
         assertThat(response.id()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("지원서 양식을 수정 저장한다.")
+    void updateRecruitment() {
+        // given
+        Administrator publisher = LIKE_LION_ADMIN().administrator();
+        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
+        LocalDateTime modifiedClosingDateTime = LocalDateTime.now().plusDays(1L);
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(recruitment.getTitle(),
+                recruitment.getDescription(), List.of(), modifiedClosingDateTime.toString());
+
+        // when
+        RecruitmentDetailsResponse response = recruitmentService.saveRecruitment(publisher.getId(),
+                recruitmentSaveRequest);
+
+        // then
+        assertAll(() -> {
+            assertThat(response.id()).isEqualTo(recruitment.getId());
+            assertThat(response.closingDate()).isEqualTo(modifiedClosingDateTime);
+        });
     }
 
     @Test

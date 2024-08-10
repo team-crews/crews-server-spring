@@ -1,7 +1,8 @@
 package com.server.crews.recruitment.application;
 
+import static java.util.stream.Collectors.groupingBy;
+
 import com.server.crews.applicant.domain.Application;
-import com.server.crews.applicant.domain.Outcome;
 import com.server.crews.applicant.event.OutcomeDeterminedEvent;
 import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.auth.domain.Administrator;
@@ -19,17 +20,14 @@ import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import static java.util.stream.Collectors.groupingBy;
 
 @Slf4j
 @Service
@@ -44,11 +42,13 @@ public class RecruitmentService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public RecruitmentDetailsResponse createRecruitment(Long publisherId, RecruitmentSaveRequest request) {
+    public RecruitmentDetailsResponse saveRecruitment(Long publisherId, RecruitmentSaveRequest request) {
         Administrator publisher = administratorRepository.findById(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
         String code = UUID.randomUUID().toString();
         Recruitment recruitment = request.toRecruitment(code, publisher);
+        recruitmentRepository.findByPublisher(publisherId)
+                .ifPresent(existingRecruitment -> recruitment.setByExistingId(existingRecruitment.getId()));
         recruitmentRepository.save(recruitment);
         return RecruitmentDetailsResponse.from(recruitment);
     }

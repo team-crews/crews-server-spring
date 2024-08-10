@@ -32,7 +32,7 @@ public class RecruitmentController {
     public ResponseEntity<RecruitmentDetailsResponse> saveRecruitment(
             @AdminAuthentication LoginUser loginUser, @RequestBody @Valid RecruitmentSaveRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(recruitmentService.createRecruitment(loginUser.userId(), request));
+                .body(recruitmentService.saveRecruitment(loginUser.userId(), request));
     }
 
     @AuthenticationRequired
