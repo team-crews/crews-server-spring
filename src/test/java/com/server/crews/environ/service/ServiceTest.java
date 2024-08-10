@@ -15,7 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CODE;
 import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public abstract class ServiceTest {
     @Autowired

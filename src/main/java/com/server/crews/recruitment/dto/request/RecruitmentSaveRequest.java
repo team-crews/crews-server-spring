@@ -3,14 +3,26 @@ package com.server.crews.recruitment.dto.request;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.Section;
-
+import com.server.crews.recruitment.presentation.DateTimeFormat;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record RecruitmentSaveRequest(String title, String description, List<SectionsSaveRequest> sections,
-                                     LocalDateTime closingDate) {
+public record RecruitmentSaveRequest(
+        @NotBlank(message = "모집공고 제목은 공백일 수 없습니다.")
+        String title,
+        String description,
+        @Valid
+        List<SectionsSaveRequest> sections,
+        @NotNull(message = "모집 마감일은 null일 수 없습니다.")
+        @DateTimeFormat
+        String closingDate
+) {
     public Recruitment toRecruitment(String code, Administrator publisher) {
-        return new Recruitment(code, title, description, closingDate, publisher, toSections());
+        LocalDateTime closingDateTime = LocalDateTime.parse(closingDate);
+        return new Recruitment(code, title, description, closingDateTime, publisher, toSections());
     }
 
     public List<Section> toSections() {
