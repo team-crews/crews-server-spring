@@ -1,6 +1,8 @@
 package com.server.crews.recruitment.dto.request;
 
 import com.server.crews.auth.domain.Administrator;
+import com.server.crews.recruitment.presentation.DateTimeFormat;
+import com.server.crews.recruitment.presentation.DateTimeFormatValidator;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.Section;
 import jakarta.validation.Valid;
@@ -16,10 +18,12 @@ public record RecruitmentSaveRequest(
         @Valid
         List<SectionsSaveRequest> sections,
         @NotNull(message = "모집 마감일은 null일 수 없습니다.")
-        LocalDateTime closingDate
+        @DateTimeFormat
+        String closingDate
 ) {
     public Recruitment toRecruitment(String code, Administrator publisher) {
-        return new Recruitment(code, title, description, closingDate, publisher, toSections());
+        LocalDateTime closingDateTime = LocalDateTime.parse(closingDate, DateTimeFormatValidator.DATE_TIME_FORMATTER);
+        return new Recruitment(code, title, description, closingDateTime, publisher, toSections());
     }
 
     public List<Section> toSections() {

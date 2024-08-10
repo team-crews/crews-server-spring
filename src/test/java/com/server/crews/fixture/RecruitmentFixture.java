@@ -28,7 +28,7 @@ public class RecruitmentFixture {
     public static final SectionsSaveRequest BACKEND_SECTION_REQUEST = new SectionsSaveRequest(BACKEND_SECTION_NAME, DEFAULT_DESCRIPTION, QUESTION_REQUESTS);
     public static final SectionsSaveRequest FRONTEND_SECTION_REQUEST = new SectionsSaveRequest(FRONTEND_SECTION_NAME, DEFAULT_DESCRIPTION, QUESTION_REQUESTS);
     public static final List<SectionsSaveRequest> SECTION_REQUESTS = List.of(BACKEND_SECTION_REQUEST, FRONTEND_SECTION_REQUEST);
-    public static final RecruitmentSaveRequest RECRUITMENT_SAVE_REQUEST = new RecruitmentSaveRequest(DEFAULT_TITLE, DEFAULT_DESCRIPTION, SECTION_REQUESTS, DEFAULT_CLOSING_DATE);
+    public static final RecruitmentSaveRequest RECRUITMENT_SAVE_REQUEST = new RecruitmentSaveRequest(DEFAULT_TITLE, DEFAULT_DESCRIPTION, SECTION_REQUESTS, DEFAULT_CLOSING_DATE.toString());
 
     public static Recruitment TEST_RECRUITMENT(Administrator publisher) {
         return new Recruitment(DEFAULT_CODE, DEFAULT_TITLE, DEFAULT_DESCRIPTION, DEFAULT_CLOSING_DATE, publisher, List.of());

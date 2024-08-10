@@ -48,7 +48,7 @@ class RecruitmentControllerTest extends ControllerTest {
     void saveRecruitment() throws Exception {
         // given
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(DEFAULT_TITLE, null,
-                null, LocalDateTime.now());
+                null, LocalDateTime.now().toString());
 
         // when & then
         mockMvc.perform(post("/recruitments")
@@ -98,13 +98,33 @@ class RecruitmentControllerTest extends ControllerTest {
     }
 
     @Test
+    @DisplayName("모집 공고의 마감일 형식을 검증한다.")
+    void validateRecruitmentClosingDateForm() throws Exception {
+        // given
+        String invalidRecruitmentSaveRequest = """
+                        {
+                            "title": "모집공고 제목입니다.",
+                            "closingDate": "invalid"
+                        }
+                """;
+
+        // when & then
+        mockMvc.perform(post("/recruitments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidRecruitmentSaveRequest))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
     @DisplayName("모집 공고의 섹션 이름이 공백인지 검증한다.")
     void validateRecruitmentSectionName() throws Exception {
         // given
         String invalidSectionName = "";
         SectionsSaveRequest invalidSectionsSaveRequest = new SectionsSaveRequest(invalidSectionName, null, null);
         RecruitmentSaveRequest invalidRecruitmentSaveRequest = new RecruitmentSaveRequest(DEFAULT_TITLE, null,
-                List.of(invalidSectionsSaveRequest), LocalDateTime.now());
+                List.of(invalidSectionsSaveRequest), LocalDateTime.now().toString());
 
         // when & then
         mockMvc.perform(post("/recruitments")
@@ -124,7 +144,7 @@ class RecruitmentControllerTest extends ControllerTest {
         SectionsSaveRequest invalidSectionsSaveRequest = new SectionsSaveRequest(BACKEND_SECTION_NAME, null,
                 List.of(invalidQuestionSaveRequest));
         RecruitmentSaveRequest invalidRecruitmentSaveRequest = new RecruitmentSaveRequest(DEFAULT_TITLE, null,
-                List.of(invalidSectionsSaveRequest), LocalDateTime.now());
+                List.of(invalidSectionsSaveRequest), LocalDateTime.now().toString());
 
         // when & then
         mockMvc.perform(post("/recruitments")
