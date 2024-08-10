@@ -7,13 +7,12 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
-public class ExceptionManager extends ResponseEntityExceptionHandler {
+public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException e,
@@ -32,12 +31,12 @@ public class ExceptionManager extends ResponseEntityExceptionHandler {
                 .body(new ErrorDto(errorMessage));
     }
 
-    @ExceptionHandler(CrewsException.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(CrewsException.class)
     public ResponseEntity<ErrorDto> crewsExceptionHandler(CrewsException e) {
         return ResponseEntity.status(e.getHttpStatus()).body(new ErrorDto(e.getMessage()));
     }
 
-    @ExceptionHandler(Throwable.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(Throwable.class)
     public ResponseEntity<ErrorDto> handleException(Throwable e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorDto(e.getMessage()));
