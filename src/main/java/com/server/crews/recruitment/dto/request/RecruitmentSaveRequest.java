@@ -1,10 +1,9 @@
 package com.server.crews.recruitment.dto.request;
 
 import com.server.crews.auth.domain.Administrator;
-import com.server.crews.recruitment.presentation.DateTimeFormat;
-import com.server.crews.recruitment.presentation.DateTimeFormatValidator;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.Section;
+import com.server.crews.recruitment.presentation.DateTimeFormat;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,7 +21,7 @@ public record RecruitmentSaveRequest(
         String closingDate
 ) {
     public Recruitment toRecruitment(String code, Administrator publisher) {
-        LocalDateTime closingDateTime = LocalDateTime.parse(closingDate, DateTimeFormatValidator.DATE_TIME_FORMATTER);
+        LocalDateTime closingDateTime = LocalDateTime.parse(closingDate);
         return new Recruitment(code, title, description, closingDateTime, publisher, toSections());
     }
 
