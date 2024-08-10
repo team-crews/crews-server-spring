@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
 
@@ -34,10 +34,6 @@ jobs:
       - name: Run Test
         run: ./gradlew clean test
 
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
       - name: Build with Gradle
         run: ./gradlew bootJar
 
