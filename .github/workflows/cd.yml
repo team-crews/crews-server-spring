@@ -2,7 +2,7 @@ name: crews backend cd
 
 on:
   push:
-    branches: [ "cd/#11-build-docker-image" ]
+    branches: [ "dev" ]
 
 permissions:
   contents: read
