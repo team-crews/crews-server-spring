@@ -74,8 +74,8 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public void updateClosingDate(Long recruitmentId, ClosingDateUpdateRequest request) {
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+    public void updateClosingDate(Long publisherId, ClosingDateUpdateRequest request) {
+        Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
         recruitment.updateClosingDate(request.closingDate());
     }

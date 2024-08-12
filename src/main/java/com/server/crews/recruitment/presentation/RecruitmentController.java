@@ -2,7 +2,6 @@ package com.server.crews.recruitment.presentation;
 
 import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.presentation.AdminAuthentication;
-import com.server.crews.auth.presentation.AuthenticationRequired;
 import com.server.crews.recruitment.application.RecruitmentService;
 import com.server.crews.recruitment.dto.request.ClosingDateUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
@@ -48,13 +47,12 @@ public class RecruitmentController {
         return ResponseEntity.ok(recruitmentService.findRecruitmentDetails(recruitmentId));
     }
 
-    @AuthenticationRequired
-    @PatchMapping("/{recruitment-id}/closing-date")
+    @PatchMapping("/closing-date")
     @Operation(description = "지원서 양식의 마감기한을 변경한다.")
     public ResponseEntity<Void> updateProgressState(
-            @PathVariable(value = "recruitment-id") Long recruitmentId,
+            @AdminAuthentication LoginUser loginUser,
             @RequestBody ClosingDateUpdateRequest request) {
-        recruitmentService.updateClosingDate(recruitmentId, request);
+        recruitmentService.updateClosingDate(loginUser.userId(), request);
         return ResponseEntity.ok().build();
     }
 
