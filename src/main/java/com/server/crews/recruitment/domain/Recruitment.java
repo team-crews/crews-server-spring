@@ -1,6 +1,8 @@
 package com.server.crews.recruitment.domain;
 
 import com.server.crews.auth.domain.Administrator;
+import com.server.crews.global.exception.CrewsException;
+import com.server.crews.global.exception.ErrorCode;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
@@ -64,6 +66,7 @@ public class Recruitment {
 
     public Recruitment(String code, String title, String description, LocalDateTime closingDate,
                        Administrator publisher, List<Section> sections) {
+        validateClosingDate(closingDate);
         this.code = code;
         this.title = title;
         this.description = description;
@@ -71,6 +74,12 @@ public class Recruitment {
         this.publisher = publisher;
         this.progress = Progress.READY;
         addSections(sections);
+    }
+
+    private void validateClosingDate(LocalDateTime closingDate) {
+        if (closingDate.isBefore(LocalDateTime.now())) {
+            throw new CrewsException(ErrorCode.INVALID_CLOSING_DATE);
+        }
     }
 
     public void addSections(List<Section> sections) {
@@ -83,6 +92,7 @@ public class Recruitment {
     }
 
     public void updateClosingDate(LocalDateTime closingDate) {
+        validateClosingDate(closingDate);
         this.closingDate = closingDate;
     }
 
