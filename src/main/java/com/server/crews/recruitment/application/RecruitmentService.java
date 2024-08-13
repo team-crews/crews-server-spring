@@ -89,7 +89,7 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public void sendOutcomeEmail(Long adminId) {
+    public void announceRecruitmentOutcome(Long adminId) {
         Recruitment recruitment = recruitmentRepository.findWithPublisherByPublisher(adminId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
         List<Application> applications = applicationRepository.findAllWithApplicantByRecruitmentId(recruitment.getId());

@@ -8,8 +8,6 @@ import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import com.server.crews.applicant.domain.Application;
-import com.server.crews.applicant.domain.Outcome;
 import com.server.crews.applicant.event.OutcomeDeterminedEvent;
 import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.auth.domain.Administrator;
@@ -123,8 +121,8 @@ class RecruitmentServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("지원 결과를 저장하고 지원 결과 이메일을 전송한다.")
-    void sendOutcomeEmail() {
+    @DisplayName("모집 공고 상태를 변경하고 지원 결과 이메일을 전송한다.")
+    void announceRecruitmentOutcome() {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
         Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher)
@@ -132,20 +130,17 @@ class RecruitmentServiceTest extends ServiceTest {
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment();
         Applicant jongmee = JONGMEE_APPLICANT(recruitment).applicant();
-        Application jongmeeApplication = JONGMEE_APPLICATION(jongmee)
-                .pass()
-                .application();
+        JONGMEE_APPLICATION(jongmee).pass();
         Applicant kyungho = KYUNGHO_APPLICANT(recruitment).applicant();
-        Application kyunghoApplication = KYUNGHO_APPLICATION(kyungho)
-                .application();
+        KYUNGHO_APPLICATION(kyungho);
 
         // when
-        recruitmentService.sendOutcomeEmail(publisher.getId());
+        recruitmentService.announceRecruitmentOutcome(publisher.getId());
 
         // then
-        Application updatedKyunhoApplication = applicationRepository.findById(kyunghoApplication.getId()).get();
+        Recruitment updatedRecruitment = recruitmentRepository.findById(recruitment.getId()).get();
         assertAll(
-                () -> assertThat(updatedKyunhoApplication.getOutcome()).isEqualTo(Outcome.FAIL),
+                () -> assertThat(updatedRecruitment.getProgress()).isEqualTo(Progress.ANNOUNCED),
                 () -> assertThat(events.stream(OutcomeDeterminedEvent.class).count()).isSameAs(1L)
         );
     }

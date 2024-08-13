@@ -67,7 +67,7 @@ public class RecruitmentController {
     @PostMapping("/announcement")
     @Operation(description = "모든 지원자에게 지원 결과 메일을 전송한다.")
     public ResponseEntity<Void> sendOutcomeEmail(@AdminAuthentication LoginUser loginUser) {
-        recruitmentService.sendOutcomeEmail(loginUser.userId());
+        recruitmentService.announceRecruitmentOutcome(loginUser.userId());
         return ResponseEntity.ok().build();
     }
 }
