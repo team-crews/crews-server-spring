@@ -92,8 +92,10 @@ public class RecruitmentService {
     public void announceRecruitmentOutcome(Long adminId) {
         Recruitment recruitment = recruitmentRepository.findWithPublisherByPublisher(adminId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+        if (recruitment.isAnnounced()) {
+            throw new CrewsException(ErrorCode.ALREADY_ANNOUNCED);
+        }
         List<Application> applications = applicationRepository.findAllWithApplicantByRecruitmentId(recruitment.getId());
-
         applications.stream().filter(Application::isNotDetermined)
                 .forEach(Application::reject);
 

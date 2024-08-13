@@ -6,6 +6,7 @@ import static com.server.crews.fixture.RecruitmentFixture.RECRUITMENT_SAVE_REQUE
 import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
 import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.server.crews.applicant.event.OutcomeDeterminedEvent;
@@ -13,6 +14,9 @@ import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.environ.service.ServiceTest;
+import com.server.crews.environ.service.TestRecruitment;
+import com.server.crews.global.exception.CrewsException;
+import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.Progress;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
@@ -143,5 +147,25 @@ class RecruitmentServiceTest extends ServiceTest {
                 () -> assertThat(updatedRecruitment.getProgress()).isEqualTo(Progress.ANNOUNCED),
                 () -> assertThat(events.stream(OutcomeDeterminedEvent.class).count()).isSameAs(1L)
         );
+    }
+
+    @Test
+    @DisplayName("모집 공고 결과 발표가 이미 완료됐을 때 지원 결과 이메일을 전송할 수 없다.")
+    void validateAlreadyAnnouncedRecruitment() {
+        // given
+        Administrator publisher = LIKE_LION_ADMIN().administrator();
+        TestRecruitment testRecruitment = LIKE_LION_RECRUITMENT(publisher)
+                .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
+                .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()));
+        Applicant jongmee = JONGMEE_APPLICANT(testRecruitment.recruitment()).applicant();
+        JONGMEE_APPLICATION(jongmee).pass();
+        Applicant kyungho = KYUNGHO_APPLICANT(testRecruitment.recruitment()).applicant();
+        KYUNGHO_APPLICATION(kyungho);
+        testRecruitment.announce();
+
+        // when & then
+        assertThatThrownBy(() -> recruitmentService.announceRecruitmentOutcome(publisher.getId()))
+                .isInstanceOf(CrewsException.class)
+                .hasMessage(ErrorCode.ALREADY_ANNOUNCED.getMessage());
     }
 }

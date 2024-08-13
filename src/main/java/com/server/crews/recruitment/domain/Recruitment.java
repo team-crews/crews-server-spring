@@ -103,4 +103,8 @@ public class Recruitment {
     public void setByExistingId(Long id) {
         this.id = id;
     }
+
+    public boolean isAnnounced() {
+        return this.progress == Progress.ANNOUNCED;
+    }
 }
