@@ -98,5 +98,6 @@ public class RecruitmentService {
                 .forEach(Application::reject);
 
         eventPublisher.publishEvent(new OutcomeDeterminedEvent(applications, recruitment));
+        recruitment.announce();
     }
 }

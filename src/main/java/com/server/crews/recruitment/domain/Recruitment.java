@@ -91,6 +91,10 @@ public class Recruitment {
         this.progress = Progress.IN_PROGRESS;
     }
 
+    public void announce() {
+        this.progress = Progress.ANNOUNCED;
+    }
+
     public void updateClosingDate(LocalDateTime closingDate) {
         validateClosingDate(closingDate);
         this.closingDate = closingDate;
