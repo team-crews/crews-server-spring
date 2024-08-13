@@ -23,7 +23,7 @@ class ApplicationRepositoryTest extends RepositoryTest {
         // given
         Administrator admin = createDefaultAdmin();
         Recruitment recruitment = createDefaultRecruitment(admin);
-        Applicant applicant = createDefaultApplicant(recruitment);
+        Applicant applicant = createDefaultApplicant("test@gmail.com", recruitment);
         Application application = createDefaultApplication(applicant);
 
         // when
@@ -44,5 +44,23 @@ class ApplicationRepositoryTest extends RepositoryTest {
 
         // then
         assertThat(applications).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("모집 공고의 모든 지원서 개수를 조회한다.")
+    void countAllByRecruitment() {
+        // given
+        Administrator admin = createDefaultAdmin();
+        Recruitment recruitment = createDefaultRecruitment(admin);
+        Applicant firstApplicant = createDefaultApplicant("test1@gmail.com", recruitment);
+        Applicant secondApplicant = createDefaultApplicant("test2@gmail.com", recruitment);
+        createDefaultApplication(firstApplicant);
+        createDefaultApplication(secondApplicant);
+
+        // when
+        int applicationCount = applicationRepository.countAllByRecruitment(recruitment);
+
+        // then
+        assertThat(applicationCount).isEqualTo(2);
     }
 }

@@ -2,11 +2,11 @@ package com.server.crews.recruitment.presentation;
 
 import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.presentation.AdminAuthentication;
-import com.server.crews.auth.presentation.AuthenticationRequired;
 import com.server.crews.recruitment.application.RecruitmentService;
 import com.server.crews.recruitment.dto.request.ClosingDateUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
+import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +41,13 @@ public class RecruitmentController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/in-progress")
+    @Operation(description = "모집 중 지원 상태를 조회한다.")
+    public ResponseEntity<RecruitmentStateInProgressResponse> getRecruitmentStateInProgress(
+            @AdminAuthentication LoginUser loginUser) {
+        return ResponseEntity.ok(recruitmentService.findRecruitmentStateInProgress(loginUser.userId()));
+    }
+
     @GetMapping("/{recruitment-id}")
     @Operation(description = "지원서 양식 상세 정보를 조회한다.")
     public ResponseEntity<RecruitmentDetailsResponse> getRecruitmentDetails(
@@ -48,13 +55,12 @@ public class RecruitmentController {
         return ResponseEntity.ok(recruitmentService.findRecruitmentDetails(recruitmentId));
     }
 
-    @AuthenticationRequired
-    @PatchMapping("/{recruitment-id}/closing-date")
+    @PatchMapping("/closing-date")
     @Operation(description = "지원서 양식의 마감기한을 변경한다.")
     public ResponseEntity<Void> updateProgressState(
-            @PathVariable(value = "recruitment-id") Long recruitmentId,
+            @AdminAuthentication LoginUser loginUser,
             @RequestBody ClosingDateUpdateRequest request) {
-        recruitmentService.updateClosingDate(recruitmentId, request);
+        recruitmentService.updateClosingDate(loginUser.userId(), request);
         return ResponseEntity.ok().build();
     }
 

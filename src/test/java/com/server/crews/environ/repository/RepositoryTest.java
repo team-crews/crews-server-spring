@@ -40,8 +40,8 @@ public abstract class RepositoryTest {
         return administrator;
     }
 
-    protected Applicant createDefaultApplicant(Recruitment recruitment) {
-        Applicant applicant = new Applicant(TEST_EMAIL, TEST_PASSWORD, recruitment);
+    protected Applicant createDefaultApplicant(String email, Recruitment recruitment) {
+        Applicant applicant = new Applicant(email, TEST_PASSWORD, recruitment);
         testRepository.save(applicant);
         return applicant;
     }
