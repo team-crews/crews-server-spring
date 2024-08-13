@@ -56,9 +56,9 @@ public class ApplicationController {
         return ResponseEntity.ok(applicationService.findAllApplicationsByRecruitment(recruitmentId));
     }
 
-    @PatchMapping("/evaluation")
+    @PostMapping("/evaluation")
     @AuthenticationRequired
-    @Operation(description = "지원자들을 평가한다.")
+    @Operation(description = "지원서 평가를 저장한다.")
     public ResponseEntity<Void> decideOutcome(@RequestBody EvaluationRequest request) {
         applicationService.decideOutcome(request);
         return ResponseEntity.ok().build();
