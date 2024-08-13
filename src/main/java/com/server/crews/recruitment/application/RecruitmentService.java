@@ -16,6 +16,7 @@ import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.dto.request.ClosingDateUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
+import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
 import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
@@ -57,6 +58,13 @@ public class RecruitmentService {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
         recruitment.start();
+    }
+
+    public RecruitmentStateInProgressResponse findRecruitmentStateInProgress(Long publisherId) {
+        Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
+                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+        int applicationCount = applicationRepository.countAllByRecruitment(recruitment);
+        return new RecruitmentStateInProgressResponse(applicationCount, recruitment.getClosingDate());
     }
 
     public RecruitmentDetailsResponse findRecruitmentDetails(Long recruitmentId) {

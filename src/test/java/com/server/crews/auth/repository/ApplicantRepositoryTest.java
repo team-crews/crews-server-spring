@@ -40,7 +40,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
         // given
         Administrator publisher = createDefaultAdmin();
         Recruitment recruitment = createDefaultRecruitment(publisher);
-        Applicant applicant = createDefaultApplicant(recruitment);
+        Applicant applicant = createDefaultApplicant("test@gmail.com", recruitment);
 
         // when
         Optional<Applicant> foundApplicant = applicantRepository.findByEmailAndRecruitment(applicant.getEmail(), recruitment);

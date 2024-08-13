@@ -6,6 +6,7 @@ import com.server.crews.recruitment.application.RecruitmentService;
 import com.server.crews.recruitment.dto.request.ClosingDateUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
+import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,13 @@ public class RecruitmentController {
     public ResponseEntity<Void> startRecruiting(@AdminAuthentication LoginUser loginUser) {
         recruitmentService.startRecruiting(loginUser.userId());
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/in-progress")
+    @Operation(description = "모집 중 지원 상태를 조회한다.")
+    public ResponseEntity<RecruitmentStateInProgressResponse> getRecruitmentStateInProgress(
+            @AdminAuthentication LoginUser loginUser) {
+        return ResponseEntity.ok(recruitmentService.findRecruitmentStateInProgress(loginUser.userId()));
     }
 
     @GetMapping("/{recruitment-id}")
