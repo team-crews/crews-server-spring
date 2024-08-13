@@ -4,6 +4,7 @@ import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.Outcome;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.recruitment.domain.Recruitment;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -12,8 +13,6 @@ import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -38,20 +37,21 @@ public class EmailService {
         Context context = prepareVariables(application, recruitment);
         String htmlName = determineHtml(application.getOutcome());
 
-        MimeMessagePreparator preparator = mimeMessage -> {
+        return mimeMessage -> {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             helper.setTo(application.getApplicant().getEmail());
             helper.setSubject(TITLE);
             String htmlContent = templateEngine.process(htmlName, context);
             helper.setText(htmlContent, true);
         };
-
-        return preparator;
     }
 
     private Context prepareVariables(Application application, Recruitment recruitment) {
         Context context = new Context();
-        context.setVariables(Map.of("name", application.getName(), "recruitment", recruitment.getTitle()));
+        context.setVariables(Map.of(
+                "name", application.getName(),
+                "recruitment", recruitment.getTitle(),
+                "club", recruitment.getPublisher().getClubName()));
         return context;
     }
 
