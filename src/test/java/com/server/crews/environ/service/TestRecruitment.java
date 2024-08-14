@@ -59,6 +59,12 @@ public class TestRecruitment {
                 .toList();
     }
 
+    public TestRecruitment announce() {
+        this.recruitment.announce();
+        environ.recruitmentRepository().save(this.recruitment);
+        return this;
+    }
+
     public Recruitment recruitment() {
         return this.recruitment;
     }

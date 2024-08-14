@@ -11,6 +11,7 @@ public enum ErrorCode {
     NO_PARAMETER(HttpStatus.BAD_REQUEST, "%s 파라미터가 없습니다."),
     INVALID_EMAIL_PATTERN(HttpStatus.BAD_REQUEST, "유효하지 않은 이메일 형식입니다."),
     INVALID_CLOSING_DATE(HttpStatus.BAD_REQUEST, "모집 마감일은 지금 이전이 될 수 없습니다."),
+    ALREADY_ANNOUNCED(HttpStatus.BAD_REQUEST, "모집 공고 결과 발표가 이미 완료되었습니다."),
 
     NO_TOKEN(HttpStatus.UNAUTHORIZED, "토큰이 존재하지 않습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "토큰 형식이 잘못 되었습니다."),

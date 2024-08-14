@@ -91,6 +91,10 @@ public class Recruitment {
         this.progress = Progress.IN_PROGRESS;
     }
 
+    public void announce() {
+        this.progress = Progress.ANNOUNCED;
+    }
+
     public void updateClosingDate(LocalDateTime closingDate) {
         validateClosingDate(closingDate);
         this.closingDate = closingDate;
@@ -98,5 +102,9 @@ public class Recruitment {
 
     public void setByExistingId(Long id) {
         this.id = id;
+    }
+
+    public boolean isAnnounced() {
+        return this.progress == Progress.ANNOUNCED;
     }
 }
