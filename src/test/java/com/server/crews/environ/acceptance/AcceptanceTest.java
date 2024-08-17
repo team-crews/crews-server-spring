@@ -11,6 +11,7 @@ import com.server.crews.auth.dto.request.ApplicantLoginRequest;
 import com.server.crews.auth.dto.response.AccessTokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.environ.DatabaseCleaner;
+import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -60,10 +61,14 @@ public abstract class AcceptanceTest {
     }
 
     protected RecruitmentDetailsResponse createRecruitment(String accessToken) {
+        return createRecruitment(accessToken, RECRUITMENT_SAVE_REQUEST);
+    }
+
+    protected RecruitmentDetailsResponse createRecruitment(String accessToken, RecruitmentSaveRequest request) {
         ExtractableResponse<Response> response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
-                .body(RECRUITMENT_SAVE_REQUEST)
+                .body(request)
                 .when().post("/recruitments")
                 .then()
                 .statusCode(HttpStatus.OK.value())
