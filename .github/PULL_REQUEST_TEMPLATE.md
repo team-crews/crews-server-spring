@@ -2,6 +2,6 @@
 
 >description
 
-## To improve 💬
+## Issue 💬
 
-개선사항
+#

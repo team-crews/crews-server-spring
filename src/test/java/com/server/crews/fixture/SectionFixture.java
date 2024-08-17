@@ -11,6 +11,6 @@ public class SectionFixture {
     public static final String FRONTEND_SECTION_NAME = "FRONTEND";
 
     public static Section SECTION(String name) {
-        return new Section(name, DEFAULT_DESCRIPTION, List.of(), List.of());
+        return new Section(null, name, DEFAULT_DESCRIPTION, List.of(), List.of());
     }
 }

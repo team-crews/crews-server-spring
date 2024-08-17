@@ -17,7 +17,7 @@ import com.server.crews.recruitment.application.RecruitmentService;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
 import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
-import com.server.crews.recruitment.dto.request.SectionsSaveRequest;
+import com.server.crews.recruitment.dto.request.SectionSaveRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
@@ -47,7 +47,7 @@ class RecruitmentControllerTest extends ControllerTest {
     @DisplayName("모집 공고를 필수 항목(제목, 마감일)만 포함하여 저장한다.")
     void saveRecruitment() throws Exception {
         // given
-        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(DEFAULT_TITLE, null,
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE, null,
                 null, LocalDateTime.now().toString());
 
         // when & then
@@ -122,9 +122,9 @@ class RecruitmentControllerTest extends ControllerTest {
     void validateRecruitmentSectionName() throws Exception {
         // given
         String invalidSectionName = "";
-        SectionsSaveRequest invalidSectionsSaveRequest = new SectionsSaveRequest(invalidSectionName, null, null);
-        RecruitmentSaveRequest invalidRecruitmentSaveRequest = new RecruitmentSaveRequest(DEFAULT_TITLE, null,
-                List.of(invalidSectionsSaveRequest), LocalDateTime.now().toString());
+        SectionSaveRequest invalidSectionSaveRequest = new SectionSaveRequest(null, invalidSectionName, null, null);
+        RecruitmentSaveRequest invalidRecruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE, null,
+                List.of(invalidSectionSaveRequest), LocalDateTime.now().toString());
 
         // when & then
         mockMvc.perform(post("/recruitments")
@@ -141,10 +141,10 @@ class RecruitmentControllerTest extends ControllerTest {
     void validateRecruitmentQuestionNecessaryField(QuestionSaveRequest invalidQuestionSaveRequest, String errorMessage)
             throws Exception {
         // given
-        SectionsSaveRequest invalidSectionsSaveRequest = new SectionsSaveRequest(BACKEND_SECTION_NAME, null,
+        SectionSaveRequest invalidSectionSaveRequest = new SectionSaveRequest(null, BACKEND_SECTION_NAME, null,
                 List.of(invalidQuestionSaveRequest));
-        RecruitmentSaveRequest invalidRecruitmentSaveRequest = new RecruitmentSaveRequest(DEFAULT_TITLE, null,
-                List.of(invalidSectionsSaveRequest), LocalDateTime.now().toString());
+        RecruitmentSaveRequest invalidRecruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE, null,
+                List.of(invalidSectionSaveRequest), LocalDateTime.now().toString());
 
         // when & then
         mockMvc.perform(post("/recruitments")
@@ -157,13 +157,13 @@ class RecruitmentControllerTest extends ControllerTest {
 
     private static Stream<Arguments> invalidQuestionSaveRequests() {
         return Stream.of(
-                Arguments.of(new QuestionSaveRequest(null, INTRODUCTION_QUESTION, true, 1,
+                Arguments.of(new QuestionSaveRequest(null, null, INTRODUCTION_QUESTION, true, 1,
                         300, null, null, null), "질문 타입은 공백일 수 없습니다."),
-                Arguments.of(new QuestionSaveRequest(QuestionType.NARRATIVE.name(), "", true, 1,
+                Arguments.of(new QuestionSaveRequest(null, QuestionType.NARRATIVE.name(), "", true, 1,
                         300, null, null, null), "질문 내용은 공백일 수 없습니다."),
-                Arguments.of(new QuestionSaveRequest(QuestionType.NARRATIVE.name(), INTRODUCTION_QUESTION, null, 1,
+                Arguments.of(new QuestionSaveRequest(null, QuestionType.NARRATIVE.name(), INTRODUCTION_QUESTION, null, 1,
                         300, null, null, null), "필수 항목 여부는 null일 수 없습니다."),
-                Arguments.of(new QuestionSaveRequest(QuestionType.NARRATIVE.name(), INTRODUCTION_QUESTION, true, null,
+                Arguments.of(new QuestionSaveRequest(null, QuestionType.NARRATIVE.name(), INTRODUCTION_QUESTION, true, null,
                         300, null, null, null), "질문 순서는 null일 수 없습니다.")
         );
     }

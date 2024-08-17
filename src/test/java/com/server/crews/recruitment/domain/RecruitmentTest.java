@@ -22,7 +22,7 @@ class RecruitmentTest {
         LocalDateTime invalidClosingDate = LocalDateTime.now().minusDays(1L);
 
         // when & then
-        assertThatThrownBy(() -> new Recruitment(DEFAULT_CODE, DEFAULT_TITLE, DEFAULT_DESCRIPTION, invalidClosingDate,
+        assertThatThrownBy(() -> new Recruitment(null, DEFAULT_CODE, DEFAULT_TITLE, DEFAULT_DESCRIPTION, invalidClosingDate,
                 TEST_ADMIN(), List.of()))
                 .isInstanceOf(CrewsException.class)
                 .hasMessage(ErrorCode.INVALID_CLOSING_DATE.getMessage());

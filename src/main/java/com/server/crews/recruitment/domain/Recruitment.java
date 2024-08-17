@@ -64,9 +64,10 @@ public class Recruitment {
     @Column(name = "created_date", updatable = false, nullable = false)
     private LocalDateTime createdDate;
 
-    public Recruitment(String code, String title, String description, LocalDateTime closingDate,
+    public Recruitment(Long id, String code, String title, String description, LocalDateTime closingDate,
                        Administrator publisher, List<Section> sections) {
         validateClosingDate(closingDate);
+        this.id = id;
         this.code = code;
         this.title = title;
         this.description = description;
@@ -98,10 +99,6 @@ public class Recruitment {
     public void updateClosingDate(LocalDateTime closingDate) {
         validateClosingDate(closingDate);
         this.closingDate = closingDate;
-    }
-
-    public void setByExistingId(Long id) {
-        this.id = id;
     }
 
     public boolean isAnnounced() {

@@ -13,12 +13,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Entity
@@ -45,15 +44,16 @@ public class Section {
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SelectiveQuestion> selectiveQuestions;
 
-    public Section(
-            String name, String description,
-            List<NarrativeQuestion> narrativeQuestions, List<SelectiveQuestion> selectiveQuestions) {
+    public Section(Long id, String name, String description, List<NarrativeQuestion> narrativeQuestions,
+                   List<SelectiveQuestion> selectiveQuestions) {
+        this.id = id;
         this.name = name;
         this.description = description;
         replaceQuestions(narrativeQuestions, selectiveQuestions);
     }
 
-    public void replaceQuestions(List<NarrativeQuestion> narrativeQuestions, List<SelectiveQuestion> selectiveQuestions) {
+    public void replaceQuestions(List<NarrativeQuestion> narrativeQuestions,
+                                 List<SelectiveQuestion> selectiveQuestions) {
         narrativeQuestions.forEach(narrativeQuestion -> narrativeQuestion.updateSection(this));
         this.narrativeQuestions = new ArrayList<>(narrativeQuestions);
         selectiveQuestions.forEach(selectiveQuestion -> selectiveQuestion.updateSection(this));

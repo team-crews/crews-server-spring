@@ -30,7 +30,7 @@ public class TestRecruitment {
     }
 
     public TestRecruitment create(String code, String clubName, Administrator publisher) {
-        Recruitment recruitment = new Recruitment(code, clubName + " 99기 모집", DEFAULT_DESCRIPTION,
+        Recruitment recruitment = new Recruitment(null, code, clubName + " 99기 모집", DEFAULT_DESCRIPTION,
                 DEFAULT_CLOSING_DATE, publisher, List.of());
         this.recruitment = environ.recruitmentRepository().save(recruitment);
         return this;
@@ -38,7 +38,7 @@ public class TestRecruitment {
 
     public TestRecruitment addSection(String name, List<NarrativeQuestion> narrativeQuestions,
                                       List<SelectiveQuestion> selectiveQuestions) {
-        Section section = new Section(name, DEFAULT_DESCRIPTION, narrativeQuestions, selectiveQuestions);
+        Section section = new Section(null, name, DEFAULT_DESCRIPTION, narrativeQuestions, selectiveQuestions);
         section.updateRecruitment(this.recruitment);
         Section savedSection = environ.sectionRepository().save(section);
         List<NarrativeQuestion> savedNarrativeQuestions = environ.narrativeQuestionRepository().saveAll(narrativeQuestions);

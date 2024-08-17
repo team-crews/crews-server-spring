@@ -7,15 +7,17 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
-public record SectionsSaveRequest(
+public record SectionSaveRequest(
+        Long id,
         @NotBlank(message = "섹션 이름은 공백일 수 없습니다.")
         String name,
         String description,
         @Valid
         List<QuestionSaveRequest> questions
 ) {
+
     public Section toEntity() {
-        return new Section(name, description, narrativeQuestions(), selectiveQuestions());
+        return new Section(id, name, description, narrativeQuestions(), selectiveQuestions());
     }
 
     private List<NarrativeQuestion> narrativeQuestions() {
