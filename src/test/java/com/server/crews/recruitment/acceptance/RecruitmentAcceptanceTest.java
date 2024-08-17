@@ -2,6 +2,10 @@ package com.server.crews.recruitment.acceptance;
 
 import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode200;
 import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode400;
+import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
+import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
+import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NARRATIVE_ANSWER;
+import static com.server.crews.fixture.ApplicationFixture.DEFAULT_STUDENT_NUMBER;
 import static com.server.crews.fixture.QuestionFixture.STRENGTH_QUESTION;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CLOSING_DATE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
@@ -12,6 +16,8 @@ import static com.server.crews.fixture.UserFixture.TEST_EMAIL;
 import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import com.server.crews.applicant.dto.request.AnswerSaveRequest;
+import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.auth.dto.response.AccessTokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.environ.acceptance.AcceptanceTest;
@@ -21,6 +27,7 @@ import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.request.SectionSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
+import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -71,7 +78,7 @@ public class RecruitmentAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.RECRUITMENT_SAVE_200_DOCUMENT())
+                .filter(RecruitmentApiDocuments.SAVE_RECRUITMENT_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .body(recruitmentSaveRequest)
@@ -101,7 +108,7 @@ public class RecruitmentAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.RECRUITMENT_SAVE_400_DOCUMENT())
+                .filter(RecruitmentApiDocuments.SAVE_RECRUITMENT_400_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .body(recruitmentSaveRequest)
@@ -124,7 +131,7 @@ public class RecruitmentAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.RECRUITMENT_START_200_DOCUMENT())
+                .filter(RecruitmentApiDocuments.START_RECRUITMENT_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .when().patch("/recruitments/in-progress")
@@ -154,7 +161,7 @@ public class RecruitmentAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.RECRUITMENT_START_400_DOCUMENT())
+                .filter(RecruitmentApiDocuments.START_RECRUITMENT_400_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .when().patch("/recruitments/in-progress")
@@ -164,5 +171,46 @@ public class RecruitmentAcceptanceTest extends AcceptanceTest {
 
         // then
         checkStatusCode400(response);
+    }
+
+    @Test
+    @DisplayName("모집 중 지원 상태(지원자 수, 마감일)를 조회한다.")
+    void getRecruitmentStateInProgress() {
+        // given
+        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
+        String adminAccessToken = adminTokenResponse.accessToken();
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminAccessToken);
+        AccessTokenResponse applicantATokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
+                "A" + TEST_EMAIL, TEST_PASSWORD);
+        AccessTokenResponse applicantBTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
+                "B" + TEST_EMAIL, TEST_PASSWORD);
+
+        List<AnswerSaveRequest> answerSaveRequests = List.of(
+                new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
+                new AnswerSaveRequest(QuestionType.SELECTIVE, 1L, null, List.of(1L, 2L)));
+        ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(DEFAULT_STUDENT_NUMBER,
+                DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
+        createTestApplication(applicantATokenResponse.accessToken(), applicationSaveRequest);
+        createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.GET_RECRUITMENT_STATUS_200_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .when().get("/recruitments/in-progress")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        RecruitmentStateInProgressResponse recruitmentStateInProgressResponse = response.as(
+                RecruitmentStateInProgressResponse.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode200(response, softAssertions);
+            softAssertions.assertThat(recruitmentStateInProgressResponse.closingDate()).isNotNull();
+            softAssertions.assertThat(recruitmentStateInProgressResponse.applicationCount()).isEqualTo(2);
+        });
+
     }
 }

@@ -10,12 +10,12 @@ import org.springframework.restdocs.restassured.RestDocumentationFilter;
 public class RecruitmentApiDocuments {
     private static final String RECRUITMENT_API = "recruitment/";
 
-    public static RestDocumentationFilter RECRUITMENT_SAVE_200_DOCUMENT() {
+    public static RestDocumentationFilter SAVE_RECRUITMENT_200_DOCUMENT() {
         return document(RECRUITMENT_API + "모집 공고 저장",
-                RECRUITMENT_SAVE_200_REQUEST_FIELDS());
+                SAVE_RECRUITMENT_200_REQUEST_FIELDS());
     }
 
-    public static RequestFieldsSnippet RECRUITMENT_SAVE_200_REQUEST_FIELDS() {
+    public static RequestFieldsSnippet SAVE_RECRUITMENT_200_REQUEST_FIELDS() {
         return requestFields(
                 fieldWithPath(".id")
                         .description("모집 공고 id")
@@ -72,7 +72,7 @@ public class RecruitmentApiDocuments {
                         .description("선택지 내용"));
     }
 
-    public static RestDocumentationFilter RECRUITMENT_SAVE_400_DOCUMENT() {
+    public static RestDocumentationFilter SAVE_RECRUITMENT_400_DOCUMENT() {
         return document(RECRUITMENT_API + "잘못된 마감일의 모집 공고 저장",
                 requestFields(
                         fieldWithPath(".id").description("모집 공고 id"),
@@ -82,11 +82,15 @@ public class RecruitmentApiDocuments {
                         fieldWithPath(".closingDate").description("현재 날짜 이후여야 하는 모집 마감일")));
     }
 
-    public static RestDocumentationFilter RECRUITMENT_START_200_DOCUMENT() {
+    public static RestDocumentationFilter START_RECRUITMENT_200_DOCUMENT() {
         return document(RECRUITMENT_API + "모집 시작");
     }
 
-    public static RestDocumentationFilter RECRUITMENT_START_400_DOCUMENT() {
+    public static RestDocumentationFilter START_RECRUITMENT_400_DOCUMENT() {
         return document(RECRUITMENT_API + "유효하지 않은 모집 시작");
+    }
+
+    public static RestDocumentationFilter GET_RECRUITMENT_STATUS_200_DOCUMENT() {
+        return document(RECRUITMENT_API + "모집 중 지원 상태를 조회");
     }
 }
