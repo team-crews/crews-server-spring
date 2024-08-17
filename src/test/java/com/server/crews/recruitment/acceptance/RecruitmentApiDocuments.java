@@ -72,6 +72,16 @@ public class RecruitmentApiDocuments {
                         .description("선택지 내용"));
     }
 
+    public static RestDocumentationFilter RECRUITMENT_SAVE_400_DOCUMENT() {
+        return document(RECRUITMENT_API + "잘못된 마감일의 모집 공고 저장",
+                requestFields(
+                        fieldWithPath(".id").description("모집 공고 id"),
+                        fieldWithPath(".title").description("모집 공고 제목"),
+                        fieldWithPath(".description").description("모집 공고 설명"),
+                        fieldWithPath(".sections").description("섹션 목록"),
+                        fieldWithPath(".closingDate").description("현재 날짜 이후여야 하는 모집 마감일")));
+    }
+
     public static RestDocumentationFilter RECRUITMENT_START_200_DOCUMENT() {
         return document(RECRUITMENT_API + "모집 시작");
     }

@@ -24,6 +24,7 @@ import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -85,6 +86,32 @@ public class RecruitmentAcceptanceTest extends AcceptanceTest {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(recruitmentDetailsResponse.id()).isEqualTo(recruitmentId);
         });
+    }
+
+    @Test
+    @DisplayName("유효하지 않은 마감일로 모집 공고를 저장한다.")
+    void saveRecruitmentWithInvalidClosingDate() {
+        // given
+        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
+        String accessToken = adminTokenResponse.accessToken();
+
+        String invalidClosingDate = LocalDateTime.now().minusDays(10).toString();
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE,
+                DEFAULT_DESCRIPTION, null, invalidClosingDate);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.RECRUITMENT_SAVE_400_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
+                .body(recruitmentSaveRequest)
+                .when().post("/recruitments")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract();
+
+        // then
+        checkStatusCode400(response);
     }
 
     @Test
