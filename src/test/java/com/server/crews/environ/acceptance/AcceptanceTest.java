@@ -1,5 +1,9 @@
 package com.server.crews.environ.acceptance;
 
+import static com.server.crews.fixture.RecruitmentFixture.RECRUITMENT_SAVE_REQUEST;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
+
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
@@ -9,19 +13,22 @@ import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.environ.DatabaseCleaner;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
 
-import static com.server.crews.fixture.RecruitmentFixture.RECRUITMENT_SAVE_REQUEST;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-
+@ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public abstract class AcceptanceTest {
     @LocalServerPort
@@ -30,9 +37,14 @@ public abstract class AcceptanceTest {
     @Autowired
     private DatabaseCleaner databaseCleaner;
 
+    protected RequestSpecification spec;
+
     @BeforeEach
-    public void setUp() {
+    void setUp(RestDocumentationContextProvider restDocumentation) {
         RestAssured.port = port;
+        this.spec = new RequestSpecBuilder()
+                .addFilter(documentationConfiguration(restDocumentation))
+                .build();
         databaseCleaner.clear();
     }
 
@@ -70,7 +82,8 @@ public abstract class AcceptanceTest {
         return response.as(AccessTokenResponse.class);
     }
 
-    protected ApplicationDetailsResponse createTestApplication(String accessToken, ApplicationSaveRequest applicationSaveRequest) {
+    protected ApplicationDetailsResponse createTestApplication(String accessToken,
+                                                               ApplicationSaveRequest applicationSaveRequest) {
         ExtractableResponse<Response> response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)

@@ -22,14 +22,14 @@ public record SectionSaveRequest(
 
     private List<NarrativeQuestion> narrativeQuestions() {
         return questions.stream()
-                .filter(QuestionSaveRequest::isNarrative)
+                .filter(questionSaveRequest ->  QuestionType.NARRATIVE.hasSameName(questionSaveRequest.type()))
                 .map(QuestionSaveRequest::createNarrativeQuestion)
                 .toList();
     }
 
     private List<SelectiveQuestion> selectiveQuestions() {
         return questions.stream()
-                .filter(QuestionSaveRequest::isSelective)
+                .filter(questionSaveRequest -> QuestionType.SELECTIVE.hasSameName(questionSaveRequest.type()))
                 .map(QuestionSaveRequest::createSelectiveQuestion)
                 .toList();
     }

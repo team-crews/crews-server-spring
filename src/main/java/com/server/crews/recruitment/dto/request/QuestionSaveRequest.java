@@ -39,12 +39,4 @@ public record QuestionSaveRequest(
     public NarrativeQuestion createNarrativeQuestion() {
         return new NarrativeQuestion(id, content, necessity, order, wordLimit);
     }
-
-    public boolean isSelective() {
-        return QuestionType.SELECTIVE.hasSameName(type);
-    }
-
-    public boolean isNarrative() {
-        return QuestionType.NARRATIVE.hasSameName(type);
-    }
 }
