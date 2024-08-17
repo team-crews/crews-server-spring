@@ -8,10 +8,10 @@ import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.restassured.RestDocumentationFilter;
 
 public class RecruitmentApiDocuments {
-    private static final String CAFE_API = "recruitment/";
+    private static final String RECRUITMENT_API = "recruitment/";
 
     public static RestDocumentationFilter RECRUITMENT_SAVE_200_DOCUMENT() {
-        return document(CAFE_API + "모집 공고 저장",
+        return document(RECRUITMENT_API + "모집 공고 저장",
                 RECRUITMENT_SAVE_200_REQUEST_FIELDS());
     }
 
@@ -70,5 +70,13 @@ public class RecruitmentApiDocuments {
                         .optional(),
                 fieldWithPath(".sections[].questions[].choices[].content")
                         .description("선택지 내용"));
+    }
+
+    public static RestDocumentationFilter RECRUITMENT_START_200_DOCUMENT() {
+        return document(RECRUITMENT_API + "모집 시작");
+    }
+
+    public static RestDocumentationFilter RECRUITMENT_START_400_DOCUMENT() {
+        return document(RECRUITMENT_API + "유효하지 않은 모집 시작");
     }
 }

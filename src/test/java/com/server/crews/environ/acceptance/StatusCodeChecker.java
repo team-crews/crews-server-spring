@@ -13,6 +13,10 @@ public class StatusCodeChecker {
         softAssertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    public static void checkStatusCode200(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
     public static void checkStatusCode201(ExtractableResponse<Response> response, SoftAssertions softAssertions) {
         softAssertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }

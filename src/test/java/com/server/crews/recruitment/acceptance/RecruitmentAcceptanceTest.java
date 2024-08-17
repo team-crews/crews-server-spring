@@ -1,6 +1,7 @@
 package com.server.crews.recruitment.acceptance;
 
 import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode200;
+import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode400;
 import static com.server.crews.fixture.QuestionFixture.STRENGTH_QUESTION;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CLOSING_DATE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
@@ -84,5 +85,57 @@ public class RecruitmentAcceptanceTest extends AcceptanceTest {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(recruitmentDetailsResponse.id()).isEqualTo(recruitmentId);
         });
+    }
+
+    @Test
+    @DisplayName("모집을 시작한다.")
+    void startRecruiting() {
+        // given
+        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
+        String accessToken = adminTokenResponse.accessToken();
+        createRecruitment(accessToken);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.RECRUITMENT_START_200_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
+                .when().patch("/recruitments/in-progress")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        checkStatusCode200(response);
+    }
+
+    @Test
+    @DisplayName("작성 중 단계가 아닌 모집 공고(이미 시작된)는 시작할 수 없다.")
+    void startInvalidStateRecruitment() {
+        // given
+        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
+        String accessToken = adminTokenResponse.accessToken();
+        createRecruitment(accessToken);
+
+        RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
+                .when().patch("/recruitments/in-progress")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.RECRUITMENT_START_400_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
+                .when().patch("/recruitments/in-progress")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract();
+
+        // then
+        checkStatusCode400(response);
     }
 }

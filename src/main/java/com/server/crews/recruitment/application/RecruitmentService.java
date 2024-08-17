@@ -54,6 +54,9 @@ public class RecruitmentService {
     public void startRecruiting(Long publisherId) {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+        if (recruitment.isStarted()) {
+            throw new CrewsException(ErrorCode.RECRUITMENT_ALREADY_STARTED);
+        }
         recruitment.start();
     }
 
