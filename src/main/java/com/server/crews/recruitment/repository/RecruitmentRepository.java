@@ -18,6 +18,13 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long>,
 
     @Query("""
             SELECT r FROM Recruitment r
+            JOIN FETCH r.sections
+            WHERE r.publisher.id = :publisherId
+            """)
+    Optional<Recruitment> findWithSectionsByPublisher(@Param("publisherId") Long publisherId);
+
+    @Query("""
+            SELECT r FROM Recruitment r
             join fetch r.publisher p
             WHERE p.id = :publisherId
             """)

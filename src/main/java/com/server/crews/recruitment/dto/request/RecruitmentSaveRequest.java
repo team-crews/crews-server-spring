@@ -11,18 +11,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record RecruitmentSaveRequest(
+        Long id,
         @NotBlank(message = "모집공고 제목은 공백일 수 없습니다.")
         String title,
         String description,
         @Valid
-        List<SectionsSaveRequest> sections,
+        List<SectionSaveRequest> sections,
         @NotNull(message = "모집 마감일은 null일 수 없습니다.")
         @DateTimeFormat
         String closingDate
 ) {
     public Recruitment toRecruitment(String code, Administrator publisher) {
         LocalDateTime closingDateTime = LocalDateTime.parse(closingDate);
-        return new Recruitment(code, title, description, closingDateTime, publisher, toSections());
+        return new Recruitment(id, code, title, description, closingDateTime, publisher, toSections());
     }
 
     public List<Section> toSections() {
@@ -30,7 +31,7 @@ public record RecruitmentSaveRequest(
             return List.of();
         }
         return sections.stream()
-                .map(SectionsSaveRequest::toEntity)
+                .map(SectionSaveRequest::toEntity)
                 .toList();
     }
 }

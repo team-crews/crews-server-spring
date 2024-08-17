@@ -31,7 +31,8 @@ public class Choice {
     @Column(name = "content", nullable = false)
     private String content;
 
-    public Choice(String content) {
+    public Choice(Long id, String content) {
+        this.id = id;
         this.content = content;
     }
 

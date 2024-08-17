@@ -2,18 +2,23 @@ package com.server.crews.recruitment.dto.response;
 
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
-import lombok.Builder;
-
 import java.util.List;
+import lombok.Builder;
 
 @Builder
 public record SelectiveQuestionResponse(
-        List<ChoiceResponse> choices, String content,
-        Boolean necessity, Integer order,
-        Integer minimumSelection, Integer maximumSelection) {
+        Long id,
+        List<ChoiceResponse> choices,
+        String content,
+        Boolean necessity,
+        Integer order,
+        Integer minimumSelection,
+        Integer maximumSelection
+) {
 
     public static SelectiveQuestionResponse from(final SelectiveQuestion question) {
         return SelectiveQuestionResponse.builder()
+                .id(question.getId())
                 .choices(choiceResponses(question.getChoices()))
                 .content(question.getContent())
                 .necessity(question.getNecessity())

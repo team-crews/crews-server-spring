@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record QuestionSaveRequest(
+        Long id,
         @NotBlank(message = "질문 타입은 공백일 수 없습니다.")
         @QuestionTypeFormat
         String type,
@@ -21,20 +22,22 @@ public record QuestionSaveRequest(
         Integer wordLimit,
         Integer minimumSelection,
         Integer maximumSelection,
-        List<String> choices
+        List<ChoiceSaveRequest> choices
 ) {
+
     public SelectiveQuestion createSelectiveQuestion() {
-        return new SelectiveQuestion(createsChoices(), content, necessity, order, minimumSelection, maximumSelection);
+        return new SelectiveQuestion(id, createsChoices(), content, necessity, order, minimumSelection,
+                maximumSelection);
     }
 
     private List<Choice> createsChoices() {
         return choices.stream()
-                .map(Choice::new)
+                .map(ChoiceSaveRequest::toEntity)
                 .toList();
     }
 
     public NarrativeQuestion createNarrativeQuestion() {
-        return new NarrativeQuestion(content, necessity, order, wordLimit);
+        return new NarrativeQuestion(id, content, necessity, order, wordLimit);
     }
 
     public boolean isSelective() {

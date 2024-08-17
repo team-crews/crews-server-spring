@@ -13,12 +13,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Entity
@@ -51,10 +50,10 @@ public class SelectiveQuestion {
     @Column(name = "maximum_selection", nullable = false)
     private Integer maximumSelection;
 
-    public SelectiveQuestion(
-            List<Choice> choices, String content, Boolean necessity,
-            Integer order, Integer minimumSelection, Integer maximumSelection) {
+    public SelectiveQuestion(Long id, List<Choice> choices, String content, Boolean necessity, Integer order,
+                             Integer minimumSelection, Integer maximumSelection) {
         choices.forEach(choice -> choice.updateSelectiveQuestion(this));
+        this.id = id;
         this.choices = new ArrayList<>(choices);
         this.content = content;
         this.necessity = necessity;
@@ -65,5 +64,9 @@ public class SelectiveQuestion {
 
     public void updateSection(final Section section) {
         this.section = section;
+    }
+
+    public void setByExistingId(Long id) {
+        this.id = id;
     }
 }

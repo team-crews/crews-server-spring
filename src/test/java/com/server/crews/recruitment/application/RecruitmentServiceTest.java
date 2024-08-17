@@ -2,6 +2,10 @@ package com.server.crews.recruitment.application;
 
 import static com.server.crews.fixture.QuestionFixture.NARRATIVE_QUESTION;
 import static com.server.crews.fixture.QuestionFixture.SELECTIVE_QUESTION;
+import static com.server.crews.fixture.QuestionFixture.STRENGTH_QUESTION;
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CLOSING_DATE;
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_TITLE;
 import static com.server.crews.fixture.RecruitmentFixture.RECRUITMENT_SAVE_REQUEST;
 import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
 import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
@@ -10,7 +14,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.server.crews.applicant.event.OutcomeDeterminedEvent;
-import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.environ.service.ServiceTest;
@@ -19,12 +22,16 @@ import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.Progress;
 import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
+import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
+import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
+import com.server.crews.recruitment.dto.request.SectionSaveRequest;
+import com.server.crews.recruitment.dto.response.ChoiceResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.SectionResponse;
 import com.server.crews.recruitment.dto.response.SelectiveQuestionResponse;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,9 +46,6 @@ class RecruitmentServiceTest extends ServiceTest {
 
     @Autowired
     private RecruitmentRepository recruitmentRepository;
-
-    @Autowired
-    private ApplicationRepository applicationRepository;
 
     @Autowired
     ApplicationEvents events;
@@ -65,10 +69,31 @@ class RecruitmentServiceTest extends ServiceTest {
     void updateRecruitment() {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
-        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
-        LocalDateTime modifiedClosingDateTime = LocalDateTime.now().plusDays(1L);
-        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(recruitment.getTitle(),
-                recruitment.getDescription(), List.of(), modifiedClosingDateTime.toString());
+        ChoiceSaveRequest choiceCreateRequest = new ChoiceSaveRequest(null, "선택지 내용");
+        QuestionSaveRequest selectiveQuestionCreateRequest = new QuestionSaveRequest(null,
+                QuestionType.SELECTIVE.name(),
+                STRENGTH_QUESTION, true, 2, null, 1, 2, List.of(choiceCreateRequest));
+        SectionSaveRequest sectionsCreateRequest = new SectionSaveRequest(null, FRONTEND_SECTION_NAME,
+                DEFAULT_DESCRIPTION,
+                List.of(selectiveQuestionCreateRequest));
+        RecruitmentSaveRequest recruitmentCreateRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE,
+                DEFAULT_DESCRIPTION, List.of(sectionsCreateRequest), DEFAULT_CLOSING_DATE.toString());
+
+        RecruitmentDetailsResponse savedRecruitmentResponse = recruitmentService.saveRecruitment(publisher.getId(),
+                recruitmentCreateRequest);
+
+        Long recruitmentId = savedRecruitmentResponse.id();
+        Long sectionId = savedRecruitmentResponse.sections().get(0).id();
+        Long questionId = savedRecruitmentResponse.sections().get(0).selectiveQuestions().get(0).id();
+        Long choiceId = savedRecruitmentResponse.sections().get(0).selectiveQuestions().get(0).choices().get(0).id();
+
+        ChoiceSaveRequest choiceSaveRequest = new ChoiceSaveRequest(choiceId, "변경된 선택지 내용");
+        QuestionSaveRequest selectiveQuestionSaveRequest = new QuestionSaveRequest(questionId,
+                QuestionType.SELECTIVE.name(), "변경된 질문 내용", true, 2, null, 1, 2, List.of(choiceSaveRequest));
+        SectionSaveRequest sectionSaveRequest = new SectionSaveRequest(sectionId, "변경된 섹션 이름", DEFAULT_DESCRIPTION,
+                List.of(selectiveQuestionSaveRequest));
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(recruitmentId, "변경된 모집 공고 제목",
+                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_CLOSING_DATE.toString());
 
         // when
         RecruitmentDetailsResponse response = recruitmentService.saveRecruitment(publisher.getId(),
@@ -76,8 +101,20 @@ class RecruitmentServiceTest extends ServiceTest {
 
         // then
         assertAll(() -> {
-            assertThat(response.id()).isEqualTo(recruitment.getId());
-            assertThat(response.closingDate()).isEqualTo(modifiedClosingDateTime);
+            assertThat(response.id()).isEqualTo(savedRecruitmentResponse.id());
+            assertThat(response.title()).isEqualTo("변경된 모집 공고 제목");
+            assertThat(response.sections()).extracting(SectionResponse::id).containsExactly(sectionId);
+            assertThat(response.sections()).extracting(SectionResponse::name).containsExactly("변경된 섹션 이름");
+            assertThat(response.sections()).flatExtracting(SectionResponse::selectiveQuestions)
+                    .extracting(SelectiveQuestionResponse::id).containsExactly(questionId);
+            assertThat(response.sections()).flatExtracting(SectionResponse::selectiveQuestions)
+                    .extracting(SelectiveQuestionResponse::content).containsExactly("변경된 질문 내용");
+            assertThat(response.sections()).flatExtracting(SectionResponse::selectiveQuestions)
+                    .flatExtracting(SelectiveQuestionResponse::choices).extracting(ChoiceResponse::id)
+                    .containsExactly(choiceId);
+            assertThat(response.sections()).flatExtracting(SectionResponse::selectiveQuestions)
+                    .flatExtracting(SelectiveQuestionResponse::choices).extracting(ChoiceResponse::content)
+                    .containsExactly("변경된 선택지 내용");
         });
     }
 

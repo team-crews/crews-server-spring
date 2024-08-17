@@ -42,7 +42,8 @@ public class NarrativeQuestion {
     @Column(name = "word_limit", nullable = false)
     private Integer wordLimit;
 
-    public NarrativeQuestion(String content, Boolean necessity, Integer order, Integer wordLimit) {
+    public NarrativeQuestion(Long id, String content, Boolean necessity, Integer order, Integer wordLimit) {
+        this.id = id;
         this.content = content;
         this.necessity = necessity;
         this.order = order;
@@ -51,5 +52,9 @@ public class NarrativeQuestion {
 
     public void updateSection(final Section section) {
         this.section = section;
+    }
+
+    public void setByExistingId(Long id) {
+        this.id = id;
     }
 }

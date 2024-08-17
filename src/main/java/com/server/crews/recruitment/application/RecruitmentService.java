@@ -47,10 +47,7 @@ public class RecruitmentService {
                 .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
         String code = UUID.randomUUID().toString();
         Recruitment recruitment = request.toRecruitment(code, publisher);
-        recruitmentRepository.findByPublisher(publisherId)
-                .ifPresent(existingRecruitment -> recruitment.setByExistingId(existingRecruitment.getId()));
-        recruitmentRepository.save(recruitment);
-        return RecruitmentDetailsResponse.from(recruitment);
+        return RecruitmentDetailsResponse.from(recruitmentRepository.save(recruitment));
     }
 
     @Transactional
