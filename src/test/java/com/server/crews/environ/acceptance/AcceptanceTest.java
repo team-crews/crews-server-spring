@@ -54,7 +54,7 @@ public abstract class AcceptanceTest {
                 .body(RECRUITMENT_SAVE_REQUEST)
                 .when().post("/recruitments")
                 .then()
-                .statusCode(HttpStatus.CREATED.value())
+                .statusCode(HttpStatus.OK.value())
                 .extract();
         return response.as(RecruitmentDetailsResponse.class);
     }

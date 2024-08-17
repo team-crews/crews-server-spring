@@ -30,7 +30,7 @@ public class RecruitmentController {
     @Operation(description = "지원서 양식을 저장한다.")
     public ResponseEntity<RecruitmentDetailsResponse> saveRecruitment(
             @AdminAuthentication LoginUser loginUser, @RequestBody @Valid RecruitmentSaveRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(recruitmentService.saveRecruitment(loginUser.userId(), request));
     }
 

@@ -55,7 +55,7 @@ class RecruitmentControllerTest extends ControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(recruitmentSaveRequest)))
                 .andDo(print())
-                .andExpect(status().isCreated());
+                .andExpect(status().isOk());
     }
 
     @Test
