@@ -5,8 +5,8 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.2'
     id 'io.spring.dependency-management' version '1.1.4'
-    id 'com.epages.restdocs-api-spec' version '0.18.2'
-    id 'org.hidetake.swagger.generator' version '2.18.2'
+    id 'com.epages.restdocs-api-spec' version '0.18.4'
+    id 'org.hidetake.swagger.generator' version '2.19.2'
 }
 
 group = 'com.server'
@@ -22,7 +22,7 @@ repositories {
 
 swaggerSources {
     sample {
-        setInputFile(file("build/api-spec/openapi3.yaml"))
+        setInputFile(file("build/api-spec/openapi3.json"))
     }
 }
 
@@ -68,9 +68,9 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
 
     // api docs
-    swaggerUI 'org.webjars:swagger-ui:4.11.1'
-    testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.18.2'
-    testImplementation 'com.epages:restdocs-api-spec-restassured:0.18.2'
+    swaggerUI 'org.webjars:swagger-ui:4.15.5'
+    testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.18.4'
+    testImplementation 'com.epages:restdocs-api-spec-restassured:0.18.4'
     testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
 }
 
@@ -83,7 +83,7 @@ openapi3 {
     title = 'Crews API'
     description = 'Crews API 명세서입니다.'
     version = '0.1.0'
-    format = 'yaml'
+    format = 'json'
 }
 
 tasks.withType(GenerateSwaggerUI).configureEach {
