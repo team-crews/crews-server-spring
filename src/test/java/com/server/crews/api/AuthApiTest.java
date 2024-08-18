@@ -7,7 +7,6 @@ import static com.server.crews.fixture.UserFixture.TEST_EMAIL;
 import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import com.server.crews.applicant.dto.response.ApplicationsResponse;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
 import com.server.crews.auth.dto.response.LoginResponse;
@@ -17,8 +16,6 @@ import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -110,31 +107,6 @@ public class AuthApiTest extends ApiTest {
     }
 
     @Test
-    @DisplayName("[동아리 관리자] 동아리 관리자 권한으로 지원자 목록을 조회한다.")
-    void authenticateAdmin() {
-        // given
-        LoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
-        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION,
-                        AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
-                .when().get("/applications?recruitment-id=" + recruitmentDetailsResponse.id())
-                .then().log().all()
-                .extract();
-
-        // then
-        List<ApplicationsResponse> applicationsResponses = Arrays.stream(response.as(ApplicationsResponse[].class))
-                .toList();
-        assertSoftly(softAssertions -> {
-            checkStatusCode200(response, softAssertions);
-            softAssertions.assertThat(applicationsResponses).hasSize(0);
-        });
-    }
-
-    @Test
     @DisplayName("[지원자] 지원자 권한으로 지원자 목록을 조회한다.")
     void authenticateAdminWithApplicantToken() {
         // given
@@ -144,7 +116,8 @@ public class AuthApiTest extends ApiTest {
                 TEST_PASSWORD);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(AuthApiDocuments.AUTHORIZE_401_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION,
                         AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())

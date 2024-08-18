@@ -63,4 +63,8 @@ public class AuthApiDocuments {
                 requestCookies(cookieWithName("refreshToken")
                         .description("리프레시 토큰")));
     }
+
+    public static RestDocumentationFilter AUTHORIZE_401_DOCUMENT() {
+        return document(AUTH_API + "인가 실패 예시");
+    }
 }
