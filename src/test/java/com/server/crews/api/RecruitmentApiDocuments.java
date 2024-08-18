@@ -13,14 +13,13 @@ public class RecruitmentApiDocuments {
     private static final String RECRUITMENT_API = "recruitment/";
 
     public static RestDocumentationFilter SAVE_RECRUITMENT_200_DOCUMENT() {
-        return document(RECRUITMENT_API + "모집 공고 저장",
-                SAVE_RECRUITMENT_200_REQUEST_FIELDS());
+        return document(RECRUITMENT_API + "모집 공고 저장", SAVE_RECRUITMENT_200_REQUEST_FIELDS());
     }
 
     public static RequestFieldsSnippet SAVE_RECRUITMENT_200_REQUEST_FIELDS() {
         return requestFields(
                 fieldWithPath(".id")
-                        .description("모집 공고 id")
+                        .description("모집 공고 id (최초 저장이 아닐 경우 필요함)")
                         .optional(),
                 fieldWithPath(".title")
                         .description("모집 공고 제목"),

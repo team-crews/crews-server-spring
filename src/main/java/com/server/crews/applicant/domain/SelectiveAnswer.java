@@ -35,7 +35,8 @@ public class SelectiveAnswer {
     @ManyToOne(fetch = FetchType.LAZY)
     private SelectiveQuestion selectiveQuestion;
 
-    public SelectiveAnswer(Choice choice, SelectiveQuestion selectiveQuestion) {
+    public SelectiveAnswer(Long id, Choice choice, SelectiveQuestion selectiveQuestion) {
+        this.id = id;
         this.choice = choice;
         this.selectiveQuestion = selectiveQuestion;
     }

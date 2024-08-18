@@ -1,5 +1,18 @@
 package com.server.crews.applicant.application;
 
+import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
+import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
+import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NARRATIVE_ANSWER;
+import static com.server.crews.fixture.ApplicationFixture.DEFAULT_STUDENT_NUMBER;
+import static com.server.crews.fixture.QuestionFixture.NARRATIVE_QUESTION;
+import static com.server.crews.fixture.QuestionFixture.SELECTIVE_QUESTION;
+import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
+import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;
 import com.server.crews.applicant.domain.Outcome;
@@ -9,6 +22,7 @@ import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.NarrativeAnswerResponse;
+import com.server.crews.applicant.dto.response.SelectedChoiceResponse;
 import com.server.crews.applicant.dto.response.SelectiveAnswerResponse;
 import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
@@ -26,29 +40,15 @@ import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.dto.request.QuestionType;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Stream;
-
-import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
-import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
-import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NARRATIVE_ANSWER;
-import static com.server.crews.fixture.ApplicationFixture.DEFAULT_STUDENT_NUMBER;
-import static com.server.crews.fixture.QuestionFixture.NARRATIVE_QUESTION;
-import static com.server.crews.fixture.QuestionFixture.SELECTIVE_QUESTION;
-import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
-import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 class ApplicationServiceTest extends ServiceTest {
     @Autowired
@@ -66,7 +66,8 @@ class ApplicationServiceTest extends ServiceTest {
     @ParameterizedTest
     @MethodSource("provideAnswersAndCount")
     @DisplayName("답변을 작성한 지원서를 저장한다.")
-    void createApplication(List<AnswerSaveRequest> answerSaveRequests, int expectedSavedNarrativeAnsCount, int expectedSavedSelectiveAnsCount) {
+    void saveApplication(List<AnswerSaveRequest> answerSaveRequests, int expectedSavedNarrativeAnsCount,
+                         int expectedSavedSelectiveAnsCount) {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
         Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher)
@@ -76,10 +77,11 @@ class ApplicationServiceTest extends ServiceTest {
         Applicant applicant = JONGMEE_APPLICANT(recruitment).applicant();
 
         ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(
-                DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
+                null, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
 
         // when
-        ApplicationDetailsResponse applicationDetailsResponse = applicationService.createApplication(applicant.getId(), saveRequest);
+        ApplicationDetailsResponse applicationDetailsResponse = applicationService.saveApplication(applicant.getId(),
+                saveRequest);
 
         // then
         Application application = applicationRepository.findById(applicationDetailsResponse.id()).get();
@@ -94,11 +96,12 @@ class ApplicationServiceTest extends ServiceTest {
     private static Stream<Arguments> provideAnswersAndCount() {
         return Stream.of(
                 Arguments.of(List.of(
-                        new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
-                        new AnswerSaveRequest(QuestionType.SELECTIVE, 1L, null, List.of(1L, 2L))
+                        new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 2L, DEFAULT_NARRATIVE_ANSWER, null),
+                        new AnswerSaveRequest(null, QuestionType.SELECTIVE.name(), 1L, null, 1L),
+                        new AnswerSaveRequest(null, QuestionType.SELECTIVE.name(), 1L, null, 2L)
                 ), 1, 2),
                 Arguments.of(List.of(
-                        new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of())
+                        new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 2L, DEFAULT_NARRATIVE_ANSWER, null)
                 ), 1, 0)
         );
     }
@@ -116,12 +119,12 @@ class ApplicationServiceTest extends ServiceTest {
         Application application = JONGMEE_APPLICATION(applicant).application();
 
         List<AnswerSaveRequest> invalidAnswerSaveRequests = List.of(
-                new AnswerSaveRequest(QuestionType.NARRATIVE, 3L, DEFAULT_NARRATIVE_ANSWER, List.of()));
+                new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 3L, DEFAULT_NARRATIVE_ANSWER, null));
         ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(
-                DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, invalidAnswerSaveRequests);
+                null, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, invalidAnswerSaveRequests);
 
         // when & then
-        assertThatThrownBy(() -> applicationService.createApplication(applicant.getId(), saveRequest))
+        assertThatThrownBy(() -> applicationService.saveApplication(applicant.getId(), saveRequest))
                 .isInstanceOf(CrewsException.class);
     }
 
@@ -150,8 +153,10 @@ class ApplicationServiceTest extends ServiceTest {
 
         // then
         assertAll(() -> {
-            assertThat(response.narrativeAnswers()).contains(new NarrativeAnswerResponse(1L, "안녕하세요"));
-            assertThat(response.selectiveAnswers()).contains(new SelectiveAnswerResponse(1L, List.of(1L, 2L)));
+            assertThat(response.narrativeAnswers()).extracting(NarrativeAnswerResponse::content)
+                    .containsExactly("안녕하세요");
+            assertThat(response.selectiveAnswers()).flatExtracting(SelectiveAnswerResponse::choices)
+                    .flatExtracting(SelectedChoiceResponse::choiceId).contains(1L, 2L);
         });
     }
 
@@ -210,7 +215,8 @@ class ApplicationServiceTest extends ServiceTest {
         applicationService.decideOutcome(evaluationRequest, publisher.getId());
 
         // then
-        List<Application> applications = applicationRepository.findAllWithApplicantByPublisherId(testRecruitment.getId());
+        List<Application> applications = applicationRepository.findAllWithApplicantByPublisherId(
+                testRecruitment.getId());
         applications.sort(Comparator.comparingLong(Application::getId));
         assertThat(applications).hasSize(2)
                 .extracting(Application::getOutcome)

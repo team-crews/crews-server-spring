@@ -15,12 +15,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Entity
@@ -54,8 +53,9 @@ public class Application {
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SelectiveAnswer> selectiveAnswers = new ArrayList<>();
 
-    public Application(Applicant applicant, String studentNumber, String major, String name,
+    public Application(Long id, Applicant applicant, String studentNumber, String major, String name,
                        List<NarrativeAnswer> narrativeAnswers, List<SelectiveAnswer> selectiveAnswers) {
+        this.id = id;
         this.applicant = applicant;
         this.studentNumber = studentNumber;
         this.major = major;

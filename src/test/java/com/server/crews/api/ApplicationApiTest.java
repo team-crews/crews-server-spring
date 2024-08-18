@@ -1,7 +1,8 @@
 package com.server.crews.api;
 
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
-import static com.server.crews.api.StatusCodeChecker.checkStatusCode201;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode404;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NARRATIVE_ANSWER;
@@ -15,6 +16,7 @@ import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
+import com.server.crews.applicant.dto.response.NarrativeAnswerResponse;
 import com.server.crews.applicant.dto.response.SelectiveAnswerResponse;
 import com.server.crews.auth.dto.response.AccessTokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
@@ -34,39 +36,109 @@ import org.springframework.http.MediaType;
 public class ApplicationApiTest extends ApiTest {
 
     @Test
-    @DisplayName("지원자가 로그인하여 지원서를 처음으로 저장한다.")
-    void createApplication() {
+    @DisplayName("지원자가 로그인하여 지원서를 저장한다.")
+    void saveApplication() {
         // given
         AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
         AccessTokenResponse applicantTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(), TEST_EMAIL,
                 TEST_PASSWORD);
+        List<AnswerSaveRequest> firstAnswerSaveRequests = List.of(
+                new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 2L, DEFAULT_NARRATIVE_ANSWER, null),
+                new AnswerSaveRequest(null, QuestionType.SELECTIVE.name(), 1L, null, 2L));
+        ApplicationSaveRequest applicationCreateRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
+                DEFAULT_MAJOR, DEFAULT_NAME, firstAnswerSaveRequests);
+        ApplicationDetailsResponse testApplication = createTestApplication(applicantTokenResponse.accessToken(),
+                applicationCreateRequest);
 
+        List<AnswerSaveRequest> secondAnswerSaveRequests = List.of(
+                new AnswerSaveRequest(1L, QuestionType.NARRATIVE.name(), 2L, "수정된내용", null),
+                new AnswerSaveRequest(null, QuestionType.SELECTIVE.name(), 1L, null, 1L));
+
+        ApplicationSaveRequest applicationUpdateRequest = new ApplicationSaveRequest(testApplication.id(),
+                DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, secondAnswerSaveRequests);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(ApplicationApiDocuments.SAVE_APPLICATION_200_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION,
+                        AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
+                .body(applicationUpdateRequest)
+                .when().post("/applications")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        ApplicationDetailsResponse applicationDetailsResponse = response.as(ApplicationDetailsResponse.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode200(response, softAssertions);
+            softAssertions.assertThat(applicationDetailsResponse.id()).isNotNull();
+            softAssertions.assertThat(applicationDetailsResponse.narrativeAnswers())
+                    .flatExtracting(NarrativeAnswerResponse::answerId).containsExactly(1L);
+            softAssertions.assertThat(applicationDetailsResponse.selectiveAnswers())
+                    .flatExtracting(SelectiveAnswerResponse::choices).hasSize(1);
+        });
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 질문에 대해 답변을 저장한다.")
+    void saveApplicationWithNotExistingQuestion() {
+        // given
+        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        AccessTokenResponse applicantTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(), TEST_EMAIL,
+                TEST_PASSWORD);
         List<AnswerSaveRequest> answerSaveRequests = List.of(
-                new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
-                new AnswerSaveRequest(QuestionType.SELECTIVE, 1L, null, List.of(1L, 2L)));
-        ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(DEFAULT_STUDENT_NUMBER,
+                new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 10L, DEFAULT_NARRATIVE_ANSWER, null));
+        ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
                 DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(ApplicationApiDocuments.SAVE_APPLICATION_404_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION,
                         AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
                 .body(applicationSaveRequest)
                 .when().post("/applications")
                 .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
+                .statusCode(HttpStatus.NOT_FOUND.value())
                 .extract();
 
         // then
-        ApplicationDetailsResponse applicationDetailsResponse = response.as(ApplicationDetailsResponse.class);
-        assertSoftly(softAssertions -> {
-            checkStatusCode201(response, softAssertions);
-            softAssertions.assertThat(applicationDetailsResponse.id()).isNotNull();
-            softAssertions.assertThat(applicationDetailsResponse.narrativeAnswers()).hasSize(1);
-            softAssertions.assertThat(applicationDetailsResponse.selectiveAnswers()).hasSize(1);
-        });
+        checkStatusCode404(response);
+    }
+
+    @Test
+    @DisplayName("한 서술형 문항에 두 개 이상의 답변을 저장한다.")
+    void saveApplicationWithDuplicatedNarrativeAnswer() {
+        // given
+        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        AccessTokenResponse applicantTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(), TEST_EMAIL,
+                TEST_PASSWORD);
+        List<AnswerSaveRequest> answerSaveRequests = List.of(
+                new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 1L, "동일한 내용", null),
+                new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 1L, "동일한 내용", null));
+        ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
+                DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(ApplicationApiDocuments.SAVE_APPLICATION_400_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION,
+                        AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
+                .body(applicationSaveRequest)
+                .when().post("/applications")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract();
+
+        // then
+        checkStatusCode400(response);
     }
 
     @Test
@@ -78,11 +150,7 @@ public class ApplicationApiTest extends ApiTest {
         AccessTokenResponse applicantTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(), TEST_EMAIL,
                 TEST_PASSWORD);
 
-        List<AnswerSaveRequest> answerSaveRequests = List.of(
-                new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
-                new AnswerSaveRequest(QuestionType.SELECTIVE, 1L, null, List.of(1L, 2L)));
-        ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(DEFAULT_STUDENT_NUMBER,
-                DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest();
         ApplicationDetailsResponse testApplication = createTestApplication(applicantTokenResponse.accessToken(),
                 applicationSaveRequest);
 
@@ -105,7 +173,7 @@ public class ApplicationApiTest extends ApiTest {
             softAssertions.assertThat(applicationDetailsResponse.id()).isNotNull();
             softAssertions.assertThat(applicationDetailsResponse.narrativeAnswers()).isNotEmpty();
             softAssertions.assertThat(applicationDetailsResponse.selectiveAnswers())
-                    .flatExtracting(SelectiveAnswerResponse::choiceIds).isNotEmpty();
+                    .flatExtracting(SelectiveAnswerResponse::choices).isNotEmpty();
         });
     }
 

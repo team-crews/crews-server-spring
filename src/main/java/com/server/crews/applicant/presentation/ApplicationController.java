@@ -29,11 +29,11 @@ public class ApplicationController {
      * 지원자가 지원서를 저장한다.
      */
     @PostMapping
-    public ResponseEntity<ApplicationDetailsResponse> createApplication(
+    public ResponseEntity<ApplicationDetailsResponse> saveApplication(
             @ApplicantAuthentication LoginUser loginUser,
             @RequestBody ApplicationSaveRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(applicationService.createApplication(loginUser.userId(), request));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(applicationService.saveApplication(loginUser.userId(), request));
     }
 
     // Todo: 지원서 수정 api 추가
