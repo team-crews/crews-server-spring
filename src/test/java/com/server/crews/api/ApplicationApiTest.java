@@ -1,6 +1,8 @@
 package com.server.crews.api;
 
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode404;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NARRATIVE_ANSWER;
@@ -78,6 +80,65 @@ public class ApplicationApiTest extends ApiTest {
             softAssertions.assertThat(applicationDetailsResponse.selectiveAnswers())
                     .flatExtracting(SelectiveAnswerResponse::choices).hasSize(1);
         });
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 질문에 대해 답변을 저장한다.")
+    void saveApplicationWithNotExistingQuestion() {
+        // given
+        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        AccessTokenResponse applicantTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(), TEST_EMAIL,
+                TEST_PASSWORD);
+        List<AnswerSaveRequest> answerSaveRequests = List.of(
+                new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 10L, DEFAULT_NARRATIVE_ANSWER, null));
+        ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
+                DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(ApplicationApiDocuments.SAVE_APPLICATION_404_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION,
+                        AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
+                .body(applicationSaveRequest)
+                .when().post("/applications")
+                .then().log().all()
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .extract();
+
+        // then
+        checkStatusCode404(response);
+    }
+
+    @Test
+    @DisplayName("한 서술형 문항에 두 개 이상의 답변을 저장한다.")
+    void saveApplicationWithDuplicatedNarrativeAnswer() {
+        // given
+        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        AccessTokenResponse applicantTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(), TEST_EMAIL,
+                TEST_PASSWORD);
+        List<AnswerSaveRequest> answerSaveRequests = List.of(
+                new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 1L, "동일한 내용", null),
+                new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 1L, "동일한 내용", null));
+        ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
+                DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(ApplicationApiDocuments.SAVE_APPLICATION_400_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION,
+                        AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
+                .body(applicationSaveRequest)
+                .when().post("/applications")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract();
+
+        // then
+        checkStatusCode400(response);
     }
 
     @Test
