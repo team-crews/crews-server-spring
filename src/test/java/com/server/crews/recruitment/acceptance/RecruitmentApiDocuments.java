@@ -105,4 +105,8 @@ public class RecruitmentApiDocuments {
         return document(RECRUITMENT_API + "모집 마감일 변경",
                 requestFields(fieldWithPath(".closingDate").description("변경된 마감일")));
     }
+
+    public static RestDocumentationFilter SEND_OUTCOME_EMAIL_200_REQUEST() {
+        return document(RECRUITMENT_API + "지원 결과 메일 전송");
+    }
 }

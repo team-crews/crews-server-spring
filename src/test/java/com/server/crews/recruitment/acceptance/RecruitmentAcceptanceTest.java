@@ -188,11 +188,7 @@ public class RecruitmentAcceptanceTest extends AcceptanceTest {
         AccessTokenResponse applicantBTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
                 "B" + TEST_EMAIL, TEST_PASSWORD);
 
-        List<AnswerSaveRequest> answerSaveRequests = List.of(
-                new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
-                new AnswerSaveRequest(QuestionType.SELECTIVE, 1L, null, List.of(1L, 2L)));
-        ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(DEFAULT_STUDENT_NUMBER,
-                DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest();
         createTestApplication(applicantATokenResponse.accessToken(), applicationSaveRequest);
         createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
 
@@ -273,5 +269,42 @@ public class RecruitmentAcceptanceTest extends AcceptanceTest {
 
         // then
         checkStatusCode200(response);
+    }
+
+    @Test
+    @DisplayName("모든 지원자에게 지원 결과 메일을 전송한다.")
+    void sendOutcomeEmail() {
+        // given
+        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
+        String adminAccessToken = adminTokenResponse.accessToken();
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminAccessToken);
+        AccessTokenResponse applicantATokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
+                "A" + TEST_EMAIL, TEST_PASSWORD);
+        AccessTokenResponse applicantBTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
+                "B" + TEST_EMAIL, TEST_PASSWORD);
+
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest();
+        createTestApplication(applicantATokenResponse.accessToken(), applicationSaveRequest);
+        createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.SEND_OUTCOME_EMAIL_200_REQUEST())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .when().post("/recruitments/announcement")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        checkStatusCode200(response);
+    }
+
+    private ApplicationSaveRequest applicationSaveRequest() {
+        List<AnswerSaveRequest> answerSaveRequests = List.of(
+                new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
+                new AnswerSaveRequest(QuestionType.SELECTIVE, 1L, null, List.of(1L, 2L)));
+        return new ApplicationSaveRequest(DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
     }
 }
