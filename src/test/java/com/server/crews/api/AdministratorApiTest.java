@@ -306,7 +306,7 @@ public class AdministratorApiTest extends ApiTest {
 
     @Test
     @DisplayName("한 공고의 모든 지원서 목록을 조회한다.")
-    void findAllApplicationsByRecruitment() {
+    void getAllApplicationsByRecruitment() {
         // given
         AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());

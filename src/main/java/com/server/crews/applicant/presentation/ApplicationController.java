@@ -42,7 +42,7 @@ public class ApplicationController {
      * 특정 지원자의 지원서를 조회한다.
      */
     @GetMapping("/{application-id}")
-    public ResponseEntity<ApplicationDetailsResponse> findApplicationDetails(
+    public ResponseEntity<ApplicationDetailsResponse> getApplicationDetails(
             @ApplicantAuthentication LoginUser loginUser,
             @PathVariable(value = "application-id") Long applicationId) {
         return ResponseEntity.ok(applicationService.findApplicationDetails(applicationId, loginUser));
@@ -52,7 +52,7 @@ public class ApplicationController {
      * 한 공고의 모든 지원서 목록을 조회한다.
      */
     @GetMapping
-    public ResponseEntity<List<ApplicationsResponse>> findAllApplicationsByRecruitment(
+    public ResponseEntity<List<ApplicationsResponse>> getAllApplicationsByRecruitment(
             @AdminAuthentication LoginUser loginUser) {
         return ResponseEntity.ok(applicationService.findAllApplicationsByRecruitment(loginUser.userId()));
     }
