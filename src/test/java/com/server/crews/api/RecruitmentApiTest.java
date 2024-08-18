@@ -233,6 +233,28 @@ public class RecruitmentApiTest extends ApiTest {
     }
 
     @Test
+    @DisplayName("모집 공고 및 지원서 양식 상세 정보를 모집 공고 코드로 조회한다.")
+    void getRecruitmentDetailsByCode() {
+        // given
+        LoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        String adminAccessToken = adminTokenResponse.accessToken();
+        RecruitmentDetailsResponse savedRecruitmentDetailsResponse = createRecruitment(adminAccessToken);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.GET_RECRUITMENT_BY_CODE_200_DOCUMENT())
+                .queryParam("code", savedRecruitmentDetailsResponse.code())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .when().get("/recruitments")
+                .then().log().all()
+                .extract();
+
+        // then
+        checkStatusCode200(response);
+    }
+
+    @Test
     @DisplayName("모집 마감기한을 변경한다.")
     void updateClosingDate() {
         // given

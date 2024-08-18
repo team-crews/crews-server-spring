@@ -1,6 +1,7 @@
 package com.server.crews.environ.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.server.crews.environ.DatabaseCleaner;
 import com.server.crews.global.config.JpaConfig;
 import com.server.crews.recruitment.repository.RecruitmentDslRepository;
 import com.server.crews.recruitment.repository.RecruitmentDslRepositoryImpl;
@@ -37,5 +38,10 @@ public class RepositoryTestConfig {
     @Bean
     public TestRepository testRepository() {
         return new TestRepository(em);
+    }
+
+    @Bean
+    public DatabaseCleaner databaseCleaner() {
+        return new DatabaseCleaner(em);
     }
 }

@@ -24,4 +24,17 @@ public class RecruitmentDslRepositoryImpl implements RecruitmentDslRepository {
                 .fetchFirst();
         return Optional.ofNullable(recruitment);
     }
+
+    @Override
+    public Optional<Recruitment> findWithSectionsByCode(String code) {
+        QRecruitment qRecruitment = QRecruitment.recruitment;
+        QSection qSection = QSection.section;
+
+        Recruitment recruitment =  jpaQueryFactory.selectFrom(qRecruitment)
+                .leftJoin(qRecruitment.sections, qSection)
+                .fetchJoin()
+                .where(qRecruitment.code.eq(code))
+                .fetchFirst();
+        return Optional.ofNullable(recruitment);
+    }
 }

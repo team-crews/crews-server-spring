@@ -1,20 +1,5 @@
 package com.server.crews.environ.repository;
 
-import com.server.crews.applicant.domain.Application;
-import com.server.crews.auth.domain.Administrator;
-import com.server.crews.auth.domain.Applicant;
-import com.server.crews.recruitment.domain.Choice;
-import com.server.crews.recruitment.domain.NarrativeQuestion;
-import com.server.crews.recruitment.domain.Recruitment;
-import com.server.crews.recruitment.domain.Section;
-import com.server.crews.recruitment.domain.SelectiveQuestion;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-
-import java.util.List;
-
 import static com.server.crews.fixture.ApplicationFixture.APPLICATION;
 import static com.server.crews.fixture.QuestionFixture.CHOICES;
 import static com.server.crews.fixture.QuestionFixture.NARRATIVE_QUESTION;
@@ -24,8 +9,23 @@ import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
 import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
 import static com.server.crews.fixture.SectionFixture.SECTION;
 import static com.server.crews.fixture.UserFixture.TEST_CLUB_NAME;
-import static com.server.crews.fixture.UserFixture.TEST_EMAIL;
 import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
+
+import com.server.crews.applicant.domain.Application;
+import com.server.crews.auth.domain.Administrator;
+import com.server.crews.auth.domain.Applicant;
+import com.server.crews.environ.DatabaseCleaner;
+import com.server.crews.recruitment.domain.Choice;
+import com.server.crews.recruitment.domain.NarrativeQuestion;
+import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.recruitment.domain.Section;
+import com.server.crews.recruitment.domain.SelectiveQuestion;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 @DataJpaTest
 @Import(RepositoryTestConfig.class)
@@ -33,6 +33,14 @@ import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 public abstract class RepositoryTest {
     @Autowired
     protected TestRepository testRepository;
+
+    @Autowired
+    protected DatabaseCleaner databaseCleaner;
+
+    @BeforeEach
+    void setUp() {
+        databaseCleaner.clear();
+    }
 
     protected Administrator createDefaultAdmin() {
         Administrator administrator = new Administrator(TEST_CLUB_NAME, TEST_PASSWORD);
