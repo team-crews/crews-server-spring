@@ -1,4 +1,4 @@
-package com.server.crews.acceptance;
+package com.server.crews.api;
 
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
@@ -19,14 +19,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static com.server.crews.acceptance.StatusCodeChecker.checkStatusCode200;
-import static com.server.crews.acceptance.StatusCodeChecker.checkStatusCode401;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode401;
 import static com.server.crews.fixture.UserFixture.TEST_EMAIL;
 import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 // Todo: 실패 케이스 테스트 추가
-public class AuthAcceptanceTest extends AcceptanceTest {
+public class AuthApiTest extends ApiTest {
 
     @Test
     @DisplayName("[동아리 관리자] 가입하지 않은 동아리 관리자가 로그인 해 토큰을 발급 받는다.")

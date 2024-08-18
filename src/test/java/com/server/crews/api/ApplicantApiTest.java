@@ -1,4 +1,4 @@
-package com.server.crews.acceptance;
+package com.server.crews.api;
 
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
@@ -20,8 +20,8 @@ import org.springframework.http.MediaType;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.server.crews.acceptance.StatusCodeChecker.checkStatusCode200;
-import static com.server.crews.acceptance.StatusCodeChecker.checkStatusCode201;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode201;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NARRATIVE_ANSWER;
@@ -30,7 +30,7 @@ import static com.server.crews.fixture.UserFixture.TEST_EMAIL;
 import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-public class ApplicantAcceptanceTest extends AcceptanceTest {
+public class ApplicantApiTest extends ApiTest {
 
     @Test
     @DisplayName("지원자가 로그인하여 지원서를 처음으로 저장한다.")

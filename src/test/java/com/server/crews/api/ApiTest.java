@@ -1,4 +1,4 @@
-package com.server.crews.acceptance;
+package com.server.crews.api;
 
 import static com.server.crews.fixture.RecruitmentFixture.RECRUITMENT_SAVE_REQUEST;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -33,7 +33,7 @@ import org.springframework.restdocs.RestDocumentationExtension;
 
 @ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-public abstract class AcceptanceTest {
+public abstract class ApiTest {
     @LocalServerPort
     private int port;
 

@@ -1,4 +1,4 @@
-package com.server.crews.acceptance;
+package com.server.crews.api;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;

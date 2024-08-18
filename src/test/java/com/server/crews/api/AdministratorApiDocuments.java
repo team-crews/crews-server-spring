@@ -1,4 +1,4 @@
-package com.server.crews.acceptance;
+package com.server.crews.api;
 
 import static com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;

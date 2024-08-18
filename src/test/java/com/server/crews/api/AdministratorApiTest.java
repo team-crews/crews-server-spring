@@ -1,7 +1,7 @@
-package com.server.crews.acceptance;
+package com.server.crews.api;
 
-import static com.server.crews.acceptance.StatusCodeChecker.checkStatusCode200;
-import static com.server.crews.acceptance.StatusCodeChecker.checkStatusCode400;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NARRATIVE_ANSWER;
@@ -41,7 +41,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-public class AdministratorAcceptanceTest extends AcceptanceTest {
+public class AdministratorApiTest extends ApiTest {
 
     @Test
     @DisplayName("모집 공고를 저장한다.")
