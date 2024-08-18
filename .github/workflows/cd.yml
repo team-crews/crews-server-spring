@@ -31,11 +31,11 @@ jobs:
           mysql user: ${{ secrets.TEST_DB_USERNAME }}
           mysql password: ${{ secrets.TEST_DB_PASSWORD }}
 
-      - name: Run Test
-        run: ./gradlew clean test
+      - name: Run Test And Create API Documentation
+        run: ./gradlew openapi3
 
       - name: Build with Gradle
-        run: ./gradlew bootJar
+        run: ./gradlew bootJar -x test
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

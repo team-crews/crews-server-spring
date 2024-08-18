@@ -104,4 +104,8 @@ public class Recruitment {
     public boolean isAnnounced() {
         return this.progress == Progress.ANNOUNCED;
     }
+
+    public boolean isStarted() {
+        return this.progress != Progress.READY;
+    }
 }

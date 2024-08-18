@@ -5,5 +5,5 @@ import com.server.crews.applicant.domain.Application;
 import java.util.List;
 
 public interface ApplicationDslRepository {
-    List<Application> findAllWithApplicantByRecruitmentId(Long recruitmentId);
+    List<Application> findAllWithApplicantByPublisherId(Long publisherId);
 }

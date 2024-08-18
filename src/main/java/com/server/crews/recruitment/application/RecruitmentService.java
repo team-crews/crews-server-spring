@@ -20,6 +20,7 @@ import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressRespo
 import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -54,6 +55,9 @@ public class RecruitmentService {
     public void startRecruiting(Long publisherId) {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+        if (recruitment.isStarted()) {
+            throw new CrewsException(ErrorCode.RECRUITMENT_ALREADY_STARTED);
+        }
         recruitment.start();
     }
 
@@ -82,7 +86,8 @@ public class RecruitmentService {
     public void updateClosingDate(Long publisherId, ClosingDateUpdateRequest request) {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
-        recruitment.updateClosingDate(request.closingDate());
+        LocalDateTime closingDate = LocalDateTime.parse(request.closingDate());
+        recruitment.updateClosingDate(closingDate);
     }
 
     @Transactional
@@ -92,7 +97,7 @@ public class RecruitmentService {
         if (recruitment.isAnnounced()) {
             throw new CrewsException(ErrorCode.ALREADY_ANNOUNCED);
         }
-        List<Application> applications = applicationRepository.findAllWithApplicantByRecruitmentId(recruitment.getId());
+        List<Application> applications = applicationRepository.findAllWithApplicantByPublisherId(recruitment.getId());
         applications.stream().filter(Application::isNotDetermined)
                 .forEach(Application::reject);
 

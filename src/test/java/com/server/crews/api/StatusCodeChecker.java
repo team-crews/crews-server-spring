@@ -1,16 +1,20 @@
-package com.server.crews.environ.acceptance;
+package com.server.crews.api;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.assertj.core.api.SoftAssertions;
 import org.springframework.http.HttpStatus;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class StatusCodeChecker {
 
     public static void checkStatusCode200(ExtractableResponse<Response> response, SoftAssertions softAssertions) {
         softAssertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static void checkStatusCode200(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     public static void checkStatusCode201(ExtractableResponse<Response> response, SoftAssertions softAssertions) {

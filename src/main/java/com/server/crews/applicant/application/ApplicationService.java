@@ -115,8 +115,8 @@ public class ApplicationService {
         }
     }
 
-    public List<ApplicationsResponse> findAllApplicationsByRecruitment(Long recruitmentId) {
-        List<Application> applications = applicationRepository.findAllWithApplicantByRecruitmentId(recruitmentId);
+    public List<ApplicationsResponse> findAllApplicationsByRecruitment(Long publisherId) {
+        List<Application> applications = applicationRepository.findAllWithApplicantByPublisherId(publisherId);
         return applications.stream()
                 .map(ApplicationsResponse::from)
                 .toList();
@@ -144,8 +144,8 @@ public class ApplicationService {
     }
 
     @Transactional
-    public void decideOutcome(EvaluationRequest request) {
-        List<Application> applications = applicationRepository.findAllWithApplicantByRecruitmentId(request.recruitmentId());
+    public void decideOutcome(EvaluationRequest request, Long publisherId) {
+        List<Application> applications = applicationRepository.findAllWithApplicantByPublisherId(publisherId);
         Set<Long> passApplicationIds = new HashSet<>(request.passApplicationIds());
 
         applications.stream()
