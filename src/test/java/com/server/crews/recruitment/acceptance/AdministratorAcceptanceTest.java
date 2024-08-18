@@ -42,10 +42,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-public class RecruitmentAcceptanceTest extends AcceptanceTest {
+public class AdministratorAcceptanceTest extends AcceptanceTest {
 
     @Test
-    @DisplayName("동아리 운영진이 모집 공고를 저장한다.")
+    @DisplayName("모집 공고를 저장한다.")
     void saveRecruitment() {
         // given
         AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
