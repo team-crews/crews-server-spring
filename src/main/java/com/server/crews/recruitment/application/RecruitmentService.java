@@ -20,6 +20,7 @@ import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressRespo
 import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -85,7 +86,8 @@ public class RecruitmentService {
     public void updateClosingDate(Long publisherId, ClosingDateUpdateRequest request) {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
-        recruitment.updateClosingDate(request.closingDate());
+        LocalDateTime closingDate = LocalDateTime.parse(request.closingDate());
+        recruitment.updateClosingDate(closingDate);
     }
 
     @Transactional

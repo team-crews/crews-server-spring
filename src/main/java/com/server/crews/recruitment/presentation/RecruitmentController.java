@@ -63,10 +63,10 @@ public class RecruitmentController {
     }
 
     /**
-     * 지원서 양식의 마감기한을 변경한다.
+     * 모집 마감기한을 변경한다.
      */
     @PatchMapping("/closing-date")
-    public ResponseEntity<Void> updateProgressState(
+    public ResponseEntity<Void> updateClosingDate(
             @AdminAuthentication LoginUser loginUser,
             @RequestBody ClosingDateUpdateRequest request) {
         recruitmentService.updateClosingDate(loginUser.userId(), request);

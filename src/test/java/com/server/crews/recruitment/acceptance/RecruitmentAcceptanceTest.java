@@ -22,6 +22,7 @@ import com.server.crews.auth.dto.response.AccessTokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.environ.acceptance.AcceptanceTest;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
+import com.server.crews.recruitment.dto.request.ClosingDateUpdateRequest;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
 import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
@@ -246,5 +247,31 @@ public class RecruitmentAcceptanceTest extends AcceptanceTest {
                     .flatExtracting(SectionResponse::selectiveQuestions)
                     .flatExtracting(SelectiveQuestionResponse::choices).isNotEmpty();
         });
+    }
+
+    @Test
+    @DisplayName("모집 마감기한을 변경한다.")
+    void updateClosingDate() {
+        // given
+        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
+        String adminAccessToken = adminTokenResponse.accessToken();
+        createRecruitment(adminAccessToken);
+
+        ClosingDateUpdateRequest closingDateUpdateRequest = new ClosingDateUpdateRequest(
+                LocalDateTime.now().plusMinutes(1).toString());
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.UPDATE_RECRUITMENT_CLOSING_DATE_200_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .body(closingDateUpdateRequest)
+                .when().patch("/recruitments/closing-date")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        checkStatusCode200(response);
     }
 }

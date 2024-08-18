@@ -100,4 +100,9 @@ public class RecruitmentApiDocuments {
         return document(RECRUITMENT_API + "모집 공고(지원서 양식) 상세 조회",
                 pathParameters(parameterWithName("recruitment-id").description("모집 공고 id")));
     }
+
+    public static RestDocumentationFilter UPDATE_RECRUITMENT_CLOSING_DATE_200_DOCUMENT() {
+        return document(RECRUITMENT_API + "모집 마감일 변경",
+                requestFields(fieldWithPath(".closingDate").description("변경된 마감일")));
+    }
 }
