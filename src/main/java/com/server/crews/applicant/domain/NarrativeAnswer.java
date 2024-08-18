@@ -1,6 +1,5 @@
 package com.server.crews.applicant.domain;
 
-import com.server.crews.auth.domain.Applicant;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,7 +32,8 @@ public class NarrativeAnswer {
     @Column(name = "content", nullable = false)
     private String content;
 
-    public NarrativeAnswer(NarrativeQuestion narrativeQuestion, String content) {
+    public NarrativeAnswer(Long id, NarrativeQuestion narrativeQuestion, String content) {
+        this.id = id;
         this.narrativeQuestion = narrativeQuestion;
         this.content = content;
     }

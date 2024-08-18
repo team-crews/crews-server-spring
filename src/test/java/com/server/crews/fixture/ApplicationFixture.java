@@ -15,6 +15,6 @@ public class ApplicationFixture {
     public static final String DEFAULT_NARRATIVE_ANSWER = "DEFAULT_NARRATIVE_ANSWER";
 
     public static Application APPLICATION(Applicant applicant, List<NarrativeAnswer> narrativeAnswers, List<SelectiveAnswer> selectiveAnswers) {
-        return new Application(applicant, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, narrativeAnswers, selectiveAnswers);
+        return new Application(null, applicant, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, narrativeAnswers, selectiveAnswers);
     }
 }

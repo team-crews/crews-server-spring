@@ -24,13 +24,13 @@ public class TestApplication {
     }
 
     public TestApplication create(Applicant applicant, String studentNumber, String major, String name) {
-        Application application = new Application(applicant, studentNumber, major, name, List.of(), List.of());
+        Application application = new Application(null, applicant, studentNumber, major, name, List.of(), List.of());
         this.application = environ.applicationRepository().save(application);
         return this;
     }
 
     public TestApplication addNarrativeAnswers(NarrativeQuestion question, String content) {
-        NarrativeAnswer narrativeAnswer = new NarrativeAnswer(question, content);
+        NarrativeAnswer narrativeAnswer = new NarrativeAnswer(null, question, content);
         narrativeAnswer.updateApplication(this.application);
         NarrativeAnswer savedNarrativeAnswer = environ.narrativeAnswerRepository().save(narrativeAnswer);
         this.application.updateNarrativeAnswers(List.of(narrativeAnswer));
@@ -39,7 +39,7 @@ public class TestApplication {
     }
 
     public TestApplication saveSelectiveAnswers(SelectiveQuestion question, Choice choice) {
-        SelectiveAnswer selectiveAnswer = new SelectiveAnswer(choice, question);
+        SelectiveAnswer selectiveAnswer = new SelectiveAnswer(null, choice, question);
         selectiveAnswer.updateApplication(this.application);
         SelectiveAnswer savedSelectiveAnswer = environ.selectiveAnswerRepository().save(selectiveAnswer);
         this.selectiveAnswers.add(savedSelectiveAnswer);

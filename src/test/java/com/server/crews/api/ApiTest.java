@@ -63,9 +63,11 @@ public abstract class ApiTest {
 
     protected ApplicationSaveRequest applicationSaveRequest() {
         List<AnswerSaveRequest> answerSaveRequests = List.of(
-                new AnswerSaveRequest(QuestionType.NARRATIVE.name(), 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
-                new AnswerSaveRequest(QuestionType.SELECTIVE.name(), 1L, null, List.of(1L, 2L)));
-        return new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
+                new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 2L, DEFAULT_NARRATIVE_ANSWER, null),
+                new AnswerSaveRequest(null, QuestionType.SELECTIVE.name(), 1L, null, 1L),
+                new AnswerSaveRequest(null, QuestionType.SELECTIVE.name(), 1L, null, 2L));
+        return new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME,
+                answerSaveRequests);
     }
 
     protected AccessTokenResponse signUpAdmin(String email, String password) {
@@ -114,7 +116,7 @@ public abstract class ApiTest {
                 .body(applicationSaveRequest)
                 .when().post("/applications")
                 .then()
-                .statusCode(HttpStatus.CREATED.value())
+                .statusCode(HttpStatus.OK.value())
                 .extract();
         return response.as(ApplicationDetailsResponse.class);
     }
