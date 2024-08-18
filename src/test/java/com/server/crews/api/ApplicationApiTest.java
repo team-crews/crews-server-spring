@@ -43,9 +43,9 @@ public class ApplicationApiTest extends ApiTest {
                 TEST_PASSWORD);
 
         List<AnswerSaveRequest> answerSaveRequests = List.of(
-                new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
-                new AnswerSaveRequest(QuestionType.SELECTIVE, 1L, null, List.of(1L, 2L)));
-        ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(DEFAULT_STUDENT_NUMBER,
+                new AnswerSaveRequest(QuestionType.NARRATIVE.name(), 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
+                new AnswerSaveRequest(QuestionType.SELECTIVE.name(), 1L, null, List.of(1L, 2L)));
+        ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
                 DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
 
         // when
@@ -79,9 +79,9 @@ public class ApplicationApiTest extends ApiTest {
                 TEST_PASSWORD);
 
         List<AnswerSaveRequest> answerSaveRequests = List.of(
-                new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
-                new AnswerSaveRequest(QuestionType.SELECTIVE, 1L, null, List.of(1L, 2L)));
-        ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(DEFAULT_STUDENT_NUMBER,
+                new AnswerSaveRequest(QuestionType.NARRATIVE.name(), 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
+                new AnswerSaveRequest(QuestionType.SELECTIVE.name(), 1L, null, List.of(1L, 2L)));
+        ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
                 DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
         ApplicationDetailsResponse testApplication = createTestApplication(applicantTokenResponse.accessToken(),
                 applicationSaveRequest);

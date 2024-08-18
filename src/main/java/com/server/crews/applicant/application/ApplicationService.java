@@ -19,6 +19,7 @@ import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
+import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.repository.ChoiceRepository;
 import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
@@ -61,23 +62,26 @@ public class ApplicationService {
         Application application = new Application(applicant, request.studentNumber(), request.major(), request.name(),
                 narrativeAnswers, selectiveAnswers);
 
-        applicationRepository.save(application);
+        Application savedApplication = applicationRepository.save(application);
 
-        return ApplicationDetailsResponse.of(application, narrativeAnswers, collectSelectiveAnswersByQuestion(selectiveAnswers));
+        return ApplicationDetailsResponse.of(savedApplication, narrativeAnswers,
+                collectSelectiveAnswersByQuestion(selectiveAnswers));
     }
 
     private List<SelectiveAnswer> toSelectiveAnswers(Map<Long, AnswerSaveRequest> answerSaveRequestsByQuestionId) {
         List<Long> selectiveQuestionIds = answerSaveRequestsByQuestionId.values().stream()
-                .filter(AnswerSaveRequest::isSelective)
+                .filter(answerSaveRequest -> QuestionType.SELECTIVE.hasSameName(answerSaveRequest.questionType()))
                 .map(AnswerSaveRequest::questionId)
                 .toList();
-        Map<Long, SelectiveQuestion> selectiveQuestions = selectiveQuestionRepository.findAllByIdIn(selectiveQuestionIds)
+        Map<Long, SelectiveQuestion> selectiveQuestions = selectiveQuestionRepository.findAllByIdIn(
+                        selectiveQuestionIds)
                 .stream()
                 .collect(toMap(SelectiveQuestion::getId, Function.identity()));
         validateQuestionIds(selectiveQuestionIds.size(), selectiveQuestions.size());
         List<Choice> choices = toChoices(answerSaveRequestsByQuestionId.values());
         return choices.stream()
-                .map(choice -> new SelectiveAnswer(choice, selectiveQuestions.get(choice.getSelectiveQuestion().getId())))
+                .map(choice -> new SelectiveAnswer(choice,
+                        selectiveQuestions.get(choice.getSelectiveQuestion().getId())))
                 .toList();
     }
 
@@ -99,13 +103,14 @@ public class ApplicationService {
 
     private List<NarrativeAnswer> toNarrativeAnswers(Map<Long, AnswerSaveRequest> answerSaveRequestsByQuestionId) {
         List<Long> narrativeQuestionIds = answerSaveRequestsByQuestionId.values().stream()
-                .filter(AnswerSaveRequest::isNarrative)
+                .filter(answerSaveRequest -> QuestionType.NARRATIVE.hasSameName(answerSaveRequest.questionType()))
                 .map(AnswerSaveRequest::questionId)
                 .toList();
         List<NarrativeQuestion> narrativeQuestions = narrativeQuestionRepository.findAllByIdIn(narrativeQuestionIds);
         validateQuestionIds(narrativeQuestionIds.size(), narrativeQuestions.size());
         return narrativeQuestions.stream()
-                .map(question -> new NarrativeAnswer(question, answerSaveRequestsByQuestionId.get(question.getId()).content()))
+                .map(question -> new NarrativeAnswer(question,
+                        answerSaveRequestsByQuestionId.get(question.getId()).content()))
                 .toList();
     }
 

@@ -76,7 +76,7 @@ class ApplicationServiceTest extends ServiceTest {
         Applicant applicant = JONGMEE_APPLICANT(recruitment).applicant();
 
         ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(
-                DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
+                null, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
 
         // when
         ApplicationDetailsResponse applicationDetailsResponse = applicationService.createApplication(applicant.getId(), saveRequest);
@@ -94,11 +94,11 @@ class ApplicationServiceTest extends ServiceTest {
     private static Stream<Arguments> provideAnswersAndCount() {
         return Stream.of(
                 Arguments.of(List.of(
-                        new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
-                        new AnswerSaveRequest(QuestionType.SELECTIVE, 1L, null, List.of(1L, 2L))
+                        new AnswerSaveRequest(QuestionType.NARRATIVE.name(), 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
+                        new AnswerSaveRequest(QuestionType.SELECTIVE.name(), 1L, null, List.of(1L, 2L))
                 ), 1, 2),
                 Arguments.of(List.of(
-                        new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of())
+                        new AnswerSaveRequest(QuestionType.NARRATIVE.name(), 2L, DEFAULT_NARRATIVE_ANSWER, List.of())
                 ), 1, 0)
         );
     }
@@ -116,9 +116,9 @@ class ApplicationServiceTest extends ServiceTest {
         Application application = JONGMEE_APPLICATION(applicant).application();
 
         List<AnswerSaveRequest> invalidAnswerSaveRequests = List.of(
-                new AnswerSaveRequest(QuestionType.NARRATIVE, 3L, DEFAULT_NARRATIVE_ANSWER, List.of()));
+                new AnswerSaveRequest(QuestionType.NARRATIVE.name(), 3L, DEFAULT_NARRATIVE_ANSWER, List.of()));
         ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(
-                DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, invalidAnswerSaveRequests);
+                null, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, invalidAnswerSaveRequests);
 
         // when & then
         assertThatThrownBy(() -> applicationService.createApplication(applicant.getId(), saveRequest))

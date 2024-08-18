@@ -63,9 +63,9 @@ public abstract class ApiTest {
 
     protected ApplicationSaveRequest applicationSaveRequest() {
         List<AnswerSaveRequest> answerSaveRequests = List.of(
-                new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
-                new AnswerSaveRequest(QuestionType.SELECTIVE, 1L, null, List.of(1L, 2L)));
-        return new ApplicationSaveRequest(DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
+                new AnswerSaveRequest(QuestionType.NARRATIVE.name(), 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
+                new AnswerSaveRequest(QuestionType.SELECTIVE.name(), 1L, null, List.of(1L, 2L)));
+        return new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
     }
 
     protected AccessTokenResponse signUpAdmin(String email, String password) {
