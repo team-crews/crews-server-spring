@@ -64,37 +64,4 @@ public class ApplicantApiTest extends ApiTest {
             softAssertions.assertThat(applicationDetailsResponse.selectiveAnswers()).hasSize(1);
         });
     }
-
-    @Test
-    @DisplayName("한 공고의 모든 지원서 목록을 조회한다.")
-    void findAllApplicationsByRecruitment() {
-        // given
-        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
-        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        AccessTokenResponse applicantATokenResponse = signUpApplicant(recruitmentDetailsResponse.code(), "A" + TEST_EMAIL, TEST_PASSWORD);
-        AccessTokenResponse applicantBTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(), "B" + TEST_EMAIL, TEST_PASSWORD);
-
-        List<AnswerSaveRequest> answerSaveRequests = List.of(
-                new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
-                new AnswerSaveRequest(QuestionType.SELECTIVE, 1L, null, List.of(1L, 2L)));
-        ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
-        createTestApplication(applicantATokenResponse.accessToken(), applicationSaveRequest);
-        createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
-                .when().get("/applications?recruitment-id=" + recruitmentDetailsResponse.id())
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
-
-        // then
-        List<ApplicationsResponse> applicationsResponses = Arrays.stream(response.as(ApplicationsResponse[].class)).toList();
-        assertSoftly(softAssertions -> {
-            checkStatusCode200(response, softAssertions);
-            softAssertions.assertThat(applicationsResponses).hasSize(2);
-        });
-    }
 }

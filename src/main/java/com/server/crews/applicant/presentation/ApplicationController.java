@@ -6,6 +6,7 @@ import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
 import com.server.crews.auth.dto.LoginUser;
+import com.server.crews.auth.presentation.AdminAuthentication;
 import com.server.crews.auth.presentation.ApplicantAuthentication;
 import com.server.crews.auth.presentation.AuthenticationRequired;
 import java.util.List;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -53,10 +53,9 @@ public class ApplicationController {
      * 한 공고의 모든 지원서 목록을 조회한다.
      */
     @GetMapping
-    @AuthenticationRequired
     public ResponseEntity<List<ApplicationsResponse>> findAllApplicationsByRecruitment(
-            @RequestParam(value = "recruitment-id") Long recruitmentId) {
-        return ResponseEntity.ok(applicationService.findAllApplicationsByRecruitment(recruitmentId));
+            @AdminAuthentication LoginUser loginUser) {
+        return ResponseEntity.ok(applicationService.findAllApplicationsByRecruitment(loginUser.userId()));
     }
 
     /**

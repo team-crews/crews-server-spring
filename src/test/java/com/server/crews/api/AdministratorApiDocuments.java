@@ -109,4 +109,8 @@ public class AdministratorApiDocuments {
     public static RestDocumentationFilter SEND_OUTCOME_EMAIL_200_REQUEST() {
         return document(RECRUITMENT_API + "지원 결과 메일 전송");
     }
+
+    public static RestDocumentationFilter GET_APPLICATIONS_200_DOCUMENT() {
+        return document(RECRUITMENT_API + "지원서 목록 조회");
+    }
 }

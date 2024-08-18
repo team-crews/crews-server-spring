@@ -97,7 +97,7 @@ public class RecruitmentService {
         if (recruitment.isAnnounced()) {
             throw new CrewsException(ErrorCode.ALREADY_ANNOUNCED);
         }
-        List<Application> applications = applicationRepository.findAllWithApplicantByRecruitmentId(recruitment.getId());
+        List<Application> applications = applicationRepository.findAllWithApplicantByPublisherId(recruitment.getId());
         applications.stream().filter(Application::isNotDetermined)
                 .forEach(Application::reject);
 
