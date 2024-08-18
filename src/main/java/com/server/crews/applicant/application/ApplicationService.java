@@ -144,8 +144,8 @@ public class ApplicationService {
     }
 
     @Transactional
-    public void decideOutcome(EvaluationRequest request) {
-        List<Application> applications = applicationRepository.findAllWithApplicantByPublisherId(request.recruitmentId());
+    public void decideOutcome(EvaluationRequest request, Long publisherId) {
+        List<Application> applications = applicationRepository.findAllWithApplicantByPublisherId(publisherId);
         Set<Long> passApplicationIds = new HashSet<>(request.passApplicationIds());
 
         applications.stream()

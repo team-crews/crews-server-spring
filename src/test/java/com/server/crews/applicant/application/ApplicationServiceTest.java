@@ -204,11 +204,10 @@ class ApplicationServiceTest extends ServiceTest {
         Applicant kyunghoApplicant = KYUNGHO_APPLICANT(testRecruitment).applicant();
         Application kyunghoApplication = KYUNGHO_APPLICATION(kyunghoApplicant).application();
 
-        EvaluationRequest evaluationRequest = new EvaluationRequest(
-                testRecruitment.getId(), List.of(kyunghoApplication.getId()));
+        EvaluationRequest evaluationRequest = new EvaluationRequest(List.of(kyunghoApplication.getId()));
 
         // when
-        applicationService.decideOutcome(evaluationRequest);
+        applicationService.decideOutcome(evaluationRequest, publisher.getId());
 
         // then
         List<Application> applications = applicationRepository.findAllWithApplicantByPublisherId(testRecruitment.getId());

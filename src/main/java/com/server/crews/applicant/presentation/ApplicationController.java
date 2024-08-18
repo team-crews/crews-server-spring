@@ -8,7 +8,6 @@ import com.server.crews.applicant.dto.response.ApplicationsResponse;
 import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.presentation.AdminAuthentication;
 import com.server.crews.auth.presentation.ApplicantAuthentication;
-import com.server.crews.auth.presentation.AuthenticationRequired;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -62,9 +61,9 @@ public class ApplicationController {
      * 지원서 평가를 저장한다.
      */
     @PostMapping("/evaluation")
-    @AuthenticationRequired
-    public ResponseEntity<Void> decideOutcome(@RequestBody EvaluationRequest request) {
-        applicationService.decideOutcome(request);
+    public ResponseEntity<Void> evaluate(@AdminAuthentication LoginUser loginUser,
+                                         @RequestBody EvaluationRequest request) {
+        applicationService.decideOutcome(request, loginUser.userId());
         return ResponseEntity.ok().build();
     }
 }

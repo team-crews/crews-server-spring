@@ -18,6 +18,8 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
+import com.server.crews.applicant.dto.request.EvaluationRequest;
+import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
 import com.server.crews.auth.dto.response.AccessTokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
@@ -335,6 +337,40 @@ public class AdministratorApiTest extends ApiTest {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(applicationsResponses).hasSize(2);
         });
+    }
+
+    @Test
+    @DisplayName("지원서들을 평가한다.")
+    void evaluate() {
+        // given
+        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        AccessTokenResponse applicantATokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
+                "A" + TEST_EMAIL, TEST_PASSWORD);
+        AccessTokenResponse applicantBTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
+                "B" + TEST_EMAIL, TEST_PASSWORD);
+
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest();
+        ApplicationDetailsResponse applicationADetailsResponse = createTestApplication(
+                applicantATokenResponse.accessToken(), applicationSaveRequest);
+        createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
+
+        EvaluationRequest evaluationRequest = new EvaluationRequest(List.of(applicationADetailsResponse.id()));
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(AdministratorApiDocuments.EVALUATE_APPLICATIONS_200_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(evaluationRequest)
+                .header(HttpHeaders.AUTHORIZATION,
+                        AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
+                .when().post("/applications/evaluation")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        checkStatusCode200(response);
     }
 
     private ApplicationSaveRequest applicationSaveRequest() {
