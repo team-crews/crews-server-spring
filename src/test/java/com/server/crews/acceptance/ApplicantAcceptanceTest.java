@@ -1,4 +1,4 @@
-package com.server.crews.applicant.acceptance;
+package com.server.crews.acceptance;
 
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
@@ -6,7 +6,6 @@ import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
 import com.server.crews.auth.dto.response.AccessTokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
-import com.server.crews.environ.acceptance.AcceptanceTest;
 import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
@@ -21,8 +20,8 @@ import org.springframework.http.MediaType;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode200;
-import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode201;
+import static com.server.crews.acceptance.StatusCodeChecker.checkStatusCode200;
+import static com.server.crews.acceptance.StatusCodeChecker.checkStatusCode201;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NARRATIVE_ANSWER;

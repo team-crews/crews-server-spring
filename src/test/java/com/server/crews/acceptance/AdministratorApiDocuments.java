@@ -1,4 +1,4 @@
-package com.server.crews.recruitment.acceptance;
+package com.server.crews.acceptance;
 
 import static com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -9,7 +9,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.restassured.RestDocumentationFilter;
 
-public class RecruitmentApiDocuments {
+public class AdministratorApiDocuments {
     private static final String RECRUITMENT_API = "recruitment/";
 
     public static RestDocumentationFilter SAVE_RECRUITMENT_200_DOCUMENT() {

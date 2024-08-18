@@ -1,11 +1,10 @@
-package com.server.crews.auth.acceptance;
+package com.server.crews.acceptance;
 
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
 import com.server.crews.auth.dto.response.AccessTokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
-import com.server.crews.environ.acceptance.AcceptanceTest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -20,8 +19,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode200;
-import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode401;
+import static com.server.crews.acceptance.StatusCodeChecker.checkStatusCode200;
+import static com.server.crews.acceptance.StatusCodeChecker.checkStatusCode401;
 import static com.server.crews.fixture.UserFixture.TEST_EMAIL;
 import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;

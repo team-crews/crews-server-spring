@@ -1,7 +1,7 @@
-package com.server.crews.recruitment.acceptance;
+package com.server.crews.acceptance;
 
-import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode200;
-import static com.server.crews.environ.acceptance.StatusCodeChecker.checkStatusCode400;
+import static com.server.crews.acceptance.StatusCodeChecker.checkStatusCode200;
+import static com.server.crews.acceptance.StatusCodeChecker.checkStatusCode400;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NARRATIVE_ANSWER;
@@ -20,7 +20,6 @@ import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.auth.dto.response.AccessTokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
-import com.server.crews.environ.acceptance.AcceptanceTest;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
 import com.server.crews.recruitment.dto.request.ClosingDateUpdateRequest;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
@@ -81,7 +80,7 @@ public class AdministratorAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.SAVE_RECRUITMENT_200_DOCUMENT())
+                .filter(AdministratorApiDocuments.SAVE_RECRUITMENT_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .body(recruitmentSaveRequest)
@@ -111,7 +110,7 @@ public class AdministratorAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.SAVE_RECRUITMENT_400_DOCUMENT())
+                .filter(AdministratorApiDocuments.SAVE_RECRUITMENT_400_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .body(recruitmentSaveRequest)
@@ -134,7 +133,7 @@ public class AdministratorAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.START_RECRUITMENT_200_DOCUMENT())
+                .filter(AdministratorApiDocuments.START_RECRUITMENT_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .when().patch("/recruitments/in-progress")
@@ -164,7 +163,7 @@ public class AdministratorAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.START_RECRUITMENT_400_DOCUMENT())
+                .filter(AdministratorApiDocuments.START_RECRUITMENT_400_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .when().patch("/recruitments/in-progress")
@@ -194,7 +193,7 @@ public class AdministratorAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.GET_RECRUITMENT_STATUS_200_DOCUMENT())
+                .filter(AdministratorApiDocuments.GET_RECRUITMENT_STATUS_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
                 .when().get("/recruitments/in-progress")
@@ -222,7 +221,7 @@ public class AdministratorAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.GET_RECRUITMENT_200_DOCUMENT())
+                .filter(AdministratorApiDocuments.GET_RECRUITMENT_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
                 .pathParam("recruitment-id", savedRecruitmentDetailsResponse.id())
@@ -258,7 +257,7 @@ public class AdministratorAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.UPDATE_RECRUITMENT_CLOSING_DATE_200_DOCUMENT())
+                .filter(AdministratorApiDocuments.UPDATE_RECRUITMENT_CLOSING_DATE_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
                 .body(closingDateUpdateRequest)
@@ -289,7 +288,7 @@ public class AdministratorAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.SEND_OUTCOME_EMAIL_200_REQUEST())
+                .filter(AdministratorApiDocuments.SEND_OUTCOME_EMAIL_200_REQUEST())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
                 .when().post("/recruitments/announcement")
