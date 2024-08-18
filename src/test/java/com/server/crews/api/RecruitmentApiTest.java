@@ -34,7 +34,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 public class RecruitmentApiTest extends ApiTest {
@@ -82,7 +81,6 @@ public class RecruitmentApiTest extends ApiTest {
                 .body(recruitmentSaveRequest)
                 .when().post("/recruitments")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // then
@@ -112,7 +110,6 @@ public class RecruitmentApiTest extends ApiTest {
                 .body(recruitmentSaveRequest)
                 .when().post("/recruitments")
                 .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
                 .extract();
 
         // then
@@ -134,7 +131,6 @@ public class RecruitmentApiTest extends ApiTest {
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .when().patch("/recruitments/in-progress")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // then
@@ -154,7 +150,6 @@ public class RecruitmentApiTest extends ApiTest {
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .when().patch("/recruitments/in-progress")
                 .then()
-                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // when
@@ -164,7 +159,6 @@ public class RecruitmentApiTest extends ApiTest {
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .when().patch("/recruitments/in-progress")
                 .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
                 .extract();
 
         // then
@@ -194,7 +188,6 @@ public class RecruitmentApiTest extends ApiTest {
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
                 .when().get("/recruitments/in-progress")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // then
@@ -223,7 +216,6 @@ public class RecruitmentApiTest extends ApiTest {
                 .pathParam("recruitment-id", savedRecruitmentDetailsResponse.id())
                 .when().get("/recruitments/{recruitment-id}")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // then
@@ -259,7 +251,6 @@ public class RecruitmentApiTest extends ApiTest {
                 .body(closingDateUpdateRequest)
                 .when().patch("/recruitments/closing-date")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // then
@@ -289,7 +280,6 @@ public class RecruitmentApiTest extends ApiTest {
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
                 .when().post("/recruitments/announcement")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // then

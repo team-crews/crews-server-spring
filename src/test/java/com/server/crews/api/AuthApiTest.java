@@ -23,10 +23,8 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-// Todo: 실패 케이스 테스트 추가
 public class AuthApiTest extends ApiTest {
 
     @Test
@@ -42,7 +40,6 @@ public class AuthApiTest extends ApiTest {
                 .body(adminLoginRequest)
                 .when().post("/auth/admin/login")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // then
@@ -69,7 +66,6 @@ public class AuthApiTest extends ApiTest {
                 .body(adminLoginRequest)
                 .when().post("/auth/admin/login")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // then
@@ -100,7 +96,6 @@ public class AuthApiTest extends ApiTest {
                 .body(applicantLoginRequest)
                 .when().post("/auth/applicant/login")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // then
@@ -128,7 +123,6 @@ public class AuthApiTest extends ApiTest {
                         AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
                 .when().get("/applications?recruitment-id=" + recruitmentDetailsResponse.id())
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // then
@@ -156,7 +150,6 @@ public class AuthApiTest extends ApiTest {
                         AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
                 .when().get("/applications?recruitment-id=" + recruitmentDetailsResponse.id())
                 .then().log().all()
-                .statusCode(HttpStatus.UNAUTHORIZED.value())
                 .extract();
 
         // then

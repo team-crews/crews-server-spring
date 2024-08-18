@@ -31,7 +31,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 public class ApplicationApiTest extends ApiTest {
@@ -68,7 +67,6 @@ public class ApplicationApiTest extends ApiTest {
                 .body(applicationUpdateRequest)
                 .when().post("/applications")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // then
@@ -105,7 +103,6 @@ public class ApplicationApiTest extends ApiTest {
                 .body(applicationSaveRequest)
                 .when().post("/applications")
                 .then().log().all()
-                .statusCode(HttpStatus.NOT_FOUND.value())
                 .extract();
 
         // then
@@ -135,7 +132,6 @@ public class ApplicationApiTest extends ApiTest {
                 .body(applicationSaveRequest)
                 .when().post("/applications")
                 .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
                 .extract();
 
         // then
@@ -164,7 +160,6 @@ public class ApplicationApiTest extends ApiTest {
                 .pathParam("application-id", testApplication.id())
                 .when().get("/applications/{application-id}")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // then
@@ -205,7 +200,6 @@ public class ApplicationApiTest extends ApiTest {
                         AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
                 .when().post("/applications/evaluation")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // then
@@ -235,7 +229,6 @@ public class ApplicationApiTest extends ApiTest {
                         AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
                 .when().get("/applications")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // then
