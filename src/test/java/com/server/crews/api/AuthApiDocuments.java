@@ -1,6 +1,9 @@
 package com.server.crews.api;
 
 import static com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper.document;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -23,7 +26,12 @@ public class AuthApiDocuments {
                         fieldWithPath(".accessToken")
                                 .description("access token"),
                         fieldWithPath(".progress")
-                                .description("모집 공고 상태 (READY: 모집 공고 작성 중, IN_PROGRESS: 모집 중, COMPLETION: 평가 중, ANNOUNCED: 이메일 전송 완료)")
+                                .description(
+                                        "모집 공고 상태 (READY: 모집 공고 작성 중, IN_PROGRESS: 모집 중, COMPLETION: 평가 중, ANNOUNCED: 이메일 전송 완료)")
+                ),
+                responseCookies(
+                        cookieWithName("refreshToken")
+                                .description("리프레시 토큰")
                 ));
     }
 
@@ -43,6 +51,16 @@ public class AuthApiDocuments {
                                 .description("access token"),
                         fieldWithPath(".progress")
                                 .description("모집 공고 상태 (IN_PROGRESS: 모집 중, COMPLETION: 평가 중)")
+                ),
+                responseCookies(
+                        cookieWithName("refreshToken")
+                                .description("리프레시 토큰")
                 ));
+    }
+
+    public static RestDocumentationFilter REFRESH_TOKEN_200_DOCUMENT() {
+        return document(AUTH_API + "토큰 재발급",
+                requestCookies(cookieWithName("refreshToken")
+                        .description("리프레시 토큰")));
     }
 }

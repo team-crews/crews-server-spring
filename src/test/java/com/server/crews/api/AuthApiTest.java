@@ -162,4 +162,36 @@ public class AuthApiTest extends ApiTest {
         // then
         checkStatusCode401(response);
     }
+
+    @Test
+    @DisplayName("액세스 토큰을 재발급 받는다.")
+    void refreshAccessToken() {
+        // given
+        AdminLoginRequest adminLoginRequest = new AdminLoginRequest(TEST_CLUB_NAME, TEST_PASSWORD);
+
+        String refreshToken = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(adminLoginRequest)
+                .when().post("/auth/admin/login")
+                .then()
+                .extract()
+                .cookie("refreshToken");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(AuthApiDocuments.REFRESH_TOKEN_200_DOCUMENT())
+                .cookie("refreshToken", refreshToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(adminLoginRequest)
+                .when().post("/auth/refresh")
+                .then().log().all()
+                .extract();
+
+        // then
+        LoginResponse loginResponse = response.as(LoginResponse.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode200(response);
+            softAssertions.assertThat(loginResponse.accessToken()).isNotNull();
+        });
+    }
 }
