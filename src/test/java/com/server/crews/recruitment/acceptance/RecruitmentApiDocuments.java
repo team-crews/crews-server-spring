@@ -3,6 +3,8 @@ package com.server.crews.recruitment.acceptance;
 import static com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.restassured.RestDocumentationFilter;
@@ -92,5 +94,10 @@ public class RecruitmentApiDocuments {
 
     public static RestDocumentationFilter GET_RECRUITMENT_STATUS_200_DOCUMENT() {
         return document(RECRUITMENT_API + "모집 중 지원 상태를 조회");
+    }
+
+    public static RestDocumentationFilter GET_RECRUITMENT_200_DOCUMENT() {
+        return document(RECRUITMENT_API + "모집 공고(지원서 양식) 상세 조회",
+                pathParameters(parameterWithName("recruitment-id").description("모집 공고 id")));
     }
 }

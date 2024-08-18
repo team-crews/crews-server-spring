@@ -28,6 +28,8 @@ import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.request.SectionSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
+import com.server.crews.recruitment.dto.response.SectionResponse;
+import com.server.crews.recruitment.dto.response.SelectiveQuestionResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -211,6 +213,38 @@ public class RecruitmentAcceptanceTest extends AcceptanceTest {
             softAssertions.assertThat(recruitmentStateInProgressResponse.closingDate()).isNotNull();
             softAssertions.assertThat(recruitmentStateInProgressResponse.applicationCount()).isEqualTo(2);
         });
+    }
 
+    @Test
+    @DisplayName("모집 공고 및 지원서 양식 상세 정보를 조회한다.")
+    void getRecruitmentDetails() {
+        // given
+        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
+        String adminAccessToken = adminTokenResponse.accessToken();
+        RecruitmentDetailsResponse savedRecruitmentDetailsResponse = createRecruitment(adminAccessToken);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.GET_RECRUITMENT_200_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .pathParam("recruitment-id", savedRecruitmentDetailsResponse.id())
+                .when().get("/recruitments/{recruitment-id}")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        RecruitmentDetailsResponse recruitmentDetailsResponse = response.as(RecruitmentDetailsResponse.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode200(response, softAssertions);
+            softAssertions.assertThat(recruitmentDetailsResponse.id()).isNotNull();
+            softAssertions.assertThat(recruitmentDetailsResponse.sections()).isNotEmpty();
+            softAssertions.assertThat(recruitmentDetailsResponse.sections())
+                    .flatExtracting(SectionResponse::narrativeQuestions).isNotEmpty();
+            softAssertions.assertThat(recruitmentDetailsResponse.sections())
+                    .flatExtracting(SectionResponse::selectiveQuestions)
+                    .flatExtracting(SelectiveQuestionResponse::choices).isNotEmpty();
+        });
     }
 }
