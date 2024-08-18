@@ -81,7 +81,7 @@ public class ApplicationService {
                 .collect(toMap(NarrativeQuestion::getId, identity()));
 
         return narrativeAnswerSaveRequests.stream()
-                .map(narrativeQuestionAnswerRequest -> new NarrativeAnswer(narrativeQuestionAnswerRequest.id(),
+                .map(narrativeQuestionAnswerRequest -> new NarrativeAnswer(narrativeQuestionAnswerRequest.answerId(),
                         savedNarrativeQuestionsById.get(narrativeQuestionAnswerRequest.questionId()),
                         narrativeQuestionAnswerRequest.content()))
                 .toList();
@@ -108,7 +108,7 @@ public class ApplicationService {
                 .collect(toMap(SelectiveQuestion::getId, identity()));
 
         return selectiveAnswerSaveRequests.stream()
-                .map(selectiveQuestionAnswerRequest -> new SelectiveAnswer(selectiveQuestionAnswerRequest.id(),
+                .map(selectiveQuestionAnswerRequest -> new SelectiveAnswer(selectiveQuestionAnswerRequest.answerId(),
                         savedChoicesById.get(selectiveQuestionAnswerRequest.choiceId()),
                         savedSelectiveQuestionsById.get(selectiveQuestionAnswerRequest.questionId()))).toList();
     }

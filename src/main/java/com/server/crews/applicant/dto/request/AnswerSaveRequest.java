@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record AnswerSaveRequest(
-        Long id,
+        Long answerId,
         @NotBlank(message = "질문 타입은 공백일 수 없습니다.")
         @QuestionTypeFormat
         String questionType,

@@ -14,6 +14,7 @@ import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
+import com.server.crews.applicant.dto.response.NarrativeAnswerResponse;
 import com.server.crews.applicant.dto.response.SelectiveAnswerResponse;
 import com.server.crews.auth.dto.response.AccessTokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
@@ -47,7 +48,6 @@ public class ApplicationApiTest extends ApiTest {
                 DEFAULT_MAJOR, DEFAULT_NAME, firstAnswerSaveRequests);
         ApplicationDetailsResponse testApplication = createTestApplication(applicantTokenResponse.accessToken(),
                 applicationCreateRequest);
-        System.out.println("testApplication: " + testApplication);
 
         List<AnswerSaveRequest> secondAnswerSaveRequests = List.of(
                 new AnswerSaveRequest(1L, QuestionType.NARRATIVE.name(), 2L, "수정된내용", null),
@@ -57,7 +57,8 @@ public class ApplicationApiTest extends ApiTest {
                 DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, secondAnswerSaveRequests);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(ApplicationApiDocuments.SAVE_APPLICATION_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION,
                         AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
@@ -72,8 +73,10 @@ public class ApplicationApiTest extends ApiTest {
         assertSoftly(softAssertions -> {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(applicationDetailsResponse.id()).isNotNull();
-            softAssertions.assertThat(applicationDetailsResponse.narrativeAnswers()).hasSize(1);
-            softAssertions.assertThat(applicationDetailsResponse.selectiveAnswers()).hasSize(1);
+            softAssertions.assertThat(applicationDetailsResponse.narrativeAnswers())
+                    .flatExtracting(NarrativeAnswerResponse::answerId).containsExactly(1L);
+            softAssertions.assertThat(applicationDetailsResponse.selectiveAnswers())
+                    .flatExtracting(SelectiveAnswerResponse::choices).hasSize(1);
         });
     }
 
