@@ -5,6 +5,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.restassured.RestDocumentationFilter;
@@ -98,6 +99,11 @@ public class RecruitmentApiDocuments {
     public static RestDocumentationFilter GET_RECRUITMENT_200_DOCUMENT() {
         return document(RECRUITMENT_API + "모집 공고(지원서 양식) 상세 조회",
                 pathParameters(parameterWithName("recruitment-id").description("모집 공고 id")));
+    }
+
+    public static RestDocumentationFilter GET_RECRUITMENT_BY_CODE_200_DOCUMENT() {
+        return document(RECRUITMENT_API + "모집 공고 코드 확인",
+                queryParameters(parameterWithName("code").description("모집 공고 코드")));
     }
 
     public static RestDocumentationFilter UPDATE_RECRUITMENT_CLOSING_DATE_200_DOCUMENT() {

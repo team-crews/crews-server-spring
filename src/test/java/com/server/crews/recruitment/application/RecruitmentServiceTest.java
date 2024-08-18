@@ -145,7 +145,7 @@ class RecruitmentServiceTest extends ServiceTest {
                 .getId();
 
         // when
-        RecruitmentDetailsResponse response = recruitmentService.findRecruitmentDetails(recruitmentId);
+        RecruitmentDetailsResponse response = recruitmentService.findRecruitmentDetailsById(recruitmentId);
 
         // then
         List<SectionResponse> sectionResponses = response.sections();

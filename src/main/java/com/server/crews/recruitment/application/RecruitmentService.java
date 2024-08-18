@@ -68,9 +68,19 @@ public class RecruitmentService {
         return new RecruitmentStateInProgressResponse(applicationCount, recruitment.getClosingDate());
     }
 
-    public RecruitmentDetailsResponse findRecruitmentDetails(Long recruitmentId) {
+    public RecruitmentDetailsResponse findRecruitmentDetailsById(Long recruitmentId) {
         Recruitment recruitment = recruitmentRepository.findWithSectionsById(recruitmentId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+        return findRecruitmentDetails(recruitment);
+    }
+
+    public RecruitmentDetailsResponse findRecruitmentDetailsByCode(String code) {
+        Recruitment recruitment = recruitmentRepository.findWithSectionsByCode(code)
+                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+        return findRecruitmentDetails(recruitment);
+    }
+
+    public RecruitmentDetailsResponse findRecruitmentDetails(Recruitment recruitment) {
         List<Section> sections = recruitment.getSections();
         List<NarrativeQuestion> narrativeQuestions = narrativeQuestionRepository.findAllBySectionIn(sections);
         List<SelectiveQuestion> selectiveQuestions = selectiveQuestionRepository.findAllWithChoicesInSections(sections);

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -54,12 +55,21 @@ public class RecruitmentController {
     }
 
     /**
-     * 지원서 양식 상세 정보를 조회한다.
+     * 모집 공고 상세 정보를 id로 조회한다.
      */
     @GetMapping("/{recruitment-id}")
     public ResponseEntity<RecruitmentDetailsResponse> getRecruitmentDetails(
             @PathVariable(value = "recruitment-id") Long recruitmentId) {
-        return ResponseEntity.ok(recruitmentService.findRecruitmentDetails(recruitmentId));
+        return ResponseEntity.ok(recruitmentService.findRecruitmentDetailsById(recruitmentId));
+    }
+
+    /**
+     * 모집 공고 상세 정보를 모집 공고 코드로 조회한다.
+     */
+    @GetMapping
+    public ResponseEntity<RecruitmentDetailsResponse> getRecruitmentDetailsByCode(
+            @RequestParam(value = "code") String code) {
+        return ResponseEntity.ok(recruitmentService.findRecruitmentDetailsByCode(code));
     }
 
     /**

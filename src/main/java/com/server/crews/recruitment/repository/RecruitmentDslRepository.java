@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface RecruitmentDslRepository {
     Optional<Recruitment> findWithSectionsById(Long id);
+    Optional<Recruitment> findWithSectionsByCode(String code);
 }
