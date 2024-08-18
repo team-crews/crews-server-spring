@@ -9,7 +9,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.restassured.RestDocumentationFilter;
 
-public class AdministratorApiDocuments {
+public class RecruitmentApiDocuments {
     private static final String RECRUITMENT_API = "recruitment/";
 
     public static RestDocumentationFilter SAVE_RECRUITMENT_200_DOCUMENT() {
@@ -108,14 +108,5 @@ public class AdministratorApiDocuments {
 
     public static RestDocumentationFilter SEND_OUTCOME_EMAIL_200_REQUEST() {
         return document(RECRUITMENT_API + "지원 결과 메일 전송");
-    }
-
-    public static RestDocumentationFilter GET_APPLICATIONS_200_DOCUMENT() {
-        return document(RECRUITMENT_API + "지원서 목록 조회");
-    }
-
-    public static RestDocumentationFilter EVALUATE_APPLICATIONS_200_DOCUMENT() {
-        return document(RECRUITMENT_API + "지원서 평가",
-                requestFields(fieldWithPath(".passApplicationIds").description("합격 지원서 id 목록")));
     }
 }

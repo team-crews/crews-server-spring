@@ -1,9 +1,14 @@
 package com.server.crews.api;
 
+import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
+import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
+import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NARRATIVE_ANSWER;
+import static com.server.crews.fixture.ApplicationFixture.DEFAULT_STUDENT_NUMBER;
 import static com.server.crews.fixture.RecruitmentFixture.RECRUITMENT_SAVE_REQUEST;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
+import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
@@ -12,6 +17,7 @@ import com.server.crews.auth.dto.response.AccessTokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.environ.DatabaseCleaner;
 import com.server.crews.external.application.EmailService;
+import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
@@ -19,6 +25,7 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +59,13 @@ public abstract class ApiTest {
                 .addFilter(documentationConfiguration(restDocumentation))
                 .build();
         databaseCleaner.clear();
+    }
+
+    protected ApplicationSaveRequest applicationSaveRequest() {
+        List<AnswerSaveRequest> answerSaveRequests = List.of(
+                new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
+                new AnswerSaveRequest(QuestionType.SELECTIVE, 1L, null, List.of(1L, 2L)));
+        return new ApplicationSaveRequest(DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
     }
 
     protected AccessTokenResponse signUpAdmin(String email, String password) {

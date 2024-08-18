@@ -2,10 +2,6 @@ package com.server.crews.api;
 
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
-import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
-import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
-import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NARRATIVE_ANSWER;
-import static com.server.crews.fixture.ApplicationFixture.DEFAULT_STUDENT_NUMBER;
 import static com.server.crews.fixture.QuestionFixture.STRENGTH_QUESTION;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CLOSING_DATE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
@@ -16,11 +12,7 @@ import static com.server.crews.fixture.UserFixture.TEST_EMAIL;
 import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
-import com.server.crews.applicant.dto.request.EvaluationRequest;
-import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
-import com.server.crews.applicant.dto.response.ApplicationsResponse;
 import com.server.crews.auth.dto.response.AccessTokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
@@ -37,7 +29,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,7 +36,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-public class AdministratorApiTest extends ApiTest {
+public class RecruitmentApiTest extends ApiTest {
 
     @Test
     @DisplayName("모집 공고를 저장한다.")
@@ -84,7 +75,7 @@ public class AdministratorApiTest extends ApiTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(AdministratorApiDocuments.SAVE_RECRUITMENT_200_DOCUMENT())
+                .filter(RecruitmentApiDocuments.SAVE_RECRUITMENT_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .body(recruitmentSaveRequest)
@@ -114,7 +105,7 @@ public class AdministratorApiTest extends ApiTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(AdministratorApiDocuments.SAVE_RECRUITMENT_400_DOCUMENT())
+                .filter(RecruitmentApiDocuments.SAVE_RECRUITMENT_400_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .body(recruitmentSaveRequest)
@@ -137,7 +128,7 @@ public class AdministratorApiTest extends ApiTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(AdministratorApiDocuments.START_RECRUITMENT_200_DOCUMENT())
+                .filter(RecruitmentApiDocuments.START_RECRUITMENT_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .when().patch("/recruitments/in-progress")
@@ -167,7 +158,7 @@ public class AdministratorApiTest extends ApiTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(AdministratorApiDocuments.START_RECRUITMENT_400_DOCUMENT())
+                .filter(RecruitmentApiDocuments.START_RECRUITMENT_400_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .when().patch("/recruitments/in-progress")
@@ -197,7 +188,7 @@ public class AdministratorApiTest extends ApiTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(AdministratorApiDocuments.GET_RECRUITMENT_STATUS_200_DOCUMENT())
+                .filter(RecruitmentApiDocuments.GET_RECRUITMENT_STATUS_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
                 .when().get("/recruitments/in-progress")
@@ -225,7 +216,7 @@ public class AdministratorApiTest extends ApiTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(AdministratorApiDocuments.GET_RECRUITMENT_200_DOCUMENT())
+                .filter(RecruitmentApiDocuments.GET_RECRUITMENT_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
                 .pathParam("recruitment-id", savedRecruitmentDetailsResponse.id())
@@ -261,7 +252,7 @@ public class AdministratorApiTest extends ApiTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(AdministratorApiDocuments.UPDATE_RECRUITMENT_CLOSING_DATE_200_DOCUMENT())
+                .filter(RecruitmentApiDocuments.UPDATE_RECRUITMENT_CLOSING_DATE_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
                 .body(closingDateUpdateRequest)
@@ -292,7 +283,7 @@ public class AdministratorApiTest extends ApiTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(AdministratorApiDocuments.SEND_OUTCOME_EMAIL_200_REQUEST())
+                .filter(RecruitmentApiDocuments.SEND_OUTCOME_EMAIL_200_REQUEST())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
                 .when().post("/recruitments/announcement")
@@ -302,81 +293,5 @@ public class AdministratorApiTest extends ApiTest {
 
         // then
         checkStatusCode200(response);
-    }
-
-    @Test
-    @DisplayName("한 공고의 모든 지원서 목록을 조회한다.")
-    void getAllApplicationsByRecruitment() {
-        // given
-        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
-        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        AccessTokenResponse applicantATokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
-                "A" + TEST_EMAIL, TEST_PASSWORD);
-        AccessTokenResponse applicantBTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
-                "B" + TEST_EMAIL, TEST_PASSWORD);
-
-        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest();
-        createTestApplication(applicantATokenResponse.accessToken(), applicationSaveRequest);
-        createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(AdministratorApiDocuments.GET_APPLICATIONS_200_DOCUMENT())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION,
-                        AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
-                .when().get("/applications")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
-
-        // then
-        List<ApplicationsResponse> applicationsResponses = Arrays.stream(response.as(ApplicationsResponse[].class))
-                .toList();
-        assertSoftly(softAssertions -> {
-            checkStatusCode200(response, softAssertions);
-            softAssertions.assertThat(applicationsResponses).hasSize(2);
-        });
-    }
-
-    @Test
-    @DisplayName("지원서들을 평가한다.")
-    void evaluate() {
-        // given
-        AccessTokenResponse adminTokenResponse = signUpAdmin(TEST_EMAIL, TEST_PASSWORD);
-        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        AccessTokenResponse applicantATokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
-                "A" + TEST_EMAIL, TEST_PASSWORD);
-        AccessTokenResponse applicantBTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
-                "B" + TEST_EMAIL, TEST_PASSWORD);
-
-        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest();
-        ApplicationDetailsResponse applicationADetailsResponse = createTestApplication(
-                applicantATokenResponse.accessToken(), applicationSaveRequest);
-        createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
-
-        EvaluationRequest evaluationRequest = new EvaluationRequest(List.of(applicationADetailsResponse.id()));
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(AdministratorApiDocuments.EVALUATE_APPLICATIONS_200_DOCUMENT())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(evaluationRequest)
-                .header(HttpHeaders.AUTHORIZATION,
-                        AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
-                .when().post("/applications/evaluation")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
-
-        // then
-        checkStatusCode200(response);
-    }
-
-    private ApplicationSaveRequest applicationSaveRequest() {
-        List<AnswerSaveRequest> answerSaveRequests = List.of(
-                new AnswerSaveRequest(QuestionType.NARRATIVE, 2L, DEFAULT_NARRATIVE_ANSWER, List.of()),
-                new AnswerSaveRequest(QuestionType.SELECTIVE, 1L, null, List.of(1L, 2L)));
-        return new ApplicationSaveRequest(DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
     }
 }
