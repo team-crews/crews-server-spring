@@ -6,7 +6,7 @@ import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
-import com.server.crews.auth.dto.response.AccessTokenResponse;
+import com.server.crews.auth.dto.response.LoginResponse;
 import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.environ.service.ServiceTest;
@@ -34,44 +34,44 @@ class AuthServiceTest extends ServiceTest {
     private JwtTokenProvider jwtTokenProvider;
 
     @Test
-    @DisplayName("[동아리 관리자] 가입되지 않은 관리자가 로그인 요청을 하면 계정과 모집 공고를 생성하고 액세스 토큰을 발급한다.")
+    @DisplayName("동아리 관리자가 로그인한다.")
     void loginNotSignedUpAdmin() {
         // given
-        String email = "new@gamil.com";
+        String clubName = "멋쟁이사자처럼";
         String password = "new password";
-        AdminLoginRequest request = new AdminLoginRequest(email, password);
+        AdminLoginRequest request = new AdminLoginRequest(clubName, password);
 
         // when
-        AccessTokenResponse accessTokenResponse = authService.loginForAdmin(request);
+        LoginResponse loginResponse = authService.loginForAdmin(request);
 
         // then
-        Optional<Administrator> createdAdmin = administratorRepository.findById(accessTokenResponse.userId());
+        Optional<Administrator> createdAdmin = administratorRepository.findById(loginResponse.userId());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdAdmin).isNotEmpty();
-            softAssertions.assertThat(accessTokenResponse.accessToken()).isNotNull();
+            softAssertions.assertThat(loginResponse.accessToken()).isNotNull();
         });
     }
 
     @Test
-    @DisplayName("[동아리 관리자] 가입된 관리자가 로그인 요청을 하면 액세스 토큰을 발급한다.")
+    @DisplayName("가입된 관리자가 로그인 요청을 하면 액세스 토큰을 발급한다.")
     void loginAdmin() {
         // given
         Administrator administrator = LIKE_LION_ADMIN().administrator();
         AdminLoginRequest request = new AdminLoginRequest(administrator.getClubName(), administrator.getPassword());
 
         // when
-        AccessTokenResponse accessTokenResponse = authService.loginForAdmin(request);
+        LoginResponse loginResponse = authService.loginForAdmin(request);
 
         // then
-        Optional<Administrator> createdAdmin = administratorRepository.findById(accessTokenResponse.userId());
+        Optional<Administrator> createdAdmin = administratorRepository.findById(loginResponse.userId());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdAdmin).isNotEmpty();
-            softAssertions.assertThat(accessTokenResponse.accessToken()).isNotNull();
+            softAssertions.assertThat(loginResponse.accessToken()).isNotNull();
         });
     }
 
     @Test
-    @DisplayName("[동아리 지원자] 가입되지 않은 지원자가 로그인 요청을 하면 계정을 생성하고 액세스 토큰을 발급한다.")
+    @DisplayName("가입되지 않은 지원자가 로그인 요청을 하면 계정을 생성하고 액세스 토큰을 발급한다.")
     void loginNotSignedUpApplicant() {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
@@ -81,18 +81,18 @@ class AuthServiceTest extends ServiceTest {
         ApplicantLoginRequest request = new ApplicantLoginRequest(recruitment.getCode(), email, password);
 
         // when
-        AccessTokenResponse accessTokenResponse = authService.loginForApplicant(request);
+        LoginResponse loginResponse = authService.loginForApplicant(request);
 
         // then
-        Optional<Applicant> createdApplicant = applicantRepository.findById(accessTokenResponse.userId());
+        Optional<Applicant> createdApplicant = applicantRepository.findById(loginResponse.userId());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdApplicant).isNotEmpty();
-            softAssertions.assertThat(accessTokenResponse.accessToken()).isNotNull();
+            softAssertions.assertThat(loginResponse.accessToken()).isNotNull();
         });
     }
 
     @Test
-    @DisplayName("[동아리 지원자] 가입된 지원자가 로그인 요청을 하면 액세스 토큰을 발급한다.")
+    @DisplayName("가입된 지원자가 로그인 요청을 하면 액세스 토큰을 발급한다.")
     void loginApplicant() {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
@@ -101,13 +101,13 @@ class AuthServiceTest extends ServiceTest {
         ApplicantLoginRequest request = new ApplicantLoginRequest(recruitment.getCode(), applicant.getEmail(), applicant.getPassword());
 
         // when
-        AccessTokenResponse accessTokenResponse = authService.loginForApplicant(request);
+        LoginResponse loginResponse = authService.loginForApplicant(request);
 
         // then
-        Optional<Applicant> createdApplicant = applicantRepository.findById(accessTokenResponse.userId());
+        Optional<Applicant> createdApplicant = applicantRepository.findById(loginResponse.userId());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdApplicant).isNotEmpty();
-            softAssertions.assertThat(accessTokenResponse.accessToken()).isNotNull();
+            softAssertions.assertThat(loginResponse.accessToken()).isNotNull();
         });
     }
 

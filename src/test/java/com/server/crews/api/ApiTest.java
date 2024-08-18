@@ -13,7 +13,7 @@ import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
-import com.server.crews.auth.dto.response.AccessTokenResponse;
+import com.server.crews.auth.dto.response.LoginResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.environ.DatabaseCleaner;
 import com.server.crews.external.application.EmailService;
@@ -70,15 +70,15 @@ public abstract class ApiTest {
                 answerSaveRequests);
     }
 
-    protected AccessTokenResponse signUpAdmin(String email, String password) {
+    protected LoginResponse signUpAdmin(String clubName, String password) {
         ExtractableResponse<Response> response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(new AdminLoginRequest(email, password))
+                .body(new AdminLoginRequest(clubName, password))
                 .when().post("/auth/admin/login")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
-        return response.as(AccessTokenResponse.class);
+        return response.as(LoginResponse.class);
     }
 
     protected RecruitmentDetailsResponse createRecruitment(String accessToken) {
@@ -97,7 +97,7 @@ public abstract class ApiTest {
         return response.as(RecruitmentDetailsResponse.class);
     }
 
-    protected AccessTokenResponse signUpApplicant(String recruitmentCode, String email, String password) {
+    protected LoginResponse signUpApplicant(String recruitmentCode, String email, String password) {
         ExtractableResponse<Response> response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(new ApplicantLoginRequest(recruitmentCode, email, password))
@@ -105,7 +105,7 @@ public abstract class ApiTest {
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
-        return response.as(AccessTokenResponse.class);
+        return response.as(LoginResponse.class);
     }
 
     protected ApplicationDetailsResponse createTestApplication(String accessToken,
