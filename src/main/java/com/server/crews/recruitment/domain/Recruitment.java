@@ -96,6 +96,10 @@ public class Recruitment {
         this.progress = Progress.ANNOUNCED;
     }
 
+    public void close() {
+        this.progress = Progress.COMPLETION;
+    }
+
     public void updateClosingDate(LocalDateTime closingDate) {
         validateClosingDate(closingDate);
         this.closingDate = closingDate;
@@ -107,5 +111,9 @@ public class Recruitment {
 
     public boolean isStarted() {
         return this.progress != Progress.READY;
+    }
+
+    public boolean hasPassedClosingDate() {
+        return LocalDateTime.now().isAfter(closingDate);
     }
 }

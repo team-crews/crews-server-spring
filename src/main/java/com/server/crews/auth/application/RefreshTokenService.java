@@ -3,7 +3,7 @@ package com.server.crews.auth.application;
 import com.server.crews.auth.domain.RefreshToken;
 import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.RefreshTokenWithValidity;
-import com.server.crews.auth.dto.response.AccessTokenResponse;
+import com.server.crews.auth.dto.response.LoginResponse;
 import com.server.crews.auth.repository.RefreshTokenRepository;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
@@ -34,7 +34,7 @@ public class RefreshTokenService {
         return new RefreshTokenWithValidity(refreshTokenValidityInSecond, refreshToken);
     }
 
-    public AccessTokenResponse renew(String refreshToken) {
+    public LoginResponse renew(String refreshToken) {
         jwtTokenProvider.validateRefreshToken(refreshToken);
         refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new CrewsException(ErrorCode.INVALID_REFRESH_TOKEN));
@@ -43,6 +43,6 @@ public class RefreshTokenService {
         long id = Long.parseLong(payload);
         Role role = jwtTokenProvider.getRole(refreshToken);
         String accessToken = jwtTokenProvider.createAccessToken(role, payload);
-        return new AccessTokenResponse(id, accessToken);
+        return new LoginResponse(id, accessToken, null);
     }
 }

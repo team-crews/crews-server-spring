@@ -6,11 +6,12 @@ import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
-import com.server.crews.auth.dto.response.AccessTokenResponse;
+import com.server.crews.auth.dto.response.LoginResponse;
 import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
+import com.server.crews.recruitment.domain.Progress;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,14 +27,15 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public AccessTokenResponse loginForAdmin(AdminLoginRequest request) {
+    public LoginResponse loginForAdmin(AdminLoginRequest request) {
         String clubName = request.clubName();
         String password = request.password();
 
         Administrator administrator = administratorRepository.findByClubName(clubName)
                 .orElseGet(() -> createAdmin(clubName, password));
         String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, clubName);
-        return new AccessTokenResponse(administrator.getId(), accessToken);
+        Progress progress = determineProgress(administrator);
+        return new LoginResponse(administrator.getId(), accessToken, progress);
     }
 
     private Administrator createAdmin(String clubName, String password) {
@@ -41,8 +43,20 @@ public class AuthService {
         return administratorRepository.save(administrator);
     }
 
+    private Progress determineProgress(Administrator administrator) {
+        return recruitmentRepository.findByPublisher(administrator.getId())
+                .map(recruitment -> {
+                    if (recruitment.hasPassedClosingDate()) {
+                        recruitment.close();
+                        return Progress.COMPLETION;
+                    }
+                    return recruitment.getProgress();
+                })
+                .orElse(Progress.READY);
+    }
+
     @Transactional
-    public AccessTokenResponse loginForApplicant(ApplicantLoginRequest request) {
+    public LoginResponse loginForApplicant(ApplicantLoginRequest request) {
         String email = request.email();
         String password = request.password();
         Recruitment recruitment = recruitmentRepository.findByCode(request.recruitmentCode())
@@ -51,7 +65,15 @@ public class AuthService {
         Applicant applicant = applicantRepository.findByEmailAndRecruitment(email, recruitment)
                 .orElseGet(() -> createApplicant(email, password, recruitment));
         String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, email);
-        return new AccessTokenResponse(applicant.getId(), accessToken);
+        Progress progress = determineProgress(recruitment);
+        return new LoginResponse(applicant.getId(), accessToken, progress);
+    }
+
+    private Progress determineProgress(Recruitment recruitment) {
+        if (recruitment.hasPassedClosingDate()) {
+            return Progress.COMPLETION;
+        }
+        return Progress.IN_PROGRESS;
     }
 
     private Applicant createApplicant(String email, String password, Recruitment recruitment) {
