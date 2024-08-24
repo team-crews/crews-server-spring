@@ -20,6 +20,7 @@ import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressRespo
 import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ public class RecruitmentService {
     private final AdministratorRepository administratorRepository;
     private final ApplicationRepository applicationRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final Clock clock;
 
     @Transactional
     public RecruitmentDetailsResponse saveRecruitment(Long publisherId, RecruitmentSaveRequest request) {
@@ -104,7 +106,7 @@ public class RecruitmentService {
     @Transactional
     @Scheduled(cron = "${schedules.cron.closing-recruitment}")
     public void closeRecruitments() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(clock);
         List<Recruitment> recruitments = recruitmentRepository.findAll();
         recruitments.stream()
                 .filter(recruitment -> recruitment.hasPassedDeadline(now))

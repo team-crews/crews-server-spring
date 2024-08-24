@@ -17,7 +17,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -78,7 +80,8 @@ public class Recruitment {
     }
 
     private void validateDeadline(LocalDateTime deadline) {
-        if (deadline.isBefore(LocalDateTime.now())) {
+        LocalDateTime now = LocalDateTime.now(Clock.system(ZoneId.of("Asia/Seoul")));
+        if (deadline.isBefore(now)) {
             throw new CrewsException(ErrorCode.INVALID_DEADLINE);
         }
         if (deadline.getMinute() != 0 || deadline.getSecond() != 0 || deadline.getNano() != 0) {
