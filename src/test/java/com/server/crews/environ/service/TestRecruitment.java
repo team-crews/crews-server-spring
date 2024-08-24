@@ -10,7 +10,7 @@ import com.server.crews.recruitment.domain.SelectiveQuestion;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CLOSING_DATE;
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
 
 public class TestRecruitment {
@@ -31,7 +31,7 @@ public class TestRecruitment {
 
     public TestRecruitment create(String code, String clubName, Administrator publisher) {
         Recruitment recruitment = new Recruitment(null, code, clubName + " 99기 모집", DEFAULT_DESCRIPTION,
-                DEFAULT_CLOSING_DATE, publisher, List.of());
+                DEFAULT_DEADLINE, publisher, List.of());
         this.recruitment = environ.recruitmentRepository().save(recruitment);
         return this;
     }

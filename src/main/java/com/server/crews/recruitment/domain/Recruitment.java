@@ -53,8 +53,8 @@ public class Recruitment {
     @Column(name = "progress", nullable = false)
     private Progress progress;
 
-    @Column(name = "closing_date", nullable = false)
-    private LocalDateTime closingDate;
+    @Column(name = "deadline", nullable = false)
+    private LocalDateTime deadline;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publisher_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
@@ -64,22 +64,25 @@ public class Recruitment {
     @Column(name = "created_date", updatable = false, nullable = false)
     private LocalDateTime createdDate;
 
-    public Recruitment(Long id, String code, String title, String description, LocalDateTime closingDate,
+    public Recruitment(Long id, String code, String title, String description, LocalDateTime deadline,
                        Administrator publisher, List<Section> sections) {
-        validateClosingDate(closingDate);
+        validateDeadline(deadline);
         this.id = id;
         this.code = code;
         this.title = title;
         this.description = description;
-        this.closingDate = closingDate;
+        this.deadline = deadline;
         this.publisher = publisher;
         this.progress = Progress.READY;
         addSections(sections);
     }
 
-    private void validateClosingDate(LocalDateTime closingDate) {
-        if (closingDate.isBefore(LocalDateTime.now())) {
-            throw new CrewsException(ErrorCode.INVALID_CLOSING_DATE);
+    private void validateDeadline(LocalDateTime deadline) {
+        if (deadline.isBefore(LocalDateTime.now())) {
+            throw new CrewsException(ErrorCode.INVALID_DEADLINE);
+        }
+        if (deadline.getMinute() != 0 || deadline.getSecond() != 0 || deadline.getNano() != 0) {
+            throw new CrewsException(ErrorCode.INVALID_DEADLINE);
         }
     }
 
@@ -100,9 +103,9 @@ public class Recruitment {
         this.progress = Progress.COMPLETION;
     }
 
-    public void updateClosingDate(LocalDateTime closingDate) {
-        validateClosingDate(closingDate);
-        this.closingDate = closingDate;
+    public void updateDeadline(LocalDateTime deadline) {
+        validateDeadline(deadline);
+        this.deadline = deadline;
     }
 
     public boolean isAnnounced() {
@@ -113,7 +116,7 @@ public class Recruitment {
         return this.progress != Progress.READY;
     }
 
-    public boolean hasPassedClosingDate() {
-        return LocalDateTime.now().isAfter(closingDate);
+    public boolean hasPassedDeadline() {
+        return LocalDateTime.now().isAfter(deadline);
     }
 }

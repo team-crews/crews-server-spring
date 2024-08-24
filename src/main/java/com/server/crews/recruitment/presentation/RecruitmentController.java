@@ -3,7 +3,7 @@ package com.server.crews.recruitment.presentation;
 import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.presentation.AdminAuthentication;
 import com.server.crews.recruitment.application.RecruitmentService;
-import com.server.crews.recruitment.dto.request.ClosingDateUpdateRequest;
+import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
@@ -75,11 +75,11 @@ public class RecruitmentController {
     /**
      * 모집 마감기한을 변경한다.
      */
-    @PatchMapping("/closing-date")
-    public ResponseEntity<Void> updateClosingDate(
+    @PatchMapping("/deadline")
+    public ResponseEntity<Void> updateDeadline(
             @AdminAuthentication LoginUser loginUser,
-            @RequestBody ClosingDateUpdateRequest request) {
-        recruitmentService.updateClosingDate(loginUser.userId(), request);
+            @RequestBody DeadlineUpdateRequest request) {
+        recruitmentService.updateDeadline(loginUser.userId(), request);
         return ResponseEntity.ok().build();
     }
 

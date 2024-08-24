@@ -27,7 +27,7 @@ public class RecruitmentApiDocuments {
                 fieldWithPath(".description")
                         .description("모집 공고 설명")
                         .optional(),
-                fieldWithPath(".closingDate")
+                fieldWithPath(".deadline")
                         .description("모집 마감일"),
                 fieldWithPath(".sections")
                         .description("섹션 목록")
@@ -81,7 +81,7 @@ public class RecruitmentApiDocuments {
                         fieldWithPath(".title").description("모집 공고 제목"),
                         fieldWithPath(".description").description("모집 공고 설명"),
                         fieldWithPath(".sections").description("섹션 목록"),
-                        fieldWithPath(".closingDate").description("현재 날짜 이후여야 하는 모집 마감일")));
+                        fieldWithPath(".deadline").description("현재 날짜 이후여야 하는 모집 마감일")));
     }
 
     public static RestDocumentationFilter START_RECRUITMENT_200_DOCUMENT() {
@@ -106,9 +106,9 @@ public class RecruitmentApiDocuments {
                 queryParameters(parameterWithName("code").description("모집 공고 코드")));
     }
 
-    public static RestDocumentationFilter UPDATE_RECRUITMENT_CLOSING_DATE_200_DOCUMENT() {
+    public static RestDocumentationFilter UPDATE_RECRUITMENT_DEADLINE_200_DOCUMENT() {
         return document(RECRUITMENT_API + "모집 마감일 변경",
-                requestFields(fieldWithPath(".closingDate").description("변경된 마감일")));
+                requestFields(fieldWithPath(".deadline").description("변경된 마감일")));
     }
 
     public static RestDocumentationFilter SEND_OUTCOME_EMAIL_200_REQUEST() {

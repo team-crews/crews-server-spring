@@ -3,7 +3,7 @@ package com.server.crews.recruitment.application;
 import static com.server.crews.fixture.QuestionFixture.NARRATIVE_QUESTION;
 import static com.server.crews.fixture.QuestionFixture.SELECTIVE_QUESTION;
 import static com.server.crews.fixture.QuestionFixture.STRENGTH_QUESTION;
-import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CLOSING_DATE;
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_TITLE;
 import static com.server.crews.fixture.RecruitmentFixture.RECRUITMENT_SAVE_REQUEST;
@@ -77,7 +77,7 @@ class RecruitmentServiceTest extends ServiceTest {
                 DEFAULT_DESCRIPTION,
                 List.of(selectiveQuestionCreateRequest));
         RecruitmentSaveRequest recruitmentCreateRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE,
-                DEFAULT_DESCRIPTION, List.of(sectionsCreateRequest), DEFAULT_CLOSING_DATE.toString());
+                DEFAULT_DESCRIPTION, List.of(sectionsCreateRequest), DEFAULT_DEADLINE.toString());
 
         RecruitmentDetailsResponse savedRecruitmentResponse = recruitmentService.saveRecruitment(publisher.getId(),
                 recruitmentCreateRequest);
@@ -93,7 +93,7 @@ class RecruitmentServiceTest extends ServiceTest {
         SectionSaveRequest sectionSaveRequest = new SectionSaveRequest(sectionId, "변경된 섹션 이름", DEFAULT_DESCRIPTION,
                 List.of(selectiveQuestionSaveRequest));
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(recruitmentId, "변경된 모집 공고 제목",
-                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_CLOSING_DATE.toString());
+                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_DEADLINE.toString());
 
         // when
         RecruitmentDetailsResponse response = recruitmentService.saveRecruitment(publisher.getId(),

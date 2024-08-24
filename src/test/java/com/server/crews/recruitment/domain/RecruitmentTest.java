@@ -17,14 +17,14 @@ class RecruitmentTest {
 
     @Test
     @DisplayName("모집 마감일은 지금 이전이 될 수 없다.")
-    void validateClosingDate() {
+    void validateDeadline() {
         // given
-        LocalDateTime invalidClosingDate = LocalDateTime.now().minusDays(1L);
+        LocalDateTime invalidDeadline = LocalDateTime.now().minusDays(1L);
 
         // when & then
-        assertThatThrownBy(() -> new Recruitment(null, DEFAULT_CODE, DEFAULT_TITLE, DEFAULT_DESCRIPTION, invalidClosingDate,
+        assertThatThrownBy(() -> new Recruitment(null, DEFAULT_CODE, DEFAULT_TITLE, DEFAULT_DESCRIPTION, invalidDeadline,
                 TEST_ADMIN(), List.of()))
                 .isInstanceOf(CrewsException.class)
-                .hasMessage(ErrorCode.INVALID_CLOSING_DATE.getMessage());
+                .hasMessage(ErrorCode.INVALID_DEADLINE.getMessage());
     }
 }

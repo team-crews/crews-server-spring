@@ -3,7 +3,7 @@ package com.server.crews.api;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
 import static com.server.crews.fixture.QuestionFixture.STRENGTH_QUESTION;
-import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CLOSING_DATE;
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_TITLE;
 import static com.server.crews.fixture.RecruitmentFixture.QUESTION_REQUESTS;
@@ -17,7 +17,7 @@ import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.auth.dto.response.LoginResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
-import com.server.crews.recruitment.dto.request.ClosingDateUpdateRequest;
+import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
 import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
@@ -29,7 +29,9 @@ import com.server.crews.recruitment.dto.response.SelectiveQuestionResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,7 +54,7 @@ public class RecruitmentApiTest extends ApiTest {
                 DEFAULT_DESCRIPTION,
                 List.of(selectiveQuestionCreateRequest));
         RecruitmentSaveRequest recruitmentCreateRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE,
-                DEFAULT_DESCRIPTION, List.of(sectionsCreateRequest), DEFAULT_CLOSING_DATE.toString());
+                DEFAULT_DESCRIPTION, List.of(sectionsCreateRequest), DEFAULT_DEADLINE.toString());
 
         RecruitmentDetailsResponse savedRecruitmentResponse = createRecruitment(adminTokenResponse.accessToken(),
                 recruitmentCreateRequest);
@@ -71,7 +73,7 @@ public class RecruitmentApiTest extends ApiTest {
                 QUESTION_REQUESTS);
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(recruitmentId, "변경된 모집 공고 제목",
                 DEFAULT_DESCRIPTION, List.of(sectionUpdateRequest, newSectionCreateRequest),
-                DEFAULT_CLOSING_DATE.toString());
+                DEFAULT_DEADLINE.toString());
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -93,14 +95,16 @@ public class RecruitmentApiTest extends ApiTest {
 
     @Test
     @DisplayName("유효하지 않은 마감일로 모집 공고를 저장한다.")
-    void saveRecruitmentWithInvalidClosingDate() {
+    void saveRecruitmentWithInvalidDeadline() {
         // given
         LoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String accessToken = adminTokenResponse.accessToken();
 
-        String invalidClosingDate = LocalDateTime.now().minusDays(10).toString();
+        String date = LocalDate.now().plusDays(10).toString();
+        String time = LocalTime.of(1, 10).toString();
+        String invalidDeadline = date + "T" + time;
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE,
-                DEFAULT_DESCRIPTION, null, invalidClosingDate);
+                DEFAULT_DESCRIPTION, null, invalidDeadline);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -195,7 +199,7 @@ public class RecruitmentApiTest extends ApiTest {
                 RecruitmentStateInProgressResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode200(response, softAssertions);
-            softAssertions.assertThat(recruitmentStateInProgressResponse.closingDate()).isNotNull();
+            softAssertions.assertThat(recruitmentStateInProgressResponse.deadline()).isNotNull();
             softAssertions.assertThat(recruitmentStateInProgressResponse.applicationCount()).isEqualTo(2);
         });
     }
@@ -256,22 +260,22 @@ public class RecruitmentApiTest extends ApiTest {
 
     @Test
     @DisplayName("모집 마감기한을 변경한다.")
-    void updateClosingDate() {
+    void updateDeadline() {
         // given
         LoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String adminAccessToken = adminTokenResponse.accessToken();
         createRecruitment(adminAccessToken);
 
-        ClosingDateUpdateRequest closingDateUpdateRequest = new ClosingDateUpdateRequest(
-                LocalDateTime.now().plusMinutes(1).toString());
+        DeadlineUpdateRequest deadlineUpdateRequest = new DeadlineUpdateRequest(
+                LocalDateTime.of(2030, 8, 5, 18, 0).toString());
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.UPDATE_RECRUITMENT_CLOSING_DATE_200_DOCUMENT())
+                .filter(RecruitmentApiDocuments.UPDATE_RECRUITMENT_DEADLINE_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
-                .body(closingDateUpdateRequest)
-                .when().patch("/recruitments/closing-date")
+                .body(deadlineUpdateRequest)
+                .when().patch("/recruitments/deadline")
                 .then().log().all()
                 .extract();
 

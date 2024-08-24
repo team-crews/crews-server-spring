@@ -13,7 +13,7 @@ import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
-import com.server.crews.recruitment.dto.request.ClosingDateUpdateRequest;
+import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
@@ -65,7 +65,7 @@ public class RecruitmentService {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
         int applicationCount = applicationRepository.countAllByRecruitment(recruitment);
-        return new RecruitmentStateInProgressResponse(applicationCount, recruitment.getClosingDate());
+        return new RecruitmentStateInProgressResponse(applicationCount, recruitment.getDeadline());
     }
 
     public RecruitmentDetailsResponse findRecruitmentDetailsById(Long recruitmentId) {
@@ -93,11 +93,11 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public void updateClosingDate(Long publisherId, ClosingDateUpdateRequest request) {
+    public void updateDeadline(Long publisherId, DeadlineUpdateRequest request) {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
-        LocalDateTime closingDate = LocalDateTime.parse(request.closingDate());
-        recruitment.updateClosingDate(closingDate);
+        LocalDateTime deadline = LocalDateTime.parse(request.deadline());
+        recruitment.updateDeadline(deadline);
     }
 
     @Transactional

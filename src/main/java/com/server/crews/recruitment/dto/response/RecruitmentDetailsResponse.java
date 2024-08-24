@@ -12,11 +12,11 @@ import java.util.Map;
 
 public record RecruitmentDetailsResponse(
         Long id, String title, String description, Progress progress, List<SectionResponse> sections,
-        LocalDateTime closingDate, String code) {
+        LocalDateTime deadline, String code) {
 
     public static RecruitmentDetailsResponse from(Recruitment recruitment) {
         return new RecruitmentDetailsResponse(recruitment.getId(), recruitment.getTitle(), recruitment.getDescription(),
-                recruitment.getProgress(), sectionResponses(recruitment.getSections()), recruitment.getClosingDate(),
+                recruitment.getProgress(), sectionResponses(recruitment.getSections()), recruitment.getDeadline(),
                 recruitment.getCode());
     }
 
@@ -32,7 +32,7 @@ public record RecruitmentDetailsResponse(
         List<SectionResponse> sectionResponses = sectionResponses(recruitment.getSections(),
                 narrativeQuestionsBySection, selectiveQuestionsBySection);
         return new RecruitmentDetailsResponse(recruitment.getId(), recruitment.getTitle(), recruitment.getDescription(),
-                recruitment.getProgress(), sectionResponses, recruitment.getClosingDate(), recruitment.getCode());
+                recruitment.getProgress(), sectionResponses, recruitment.getDeadline(), recruitment.getCode());
     }
 
     private static List<SectionResponse> sectionResponses(

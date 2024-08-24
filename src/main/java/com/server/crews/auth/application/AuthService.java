@@ -46,7 +46,7 @@ public class AuthService {
     private Progress determineProgress(Administrator administrator) {
         return recruitmentRepository.findByPublisher(administrator.getId())
                 .map(recruitment -> {
-                    if (recruitment.hasPassedClosingDate()) {
+                    if (recruitment.hasPassedDeadline()) {
                         recruitment.close();
                         return Progress.COMPLETION;
                     }
@@ -70,7 +70,7 @@ public class AuthService {
     }
 
     private Progress determineProgress(Recruitment recruitment) {
-        if (recruitment.hasPassedClosingDate()) {
+        if (recruitment.hasPassedDeadline()) {
             return Progress.COMPLETION;
         }
         return Progress.IN_PROGRESS;
