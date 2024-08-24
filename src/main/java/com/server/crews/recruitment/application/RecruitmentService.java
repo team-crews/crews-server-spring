@@ -27,6 +27,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,6 +99,16 @@ public class RecruitmentService {
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
         LocalDateTime deadline = LocalDateTime.parse(request.deadline());
         recruitment.updateDeadline(deadline);
+    }
+
+    @Transactional
+    @Scheduled(cron = "${schedules.cron.closing-recruitment}")
+    public void closeRecruitments() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Recruitment> recruitments = recruitmentRepository.findAll();
+        recruitments.stream()
+                .filter(recruitment -> recruitment.hasPassedDeadline(now))
+                .forEach(Recruitment::close);
     }
 
     @Transactional

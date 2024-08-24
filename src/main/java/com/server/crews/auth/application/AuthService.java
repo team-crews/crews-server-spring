@@ -45,13 +45,7 @@ public class AuthService {
 
     private Progress determineProgress(Administrator administrator) {
         return recruitmentRepository.findByPublisher(administrator.getId())
-                .map(recruitment -> {
-                    if (recruitment.hasPassedDeadline()) {
-                        recruitment.close();
-                        return Progress.COMPLETION;
-                    }
-                    return recruitment.getProgress();
-                })
+                .map(Recruitment::getProgress)
                 .orElse(Progress.READY);
     }
 
@@ -65,15 +59,8 @@ public class AuthService {
         Applicant applicant = applicantRepository.findByEmailAndRecruitment(email, recruitment)
                 .orElseGet(() -> createApplicant(email, password, recruitment));
         String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, email);
-        Progress progress = determineProgress(recruitment);
+        Progress progress = recruitment.getProgress();
         return new LoginResponse(applicant.getId(), accessToken, progress);
-    }
-
-    private Progress determineProgress(Recruitment recruitment) {
-        if (recruitment.hasPassedDeadline()) {
-            return Progress.COMPLETION;
-        }
-        return Progress.IN_PROGRESS;
     }
 
     private Applicant createApplicant(String email, String password, Recruitment recruitment) {

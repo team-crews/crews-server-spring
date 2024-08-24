@@ -116,7 +116,7 @@ public class Recruitment {
         return this.progress != Progress.READY;
     }
 
-    public boolean hasPassedDeadline() {
-        return LocalDateTime.now().isAfter(deadline);
+    public boolean hasPassedDeadline(LocalDateTime now) {
+        return now.isAfter(deadline) || now.equals(deadline);
     }
 }
