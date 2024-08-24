@@ -18,7 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.NONE,
-        properties = {"schedules.cron.closing-recruitment="}
+        properties = {"schedules.cron.closing-recruitment=0 0 0 31 2 ?"}
 )
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public abstract class ServiceTest {
