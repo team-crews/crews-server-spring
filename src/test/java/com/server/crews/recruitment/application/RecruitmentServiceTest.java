@@ -20,7 +20,7 @@ import com.server.crews.environ.service.ServiceTest;
 import com.server.crews.environ.service.TestRecruitment;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
-import com.server.crews.recruitment.domain.Progress;
+import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
@@ -130,7 +130,7 @@ class RecruitmentServiceTest extends ServiceTest {
 
         // then
         Recruitment updatedRecruitment = recruitmentRepository.findById(recruitment.getId()).get();
-        assertThat(updatedRecruitment.getProgress()).isEqualTo(Progress.IN_PROGRESS);
+        assertThat(updatedRecruitment.getRecruitmentProgress()).isEqualTo(RecruitmentProgress.IN_PROGRESS);
     }
 
     @Test
@@ -181,7 +181,7 @@ class RecruitmentServiceTest extends ServiceTest {
         // then
         Recruitment updatedRecruitment = recruitmentRepository.findById(recruitment.getId()).get();
         assertAll(
-                () -> assertThat(updatedRecruitment.getProgress()).isEqualTo(Progress.ANNOUNCED),
+                () -> assertThat(updatedRecruitment.getRecruitmentProgress()).isEqualTo(RecruitmentProgress.ANNOUNCED),
                 () -> assertThat(events.stream(OutcomeDeterminedEvent.class).count()).isSameAs(1L)
         );
     }

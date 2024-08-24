@@ -11,7 +11,7 @@ import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
-import com.server.crews.recruitment.domain.Progress;
+import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +34,8 @@ public class AuthService {
         Administrator administrator = administratorRepository.findByClubName(clubName)
                 .orElseGet(() -> createAdmin(clubName, password));
         String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, clubName);
-        Progress progress = determineProgress(administrator);
-        return new LoginResponse(administrator.getId(), accessToken, progress);
+        RecruitmentProgress recruitmentProgress = determineProgress(administrator);
+        return new LoginResponse(administrator.getId(), accessToken, recruitmentProgress);
     }
 
     private Administrator createAdmin(String clubName, String password) {
@@ -43,10 +43,10 @@ public class AuthService {
         return administratorRepository.save(administrator);
     }
 
-    private Progress determineProgress(Administrator administrator) {
+    private RecruitmentProgress determineProgress(Administrator administrator) {
         return recruitmentRepository.findByPublisher(administrator.getId())
-                .map(Recruitment::getProgress)
-                .orElse(Progress.READY);
+                .map(Recruitment::getRecruitmentProgress)
+                .orElse(RecruitmentProgress.READY);
     }
 
     @Transactional
@@ -59,8 +59,8 @@ public class AuthService {
         Applicant applicant = applicantRepository.findByEmailAndRecruitment(email, recruitment)
                 .orElseGet(() -> createApplicant(email, password, recruitment));
         String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, email);
-        Progress progress = recruitment.getProgress();
-        return new LoginResponse(applicant.getId(), accessToken, progress);
+        RecruitmentProgress recruitmentProgress = recruitment.getRecruitmentProgress();
+        return new LoginResponse(applicant.getId(), accessToken, recruitmentProgress);
     }
 
     private Applicant createApplicant(String email, String password, Recruitment recruitment) {

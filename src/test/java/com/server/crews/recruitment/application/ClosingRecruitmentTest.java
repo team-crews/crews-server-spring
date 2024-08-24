@@ -9,7 +9,7 @@ import com.server.crews.auth.domain.Administrator;
 import com.server.crews.environ.service.ServiceTestEnviron;
 import com.server.crews.environ.service.TestAdmin;
 import com.server.crews.environ.service.TestRecruitment;
-import com.server.crews.recruitment.domain.Progress;
+import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
 import java.time.Clock;
@@ -53,6 +53,6 @@ public class ClosingRecruitmentTest {
 
         // then
         Recruitment updatedRecruitment = recruitmentRepository.findById(recruitment.getId()).get();
-        assertThat(updatedRecruitment.getProgress()).isEqualTo(Progress.COMPLETION);
+        assertThat(updatedRecruitment.getRecruitmentProgress()).isEqualTo(RecruitmentProgress.COMPLETION);
     }
 }

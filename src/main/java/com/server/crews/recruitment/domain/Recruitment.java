@@ -53,7 +53,7 @@ public class Recruitment {
     private String description;
 
     @Column(name = "progress", nullable = false)
-    private Progress progress;
+    private RecruitmentProgress recruitmentProgress;
 
     @Column(name = "deadline", nullable = false)
     private LocalDateTime deadline;
@@ -75,7 +75,7 @@ public class Recruitment {
         this.description = description;
         this.deadline = deadline;
         this.publisher = publisher;
-        this.progress = Progress.READY;
+        this.recruitmentProgress = RecruitmentProgress.READY;
         addSections(sections);
     }
 
@@ -95,15 +95,15 @@ public class Recruitment {
     }
 
     public void start() {
-        this.progress = Progress.IN_PROGRESS;
+        this.recruitmentProgress = RecruitmentProgress.IN_PROGRESS;
     }
 
     public void announce() {
-        this.progress = Progress.ANNOUNCED;
+        this.recruitmentProgress = RecruitmentProgress.ANNOUNCED;
     }
 
     public void close() {
-        this.progress = Progress.COMPLETION;
+        this.recruitmentProgress = RecruitmentProgress.COMPLETION;
     }
 
     public void updateDeadline(LocalDateTime deadline) {
@@ -112,11 +112,11 @@ public class Recruitment {
     }
 
     public boolean isAnnounced() {
-        return this.progress == Progress.ANNOUNCED;
+        return this.recruitmentProgress == RecruitmentProgress.ANNOUNCED;
     }
 
     public boolean isStarted() {
-        return this.progress != Progress.READY;
+        return this.recruitmentProgress != RecruitmentProgress.READY;
     }
 
     public boolean hasPassedDeadline(LocalDateTime now) {

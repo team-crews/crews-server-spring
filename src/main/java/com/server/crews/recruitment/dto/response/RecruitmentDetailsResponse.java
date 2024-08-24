@@ -1,7 +1,7 @@
 package com.server.crews.recruitment.dto.response;
 
 import com.server.crews.recruitment.domain.NarrativeQuestion;
-import com.server.crews.recruitment.domain.Progress;
+import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Map;
 
 public record RecruitmentDetailsResponse(
-        Long id, String title, String description, Progress progress, List<SectionResponse> sections,
+        Long id, String title, String description, RecruitmentProgress recruitmentProgress, List<SectionResponse> sections,
         LocalDateTime deadline, String code) {
 
     public static RecruitmentDetailsResponse from(Recruitment recruitment) {
         return new RecruitmentDetailsResponse(recruitment.getId(), recruitment.getTitle(), recruitment.getDescription(),
-                recruitment.getProgress(), sectionResponses(recruitment.getSections()), recruitment.getDeadline(),
+                recruitment.getRecruitmentProgress(), sectionResponses(recruitment.getSections()), recruitment.getDeadline(),
                 recruitment.getCode());
     }
 
@@ -32,7 +32,7 @@ public record RecruitmentDetailsResponse(
         List<SectionResponse> sectionResponses = sectionResponses(recruitment.getSections(),
                 narrativeQuestionsBySection, selectiveQuestionsBySection);
         return new RecruitmentDetailsResponse(recruitment.getId(), recruitment.getTitle(), recruitment.getDescription(),
-                recruitment.getProgress(), sectionResponses, recruitment.getDeadline(), recruitment.getCode());
+                recruitment.getRecruitmentProgress(), sectionResponses, recruitment.getDeadline(), recruitment.getCode());
     }
 
     private static List<SectionResponse> sectionResponses(

@@ -25,7 +25,7 @@ public class AuthApiDocuments {
                                 .description("운영진 id"),
                         fieldWithPath(".accessToken")
                                 .description("access token"),
-                        fieldWithPath(".progress")
+                        fieldWithPath(".recruitmentProgress")
                                 .description(
                                         "모집 공고 상태 (READY: 모집 공고 작성 중, IN_PROGRESS: 모집 중, COMPLETION: 평가 중, ANNOUNCED: 이메일 전송 완료)")
                 ),
@@ -49,7 +49,7 @@ public class AuthApiDocuments {
                                 .description("지원자 id"),
                         fieldWithPath(".accessToken")
                                 .description("access token"),
-                        fieldWithPath(".progress")
+                        fieldWithPath(".recruitmentProgress")
                                 .description("모집 공고 상태 (IN_PROGRESS: 모집 중, COMPLETION: 평가 중)")
                 ),
                 responseCookies(

@@ -11,7 +11,7 @@ import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
 import com.server.crews.auth.dto.response.LoginResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
-import com.server.crews.recruitment.domain.Progress;
+import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -46,7 +46,7 @@ public class AuthApiTest extends ApiTest {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(loginResponse.accessToken()).isNotEmpty();
             softAssertions.assertThat(cookies.get("refreshToken")).isNotNull();
-            softAssertions.assertThat(loginResponse.progress()).isEqualTo(Progress.READY);
+            softAssertions.assertThat(loginResponse.recruitmentProgress()).isEqualTo(RecruitmentProgress.READY);
         });
     }
 
@@ -72,7 +72,7 @@ public class AuthApiTest extends ApiTest {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(loginResponse.accessToken()).isNotEmpty();
             softAssertions.assertThat(cookies.get("refreshToken")).isNotNull();
-            softAssertions.assertThat(loginResponse.progress()).isEqualTo(Progress.READY);
+            softAssertions.assertThat(loginResponse.recruitmentProgress()).isEqualTo(RecruitmentProgress.READY);
         });
     }
 
@@ -102,7 +102,7 @@ public class AuthApiTest extends ApiTest {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(loginResponse.accessToken()).isNotEmpty();
             softAssertions.assertThat(cookies.get("refreshToken")).isNotNull();
-            softAssertions.assertThat(loginResponse.progress()).isEqualTo(Progress.IN_PROGRESS);
+            softAssertions.assertThat(loginResponse.recruitmentProgress()).isEqualTo(RecruitmentProgress.READY);
         });
     }
 
