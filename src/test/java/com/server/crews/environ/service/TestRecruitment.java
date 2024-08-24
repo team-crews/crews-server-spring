@@ -7,10 +7,10 @@ import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
 
 public class TestRecruitment {
@@ -29,9 +29,9 @@ public class TestRecruitment {
         this.choices = new ArrayList<>();
     }
 
-    public TestRecruitment create(String code, String clubName, Administrator publisher) {
+    public TestRecruitment create(String code, String clubName, LocalDateTime deadline, Administrator publisher) {
         Recruitment recruitment = new Recruitment(null, code, clubName + " 99기 모집", DEFAULT_DESCRIPTION,
-                DEFAULT_DEADLINE, publisher, List.of());
+                deadline, publisher, List.of());
         this.recruitment = environ.recruitmentRepository().save(recruitment);
         return this;
     }
