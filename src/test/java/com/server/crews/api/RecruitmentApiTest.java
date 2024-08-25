@@ -14,7 +14,8 @@ import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
-import com.server.crews.auth.dto.response.LoginResponse;
+import com.server.crews.auth.dto.response.AdminLoginResponse;
+import com.server.crews.auth.dto.response.ApplicantLoginResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
 import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
@@ -44,7 +45,7 @@ public class RecruitmentApiTest extends ApiTest {
     @DisplayName("모집 공고를 저장한다.")
     void saveRecruitment() {
         // given
-        LoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String accessToken = adminTokenResponse.accessToken();
         ChoiceSaveRequest choiceCreateRequest = new ChoiceSaveRequest(null, "선택지 내용");
         QuestionSaveRequest selectiveQuestionCreateRequest = new QuestionSaveRequest(null,
@@ -97,7 +98,7 @@ public class RecruitmentApiTest extends ApiTest {
     @DisplayName("유효하지 않은 마감일로 모집 공고를 저장한다.")
     void saveRecruitmentWithInvalidDeadline() {
         // given
-        LoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String accessToken = adminTokenResponse.accessToken();
 
         String date = LocalDate.now().plusDays(10).toString();
@@ -124,7 +125,7 @@ public class RecruitmentApiTest extends ApiTest {
     @DisplayName("모집을 시작한다.")
     void startRecruiting() {
         // given
-        LoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String accessToken = adminTokenResponse.accessToken();
         createRecruitment(accessToken);
 
@@ -145,7 +146,7 @@ public class RecruitmentApiTest extends ApiTest {
     @DisplayName("작성 중 단계가 아닌 모집 공고(이미 시작된)는 시작할 수 없다.")
     void startInvalidStateRecruitment() {
         // given
-        LoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String accessToken = adminTokenResponse.accessToken();
         createRecruitment(accessToken);
 
@@ -173,12 +174,12 @@ public class RecruitmentApiTest extends ApiTest {
     @DisplayName("모집 중 지원 상태(지원자 수, 마감일)를 조회한다.")
     void getRecruitmentStateInProgress() {
         // given
-        LoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String adminAccessToken = adminTokenResponse.accessToken();
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminAccessToken);
-        LoginResponse applicantATokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
+        ApplicantLoginResponse applicantATokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
                 "A" + TEST_EMAIL, TEST_PASSWORD);
-        LoginResponse applicantBTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
+        ApplicantLoginResponse applicantBTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
                 "B" + TEST_EMAIL, TEST_PASSWORD);
 
         ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest();
@@ -208,7 +209,7 @@ public class RecruitmentApiTest extends ApiTest {
     @DisplayName("모집 공고 및 지원서 양식 상세 정보를 조회한다.")
     void getRecruitmentDetails() {
         // given
-        LoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String adminAccessToken = adminTokenResponse.accessToken();
         RecruitmentDetailsResponse savedRecruitmentDetailsResponse = createRecruitment(adminAccessToken);
 
@@ -240,7 +241,7 @@ public class RecruitmentApiTest extends ApiTest {
     @DisplayName("모집 공고 및 지원서 양식 상세 정보를 모집 공고 코드로 조회한다.")
     void getRecruitmentDetailsByCode() {
         // given
-        LoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String adminAccessToken = adminTokenResponse.accessToken();
         RecruitmentDetailsResponse savedRecruitmentDetailsResponse = createRecruitment(adminAccessToken);
 
@@ -262,7 +263,7 @@ public class RecruitmentApiTest extends ApiTest {
     @DisplayName("모집 마감기한을 변경한다.")
     void updateDeadline() {
         // given
-        LoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String adminAccessToken = adminTokenResponse.accessToken();
         createRecruitment(adminAccessToken);
 
@@ -287,12 +288,12 @@ public class RecruitmentApiTest extends ApiTest {
     @DisplayName("모든 지원자에게 지원 결과 메일을 전송한다.")
     void sendOutcomeEmail() {
         // given
-        LoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String adminAccessToken = adminTokenResponse.accessToken();
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminAccessToken);
-        LoginResponse applicantATokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
+        ApplicantLoginResponse applicantATokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
                 "A" + TEST_EMAIL, TEST_PASSWORD);
-        LoginResponse applicantBTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
+        ApplicantLoginResponse applicantBTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
                 "B" + TEST_EMAIL, TEST_PASSWORD);
 
         ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest();

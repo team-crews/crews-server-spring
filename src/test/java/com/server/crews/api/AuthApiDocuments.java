@@ -21,13 +21,15 @@ public class AuthApiDocuments {
                         fieldWithPath(".password")
                                 .description("비밀번호")),
                 responseFields(
-                        fieldWithPath(".userId")
+                        fieldWithPath(".adminId")
                                 .description("운영진 id"),
                         fieldWithPath(".accessToken")
                                 .description("access token"),
                         fieldWithPath(".recruitmentProgress")
                                 .description(
-                                        "모집 공고 상태 (READY: 모집 공고 작성 중, IN_PROGRESS: 모집 중, COMPLETION: 평가 중, ANNOUNCED: 이메일 전송 완료)")
+                                        "모집 공고 상태 (READY: 모집 공고 작성 중, IN_PROGRESS: 모집 중, COMPLETION: 평가 중, ANNOUNCED: 이메일 전송 완료)"),
+                        fieldWithPath(".recruitmentId")
+                                .description("모집 공고 id (없다면 null)")
                 ),
                 responseCookies(
                         cookieWithName("refreshToken")
@@ -45,12 +47,14 @@ public class AuthApiDocuments {
                         fieldWithPath(".password")
                                 .description("비밀번호")),
                 responseFields(
-                        fieldWithPath(".userId")
+                        fieldWithPath(".applicantId")
                                 .description("지원자 id"),
                         fieldWithPath(".accessToken")
                                 .description("access token"),
                         fieldWithPath(".recruitmentProgress")
-                                .description("모집 공고 상태 (IN_PROGRESS: 모집 중, COMPLETION: 평가 중)")
+                                .description("모집 공고 상태 (IN_PROGRESS: 모집 중, COMPLETION: 평가 중)"),
+                        fieldWithPath(".applicationId")
+                                .description("지원서 id (없다면 null)")
                 ),
                 responseCookies(
                         cookieWithName("refreshToken")

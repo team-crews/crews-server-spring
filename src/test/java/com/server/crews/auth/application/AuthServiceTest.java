@@ -6,7 +6,8 @@ import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
-import com.server.crews.auth.dto.response.LoginResponse;
+import com.server.crews.auth.dto.response.AdminLoginResponse;
+import com.server.crews.auth.dto.response.ApplicantLoginResponse;
 import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.environ.service.ServiceTest;
@@ -42,13 +43,13 @@ class AuthServiceTest extends ServiceTest {
         AdminLoginRequest request = new AdminLoginRequest(clubName, password);
 
         // when
-        LoginResponse loginResponse = authService.loginForAdmin(request);
+        AdminLoginResponse adminLoginResponse = authService.loginForAdmin(request);
 
         // then
-        Optional<Administrator> createdAdmin = administratorRepository.findById(loginResponse.userId());
+        Optional<Administrator> createdAdmin = administratorRepository.findById(adminLoginResponse.adminId());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdAdmin).isNotEmpty();
-            softAssertions.assertThat(loginResponse.accessToken()).isNotNull();
+            softAssertions.assertThat(adminLoginResponse.accessToken()).isNotNull();
         });
     }
 
@@ -60,13 +61,13 @@ class AuthServiceTest extends ServiceTest {
         AdminLoginRequest request = new AdminLoginRequest(administrator.getClubName(), administrator.getPassword());
 
         // when
-        LoginResponse loginResponse = authService.loginForAdmin(request);
+        AdminLoginResponse adminLoginResponse = authService.loginForAdmin(request);
 
         // then
-        Optional<Administrator> createdAdmin = administratorRepository.findById(loginResponse.userId());
+        Optional<Administrator> createdAdmin = administratorRepository.findById(adminLoginResponse.adminId());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdAdmin).isNotEmpty();
-            softAssertions.assertThat(loginResponse.accessToken()).isNotNull();
+            softAssertions.assertThat(adminLoginResponse.accessToken()).isNotNull();
         });
     }
 
@@ -81,13 +82,13 @@ class AuthServiceTest extends ServiceTest {
         ApplicantLoginRequest request = new ApplicantLoginRequest(recruitment.getCode(), email, password);
 
         // when
-        LoginResponse loginResponse = authService.loginForApplicant(request);
+        ApplicantLoginResponse applicantLoginResponse = authService.loginForApplicant(request);
 
         // then
-        Optional<Applicant> createdApplicant = applicantRepository.findById(loginResponse.userId());
+        Optional<Applicant> createdApplicant = applicantRepository.findById(applicantLoginResponse.applicantId());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdApplicant).isNotEmpty();
-            softAssertions.assertThat(loginResponse.accessToken()).isNotNull();
+            softAssertions.assertThat(applicantLoginResponse.accessToken()).isNotNull();
         });
     }
 
@@ -101,13 +102,13 @@ class AuthServiceTest extends ServiceTest {
         ApplicantLoginRequest request = new ApplicantLoginRequest(recruitment.getCode(), applicant.getEmail(), applicant.getPassword());
 
         // when
-        LoginResponse loginResponse = authService.loginForApplicant(request);
+        ApplicantLoginResponse applicantLoginResponse = authService.loginForApplicant(request);
 
         // then
-        Optional<Applicant> createdApplicant = applicantRepository.findById(loginResponse.userId());
+        Optional<Applicant> createdApplicant = applicantRepository.findById(applicantLoginResponse.applicantId());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdApplicant).isNotEmpty();
-            softAssertions.assertThat(loginResponse.accessToken()).isNotNull();
+            softAssertions.assertThat(applicantLoginResponse.accessToken()).isNotNull();
         });
     }
 
