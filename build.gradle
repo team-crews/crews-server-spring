@@ -100,6 +100,6 @@ tasks.register('copySwaggerUI', Copy) {
         into("build/resources/main/static/docs")
 }
 
-tasks.withType(BootJar).configureEach {
+bootJar {
     dependsOn 'copySwaggerUI'
 }
