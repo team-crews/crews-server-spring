@@ -3,7 +3,7 @@ package com.server.crews.recruitment.application;
 import static com.server.crews.fixture.QuestionFixture.NARRATIVE_QUESTION;
 import static com.server.crews.fixture.QuestionFixture.SELECTIVE_QUESTION;
 import static com.server.crews.fixture.QuestionFixture.STRENGTH_QUESTION;
-import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CLOSING_DATE;
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_TITLE;
 import static com.server.crews.fixture.RecruitmentFixture.RECRUITMENT_SAVE_REQUEST;
@@ -20,7 +20,7 @@ import com.server.crews.environ.service.ServiceTest;
 import com.server.crews.environ.service.TestRecruitment;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
-import com.server.crews.recruitment.domain.Progress;
+import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
@@ -48,7 +48,7 @@ class RecruitmentServiceTest extends ServiceTest {
     private RecruitmentRepository recruitmentRepository;
 
     @Autowired
-    ApplicationEvents events;
+    private ApplicationEvents events;
 
     @Test
     @DisplayName("지원서 양식을 최초로 저장한다.")
@@ -77,7 +77,7 @@ class RecruitmentServiceTest extends ServiceTest {
                 DEFAULT_DESCRIPTION,
                 List.of(selectiveQuestionCreateRequest));
         RecruitmentSaveRequest recruitmentCreateRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE,
-                DEFAULT_DESCRIPTION, List.of(sectionsCreateRequest), DEFAULT_CLOSING_DATE.toString());
+                DEFAULT_DESCRIPTION, List.of(sectionsCreateRequest), DEFAULT_DEADLINE.toString());
 
         RecruitmentDetailsResponse savedRecruitmentResponse = recruitmentService.saveRecruitment(publisher.getId(),
                 recruitmentCreateRequest);
@@ -93,7 +93,7 @@ class RecruitmentServiceTest extends ServiceTest {
         SectionSaveRequest sectionSaveRequest = new SectionSaveRequest(sectionId, "변경된 섹션 이름", DEFAULT_DESCRIPTION,
                 List.of(selectiveQuestionSaveRequest));
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(recruitmentId, "변경된 모집 공고 제목",
-                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_CLOSING_DATE.toString());
+                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_DEADLINE.toString());
 
         // when
         RecruitmentDetailsResponse response = recruitmentService.saveRecruitment(publisher.getId(),
@@ -130,7 +130,7 @@ class RecruitmentServiceTest extends ServiceTest {
 
         // then
         Recruitment updatedRecruitment = recruitmentRepository.findById(recruitment.getId()).get();
-        assertThat(updatedRecruitment.getProgress()).isEqualTo(Progress.IN_PROGRESS);
+        assertThat(updatedRecruitment.getRecruitmentProgress()).isEqualTo(RecruitmentProgress.IN_PROGRESS);
     }
 
     @Test
@@ -181,7 +181,7 @@ class RecruitmentServiceTest extends ServiceTest {
         // then
         Recruitment updatedRecruitment = recruitmentRepository.findById(recruitment.getId()).get();
         assertAll(
-                () -> assertThat(updatedRecruitment.getProgress()).isEqualTo(Progress.ANNOUNCED),
+                () -> assertThat(updatedRecruitment.getRecruitmentProgress()).isEqualTo(RecruitmentProgress.ANNOUNCED),
                 () -> assertThat(events.stream(OutcomeDeterminedEvent.class).count()).isSameAs(1L)
         );
     }

@@ -79,12 +79,12 @@ class RecruitmentControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("모집 공고의 마감일이 null인지 검증한다.")
-    void validRecruitmentClosingDate() throws Exception {
+    void validRecruitmentDeadline() throws Exception {
         // given
         String invalidRecruitmentSaveRequest = """
                         {
                             "title": "모집공고 제목입니다.",
-                            "closingDate": ""
+                            "deadline": ""
                         }
                 """;
 
@@ -99,12 +99,12 @@ class RecruitmentControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("모집 공고의 마감일 형식을 검증한다.")
-    void validateRecruitmentClosingDateForm() throws Exception {
+    void validateRecruitmentDeadlineForm() throws Exception {
         // given
         String invalidRecruitmentSaveRequest = """
                         {
                             "title": "모집공고 제목입니다.",
-                            "closingDate": "invalid"
+                            "deadline": "invalid"
                         }
                 """;
 
@@ -175,7 +175,7 @@ class RecruitmentControllerTest extends ControllerTest {
         String invalidRecruitmentSaveRequest = """
                         {
                             "title": "모집 공고 제목",
-                            "closingDate": "2030-09-12T00:00:00",
+                            "deadline": "2030-09-12T00:00:00",
                             "sections": [
                                 {
                                     "name": "파트1",

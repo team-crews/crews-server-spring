@@ -10,7 +10,7 @@ public enum ErrorCode {
     DUPLICATE_SECRET_CODE(HttpStatus.BAD_REQUEST, "중복된 코드입니다."),
     NO_PARAMETER(HttpStatus.BAD_REQUEST, "%s 파라미터가 없습니다."),
     INVALID_EMAIL_PATTERN(HttpStatus.BAD_REQUEST, "유효하지 않은 이메일 형식입니다."),
-    INVALID_CLOSING_DATE(HttpStatus.BAD_REQUEST, "모집 마감일은 지금 이전이 될 수 없습니다."),
+    INVALID_DEADLINE(HttpStatus.BAD_REQUEST, "모집 마감 기한은 현재 시각 이전이며 한 시간 단위입니다."),
     ALREADY_ANNOUNCED(HttpStatus.BAD_REQUEST, "모집 공고 결과 발표가 이미 완료되었습니다."),
     RECRUITMENT_ALREADY_STARTED(HttpStatus.BAD_REQUEST, "모집이 이미 시작되었습니다."),
     DUPLICATE_NARRATIVE_ANSWERS(HttpStatus.BAD_REQUEST, "같은 서술형 문항에 대해 여러 답변이 존재할 수 없습니다."),

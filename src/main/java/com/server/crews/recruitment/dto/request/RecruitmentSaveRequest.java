@@ -17,13 +17,13 @@ public record RecruitmentSaveRequest(
         String description,
         @Valid
         List<SectionSaveRequest> sections,
-        @NotNull(message = "모집 마감일은 null일 수 없습니다.")
+        @NotNull(message = "모집 마감 기한은 null일 수 없습니다.")
         @DateTimeFormat
-        String closingDate
+        String deadline
 ) {
     public Recruitment toRecruitment(String code, Administrator publisher) {
-        LocalDateTime closingDateTime = LocalDateTime.parse(closingDate);
-        return new Recruitment(id, code, title, description, closingDateTime, publisher, toSections());
+        LocalDateTime deadlineDateTime = LocalDateTime.parse(deadline);
+        return new Recruitment(id, code, title, description, deadlineDateTime, publisher, toSections());
     }
 
     public List<Section> toSections() {

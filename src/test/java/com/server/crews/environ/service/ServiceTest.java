@@ -1,5 +1,9 @@
 package com.server.crews.environ.service;
 
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CODE;
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
+import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
+
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.environ.DatabaseCleaner;
@@ -12,10 +16,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CODE;
-import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.NONE,
+        properties = {"schedules.cron.closing-recruitment=0 0 0 31 2 ?"}
+)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public abstract class ServiceTest {
     @Autowired
@@ -36,38 +40,26 @@ public abstract class ServiceTest {
     }
 
     protected TestRecruitment LIKE_LION_RECRUITMENT(Administrator publisher) {
-        TestRecruitment testRecruitment = new TestRecruitment(serviceTestEnviron);
-        testRecruitment.create(DEFAULT_CODE, "LIKE LION", publisher);
-        return testRecruitment;
+        return new TestRecruitment(serviceTestEnviron).create(DEFAULT_CODE, "LIKE LION", DEFAULT_DEADLINE, publisher);
     }
 
     protected TestAdmin LIKE_LION_ADMIN() {
-        TestAdmin testAdmin = new TestAdmin(serviceTestEnviron);
-        testAdmin.create("LIKE_LION", TEST_PASSWORD);
-        return testAdmin;
+        return new TestAdmin(serviceTestEnviron).create("LIKE_LION", TEST_PASSWORD);
     }
 
     protected TestApplicant JONGMEE_APPLICANT(Recruitment recruitment) {
-        TestApplicant testApplicant = new TestApplicant(serviceTestEnviron);
-        testApplicant.create("JONGMEE@gmail.com", TEST_PASSWORD, recruitment);
-        return testApplicant;
+        return new TestApplicant(serviceTestEnviron).create("JONGMEE@gmail.com", TEST_PASSWORD, recruitment);
     }
 
     protected TestApplicant KYUNGHO_APPLICANT(Recruitment recruitment) {
-        TestApplicant testApplicant = new TestApplicant(serviceTestEnviron);
-        testApplicant.create("KYUNGHO@gmail.com", TEST_PASSWORD, recruitment);
-        return testApplicant;
+        return new TestApplicant(serviceTestEnviron).create("KYUNGHO@gmail.com", TEST_PASSWORD, recruitment);
     }
 
     protected TestApplication JONGMEE_APPLICATION(Applicant applicant) {
-        TestApplication testApplication = new TestApplication(serviceTestEnviron);
-        testApplication.create(applicant, "20202020", "생명과학", "종미");
-        return testApplication;
+        return new TestApplication(serviceTestEnviron).create(applicant, "20202020", "생명과학", "종미");
     }
 
     protected TestApplication KYUNGHO_APPLICATION(Applicant applicant) {
-        TestApplication testApplication = new TestApplication(serviceTestEnviron);
-        testApplication.create(applicant, "20202021", "컴퓨터공학", "경호");
-        return testApplication;
+        return new TestApplication(serviceTestEnviron).create(applicant, "20202021", "컴퓨터공학", "경호");
     }
 }

@@ -17,7 +17,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -51,10 +53,10 @@ public class Recruitment {
     private String description;
 
     @Column(name = "progress", nullable = false)
-    private Progress progress;
+    private RecruitmentProgress recruitmentProgress;
 
-    @Column(name = "closing_date", nullable = false)
-    private LocalDateTime closingDate;
+    @Column(name = "deadline", nullable = false)
+    private LocalDateTime deadline;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publisher_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
@@ -64,22 +66,26 @@ public class Recruitment {
     @Column(name = "created_date", updatable = false, nullable = false)
     private LocalDateTime createdDate;
 
-    public Recruitment(Long id, String code, String title, String description, LocalDateTime closingDate,
+    public Recruitment(Long id, String code, String title, String description, LocalDateTime deadline,
                        Administrator publisher, List<Section> sections) {
-        validateClosingDate(closingDate);
+        validateDeadline(deadline);
         this.id = id;
         this.code = code;
         this.title = title;
         this.description = description;
-        this.closingDate = closingDate;
+        this.deadline = deadline;
         this.publisher = publisher;
-        this.progress = Progress.READY;
+        this.recruitmentProgress = RecruitmentProgress.READY;
         addSections(sections);
     }
 
-    private void validateClosingDate(LocalDateTime closingDate) {
-        if (closingDate.isBefore(LocalDateTime.now())) {
-            throw new CrewsException(ErrorCode.INVALID_CLOSING_DATE);
+    private void validateDeadline(LocalDateTime deadline) {
+        LocalDateTime now = LocalDateTime.now(Clock.system(ZoneId.of("Asia/Seoul")));
+        if (deadline.isBefore(now)) {
+            throw new CrewsException(ErrorCode.INVALID_DEADLINE);
+        }
+        if (deadline.getMinute() != 0 || deadline.getSecond() != 0 || deadline.getNano() != 0) {
+            throw new CrewsException(ErrorCode.INVALID_DEADLINE);
         }
     }
 
@@ -89,31 +95,31 @@ public class Recruitment {
     }
 
     public void start() {
-        this.progress = Progress.IN_PROGRESS;
+        this.recruitmentProgress = RecruitmentProgress.IN_PROGRESS;
     }
 
     public void announce() {
-        this.progress = Progress.ANNOUNCED;
+        this.recruitmentProgress = RecruitmentProgress.ANNOUNCED;
     }
 
     public void close() {
-        this.progress = Progress.COMPLETION;
+        this.recruitmentProgress = RecruitmentProgress.COMPLETION;
     }
 
-    public void updateClosingDate(LocalDateTime closingDate) {
-        validateClosingDate(closingDate);
-        this.closingDate = closingDate;
+    public void updateDeadline(LocalDateTime deadline) {
+        validateDeadline(deadline);
+        this.deadline = deadline;
     }
 
     public boolean isAnnounced() {
-        return this.progress == Progress.ANNOUNCED;
+        return this.recruitmentProgress == RecruitmentProgress.ANNOUNCED;
     }
 
     public boolean isStarted() {
-        return this.progress != Progress.READY;
+        return this.recruitmentProgress != RecruitmentProgress.READY;
     }
 
-    public boolean hasPassedClosingDate() {
-        return LocalDateTime.now().isAfter(closingDate);
+    public boolean hasPassedDeadline(LocalDateTime now) {
+        return now.isAfter(deadline) || now.equals(deadline);
     }
 }

@@ -9,9 +9,10 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
-import com.server.crews.auth.dto.response.LoginResponse;
+import com.server.crews.auth.dto.response.AdminLoginResponse;
+import com.server.crews.auth.dto.response.ApplicantLoginResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
-import com.server.crews.recruitment.domain.Progress;
+import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -40,13 +41,13 @@ public class AuthApiTest extends ApiTest {
                 .extract();
 
         // then
-        LoginResponse loginResponse = response.as(LoginResponse.class);
+        AdminLoginResponse adminLoginResponse = response.as(AdminLoginResponse.class);
         Map<String, String> cookies = response.cookies();
         assertSoftly(softAssertions -> {
             checkStatusCode200(response, softAssertions);
-            softAssertions.assertThat(loginResponse.accessToken()).isNotEmpty();
+            softAssertions.assertThat(adminLoginResponse.accessToken()).isNotEmpty();
             softAssertions.assertThat(cookies.get("refreshToken")).isNotNull();
-            softAssertions.assertThat(loginResponse.progress()).isEqualTo(Progress.READY);
+            softAssertions.assertThat(adminLoginResponse.recruitmentProgress()).isEqualTo(RecruitmentProgress.READY);
         });
     }
 
@@ -66,13 +67,13 @@ public class AuthApiTest extends ApiTest {
                 .extract();
 
         // then
-        LoginResponse loginResponse = response.as(LoginResponse.class);
+        AdminLoginResponse adminLoginResponse = response.as(AdminLoginResponse.class);
         Map<String, String> cookies = response.cookies();
         assertSoftly(softAssertions -> {
             checkStatusCode200(response, softAssertions);
-            softAssertions.assertThat(loginResponse.accessToken()).isNotEmpty();
+            softAssertions.assertThat(adminLoginResponse.accessToken()).isNotEmpty();
             softAssertions.assertThat(cookies.get("refreshToken")).isNotNull();
-            softAssertions.assertThat(loginResponse.progress()).isEqualTo(Progress.READY);
+            softAssertions.assertThat(adminLoginResponse.recruitmentProgress()).isEqualTo(RecruitmentProgress.READY);
         });
     }
 
@@ -80,7 +81,7 @@ public class AuthApiTest extends ApiTest {
     @DisplayName("[지원자] 가입하지 않은 지원자가 로그인 해 토큰을 발급 받는다.")
     void loginNotSignedUpApplicant() {
         // given
-        LoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
 
         ApplicantLoginRequest applicantLoginRequest = new ApplicantLoginRequest(recruitmentDetailsResponse.code(),
@@ -96,13 +97,13 @@ public class AuthApiTest extends ApiTest {
                 .extract();
 
         // then
-        LoginResponse loginResponse = response.as(LoginResponse.class);
+        ApplicantLoginResponse applicantLoginResponse = response.as(ApplicantLoginResponse.class);
         Map<String, String> cookies = response.cookies();
         assertSoftly(softAssertions -> {
             checkStatusCode200(response, softAssertions);
-            softAssertions.assertThat(loginResponse.accessToken()).isNotEmpty();
+            softAssertions.assertThat(applicantLoginResponse.accessToken()).isNotEmpty();
             softAssertions.assertThat(cookies.get("refreshToken")).isNotNull();
-            softAssertions.assertThat(loginResponse.progress()).isEqualTo(Progress.IN_PROGRESS);
+            softAssertions.assertThat(applicantLoginResponse.recruitmentProgress()).isEqualTo(RecruitmentProgress.READY);
         });
     }
 
@@ -110,9 +111,9 @@ public class AuthApiTest extends ApiTest {
     @DisplayName("[지원자] 지원자 권한으로 지원자 목록을 조회한다.")
     void authenticateAdminWithApplicantToken() {
         // given
-        LoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        LoginResponse applicantTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(), TEST_EMAIL,
+        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(recruitmentDetailsResponse.code(), TEST_EMAIL,
                 TEST_PASSWORD);
 
         // when
@@ -120,7 +121,7 @@ public class AuthApiTest extends ApiTest {
                 .filter(AuthApiDocuments.AUTHORIZE_401_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION,
-                        AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
+                        AuthorizationExtractor.BEARER_TYPE + applicantLoginResponse.accessToken())
                 .when().get("/applications?recruitment-id=" + recruitmentDetailsResponse.id())
                 .then().log().all()
                 .extract();
@@ -154,10 +155,10 @@ public class AuthApiTest extends ApiTest {
                 .extract();
 
         // then
-        LoginResponse loginResponse = response.as(LoginResponse.class);
+        AdminLoginResponse adminLoginResponse = response.as(AdminLoginResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode200(response);
-            softAssertions.assertThat(loginResponse.accessToken()).isNotNull();
+            softAssertions.assertThat(adminLoginResponse.accessToken()).isNotNull();
         });
     }
 }
