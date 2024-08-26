@@ -6,6 +6,7 @@ import com.server.crews.recruitment.application.RecruitmentService;
 import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
+import com.server.crews.recruitment.dto.response.RecruitmentProgressResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +58,8 @@ public class RecruitmentController {
      * 작성중인 모집 공고 상세 정보를 조회한다.
      */
     @GetMapping("/ready")
-    public ResponseEntity<RecruitmentDetailsResponse> getRecruitmentDetailsInReady(@AdminAuthentication LoginUser loginUser) {
+    public ResponseEntity<RecruitmentDetailsResponse> getRecruitmentDetailsInReady(
+            @AdminAuthentication LoginUser loginUser) {
         return ResponseEntity.ok(recruitmentService.findRecruitmentDetailsInReady(loginUser.userId()));
     }
 
@@ -68,6 +70,15 @@ public class RecruitmentController {
     public ResponseEntity<RecruitmentDetailsResponse> getRecruitmentDetailsByCode(
             @RequestParam(value = "code") String code) {
         return ResponseEntity.ok(recruitmentService.findRecruitmentDetailsByCode(code));
+    }
+
+    /**
+     * 모집 공고의 단계를 조회한다.
+     */
+    @GetMapping("/progress")
+    public ResponseEntity<RecruitmentProgressResponse> getRecruitmentProgress(
+            @AdminAuthentication LoginUser loginUser) {
+        return ResponseEntity.ok(recruitmentService.findRecruitmentProgress(loginUser.userId()));
     }
 
     /**

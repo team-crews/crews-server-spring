@@ -17,6 +17,7 @@ import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.auth.dto.response.AdminLoginResponse;
 import com.server.crews.auth.dto.response.ApplicantLoginResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
+import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
 import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
@@ -25,6 +26,7 @@ import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.request.SectionSaveRequest;
 import com.server.crews.recruitment.dto.response.QuestionResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
+import com.server.crews.recruitment.dto.response.RecruitmentProgressResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
 import com.server.crews.recruitment.dto.response.SectionResponse;
 import io.restassured.RestAssured;
@@ -215,7 +217,7 @@ public class RecruitmentApiTest extends ApiTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.GET_RECRUITMENT_200_DOCUMENT())
+                .filter(RecruitmentApiDocuments.GET_READY_RECRUITMENT_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
                 .when().get("/recruitments/ready")
@@ -285,6 +287,31 @@ public class RecruitmentApiTest extends ApiTest {
 
         // then
         checkStatusCode200(response);
+    }
+
+    @Test
+    @DisplayName("모집 공고의 단계를 조회한다.")
+    void getRecruitmentProgress() {
+        // given
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        String adminAccessToken = adminTokenResponse.accessToken();
+        createRecruitment(adminAccessToken);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.GET_RECRUITMENT_PROGRESS_200_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .when().get("/recruitments/progress")
+                .then().log().all()
+                .extract();
+
+        // then
+        RecruitmentProgressResponse recruitmentProgressResponse = response.as(RecruitmentProgressResponse.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode200(response, softAssertions);
+            softAssertions.assertThat(recruitmentProgressResponse.recruitmentProgress()).isEqualTo(RecruitmentProgress.READY);
+        });
     }
 
     @Test

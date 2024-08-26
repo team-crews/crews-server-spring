@@ -11,11 +11,13 @@ import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
+import com.server.crews.recruitment.dto.response.RecruitmentProgressResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
 import com.server.crews.recruitment.mapper.RecruitmentMapper;
 import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
@@ -101,6 +103,12 @@ public class RecruitmentService {
         });
         recruitment.sortQuestions();
         return RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(recruitment);
+    }
+
+    public RecruitmentProgressResponse findRecruitmentProgress(Long publisherId) {
+        Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
+                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+        return new RecruitmentProgressResponse(recruitment.getProgress());
     }
 
     @Transactional
