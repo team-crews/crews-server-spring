@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.server.crews.auth.config.AuthArgumentResolverConfig;
+import com.server.crews.global.config.WebMvcConfiguration;
 import com.server.crews.auth.presentation.AuthenticationArgumentResolver;
 import com.server.crews.auth.presentation.AuthenticationValidator;
 import com.server.crews.environ.presentation.ControllerTest;
@@ -36,7 +36,7 @@ import org.springframework.http.MediaType;
 @Import(TestAuthArgumentResolverConfig.class)
 @WebMvcTest(value = RecruitmentController.class,
         excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
-                AuthArgumentResolverConfig.class, AuthenticationArgumentResolver.class, AuthenticationValidator.class}))
+                WebMvcConfiguration.class, AuthenticationArgumentResolver.class, AuthenticationValidator.class}))
 class RecruitmentControllerTest extends ControllerTest {
 
     @MockBean
