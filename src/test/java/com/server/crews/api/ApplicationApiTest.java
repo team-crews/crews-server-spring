@@ -138,7 +138,7 @@ public class ApplicationApiTest extends ApiTest {
     }
 
     @Test
-    @DisplayName("지원서의 상세 정보를 조회한다.")
+    @DisplayName("동아리 관리자가 지원서 상세 정보를 조회한다.")
     void getApplicationDetails() {
         // given
         AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
@@ -154,7 +154,7 @@ public class ApplicationApiTest extends ApiTest {
                 .filter(ApplicationApiDocuments.GET_APPLICATION_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION,
-                        AuthorizationExtractor.BEARER_TYPE + applicantLoginResponse.accessToken())
+                        AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
                 .pathParam("application-id", testApplication.id())
                 .when().get("/applications/{application-id}")
                 .then().log().all()

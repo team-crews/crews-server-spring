@@ -99,10 +99,7 @@ public class Application {
         return outcome.equals(Outcome.PENDING);
     }
 
-    public boolean canBeAccessedBy(Long userId, Role role) {
-        if (role == Role.ADMIN) {
-            return true;
-        }
-        return applicant.getId().equals(userId);
+    public boolean canBeAccessedBy(Long publisherId) {
+        return this.recruitment.isPublishedBy(publisherId);
     }
 }

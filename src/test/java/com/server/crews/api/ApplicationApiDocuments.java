@@ -50,8 +50,8 @@ public class ApplicationApiDocuments {
     }
 
     public static RestDocumentationFilter GET_APPLICATION_200_DOCUMENT() {
-        return document(APPLICATION_API + "지원서 상세 조회",
-                new ResourceSnippetParametersBuilder().description("지원서 상세 정보를 조회한다.")
+        return document(APPLICATION_API + "동아리 관리자 지원서 상세 조회",
+                new ResourceSnippetParametersBuilder().description("동아리 관리자가 지원서 상세 정보를 조회한다.")
                         .pathParameters(parameterWithName("application-id").description("지원서 id")));
     }
 

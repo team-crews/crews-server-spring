@@ -126,4 +126,8 @@ public class Recruitment {
     public void sortQuestions() {
         this.sections.forEach(Section::sortQuestions);
     }
+
+    public boolean isPublishedBy(Long publisherId) {
+        return this.publisher.getId().equals(publisherId);
+    }
 }

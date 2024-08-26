@@ -9,7 +9,6 @@ import static com.server.crews.fixture.QuestionFixture.SELECTIVE_QUESTION;
 import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
 import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -29,12 +28,9 @@ import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.domain.Applicant;
-import com.server.crews.auth.domain.Role;
-import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.environ.service.ServiceTest;
 import com.server.crews.environ.service.TestRecruitment;
 import com.server.crews.global.exception.CrewsException;
-import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
@@ -146,10 +142,9 @@ class ApplicationServiceTest extends ServiceTest {
                 .saveSelectiveAnswers(selectiveQuestion, choices.get(1))
                 .application();
 
-        LoginUser loginUser = new LoginUser(publisher.getId(), Role.ADMIN);
-
         // when
-        ApplicationDetailsResponse response = applicationService.findApplicationDetails(application.getId(), loginUser);
+        ApplicationDetailsResponse response = applicationService.findApplicationDetails(application.getId(),
+                publisher.getId());
 
         // then
         assertAll(() -> {
@@ -158,44 +153,6 @@ class ApplicationServiceTest extends ServiceTest {
             assertThat(response.selectiveAnswers()).flatExtracting(SelectiveAnswerResponse::choices)
                     .flatExtracting(SelectedChoiceResponse::choiceId).contains(1L, 2L);
         });
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideRole")
-    @DisplayName("지원서의 작성자 혹은 동아리 관리자만이 지원서 상세 정보를 조회할 수 있다.")
-    void checkApplicationPermission(Role givenRole) {
-        // given
-        Administrator publisher = LIKE_LION_ADMIN().administrator();
-        Recruitment testRecruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
-        Applicant applicant = JONGMEE_APPLICANT().applicant();
-        Application application = JONGMEE_APPLICATION(applicant, testRecruitment).application();
-
-        LoginUser loginUser = new LoginUser(1L, givenRole);
-
-        // when & then
-        assertThatCode(() -> applicationService.findApplicationDetails(application.getId(), loginUser))
-                .doesNotThrowAnyException();
-    }
-
-    private static Stream<Role> provideRole() {
-        return Stream.of(Role.APPLICANT, Role.ADMIN);
-    }
-
-    @Test
-    @DisplayName("지원서 작성자가 아닌 지원자는 지원서 상세 정보를 조회할 수 없다.")
-    void checkInvalidApplicationPermission() {
-        // given
-        Administrator publisher = LIKE_LION_ADMIN().administrator();
-        Recruitment testRecruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
-        Applicant jongmeeApplicant = JONGMEE_APPLICANT().applicant();
-        Application application = JONGMEE_APPLICATION(jongmeeApplicant, testRecruitment).application();
-        Applicant kyunghoApplicant = KYUNGHO_APPLICANT().applicant();
-
-        LoginUser loginUser = new LoginUser(kyunghoApplicant.getId(), Role.APPLICANT);
-
-        // when & then
-        assertThatThrownBy(() -> applicationService.findApplicationDetails(application.getId(), loginUser))
-                .hasMessage(ErrorCode.UNAUTHORIZED_USER.getMessage());
     }
 
     @Test
