@@ -106,9 +106,10 @@ public class RecruitmentService {
     }
 
     public RecruitmentProgressResponse findRecruitmentProgress(Long publisherId) {
-        Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
-        return new RecruitmentProgressResponse(recruitment.getProgress());
+        return recruitmentRepository.findByPublisher(publisherId)
+                .map(Recruitment::getProgress)
+                .map(RecruitmentProgressResponse::new)
+                .orElse(new RecruitmentProgressResponse(RecruitmentProgress.READY));
     }
 
     @Transactional

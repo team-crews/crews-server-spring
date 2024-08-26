@@ -316,7 +316,6 @@ public class RecruitmentApiTest extends ApiTest {
         // given
         AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String adminAccessToken = adminTokenResponse.accessToken();
-        createRecruitment(adminAccessToken);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -331,7 +330,8 @@ public class RecruitmentApiTest extends ApiTest {
         RecruitmentProgressResponse recruitmentProgressResponse = response.as(RecruitmentProgressResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode200(response, softAssertions);
-            softAssertions.assertThat(recruitmentProgressResponse.recruitmentProgress()).isEqualTo(RecruitmentProgress.READY);
+            softAssertions.assertThat(recruitmentProgressResponse.recruitmentProgress())
+                    .isEqualTo(RecruitmentProgress.READY);
         });
     }
 
