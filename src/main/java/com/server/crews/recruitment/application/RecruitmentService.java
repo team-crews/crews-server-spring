@@ -11,11 +11,13 @@ import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
+import com.server.crews.recruitment.dto.response.RecruitmentProgressResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
 import com.server.crews.recruitment.mapper.RecruitmentMapper;
 import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
@@ -25,6 +27,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -74,10 +77,9 @@ public class RecruitmentService {
         return new RecruitmentStateInProgressResponse(applicationCount, recruitment.getDeadline());
     }
 
-    public RecruitmentDetailsResponse findRecruitmentDetailsInReady(Long publisherId) {
-        Recruitment recruitment = recruitmentRepository.findWithSectionsByPublisherId(publisherId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
-        return toRecruitmentDetailsWithQuestions(recruitment);
+    public Optional<RecruitmentDetailsResponse> findRecruitmentDetailsInReady(Long publisherId) {
+        return recruitmentRepository.findWithSectionsByPublisherId(publisherId)
+                .map(this::toRecruitmentDetailsWithQuestions);
     }
 
     public RecruitmentDetailsResponse findRecruitmentDetailsByCode(String code) {
@@ -101,6 +103,13 @@ public class RecruitmentService {
         });
         recruitment.sortQuestions();
         return RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(recruitment);
+    }
+
+    public RecruitmentProgressResponse findRecruitmentProgress(Long publisherId) {
+        return recruitmentRepository.findByPublisher(publisherId)
+                .map(Recruitment::getProgress)
+                .map(RecruitmentProgressResponse::new)
+                .orElse(new RecruitmentProgressResponse(RecruitmentProgress.READY));
     }
 
     @Transactional

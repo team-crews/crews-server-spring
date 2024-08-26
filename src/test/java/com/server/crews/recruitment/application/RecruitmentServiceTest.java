@@ -143,7 +143,7 @@ class RecruitmentServiceTest extends ServiceTest {
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()));
 
         // when
-        RecruitmentDetailsResponse response = recruitmentService.findRecruitmentDetailsInReady(publisher.getId());
+        RecruitmentDetailsResponse response = recruitmentService.findRecruitmentDetailsInReady(publisher.getId()).get();
 
         // then
         List<SectionResponse> sectionResponses = response.sections();

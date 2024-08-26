@@ -15,9 +15,7 @@ import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.Recruitment;
-import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,11 +37,7 @@ public class AuthService {
         Administrator administrator = administratorRepository.findByClubName(clubName)
                 .orElseGet(() -> createAdmin(clubName, password));
         String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, clubName);
-        Optional<Recruitment> optionalRecruitment = recruitmentRepository.findByPublisher(administrator.getId());
-        Long recruitmentId = optionalRecruitment.map(Recruitment::getId).orElse(null);
-        RecruitmentProgress recruitmentProgress = optionalRecruitment.map(Recruitment::getProgress)
-                .orElse(RecruitmentProgress.READY);
-        return new AdminLoginResponse(administrator.getId(), accessToken, recruitmentProgress, recruitmentId);
+        return new AdminLoginResponse(administrator.getId(), accessToken);
     }
 
     private Administrator createAdmin(String clubName, String password) {
@@ -64,8 +58,7 @@ public class AuthService {
                 .map(Application::getId)
                 .orElse(null);
         String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, email);
-        RecruitmentProgress recruitmentProgress = recruitment.getProgress();
-        return new ApplicantLoginResponse(applicant.getId(), accessToken, recruitmentProgress, applicationId);
+        return new ApplicantLoginResponse(applicant.getId(), accessToken, applicationId);
     }
 
     private Applicant createApplicant(String email, String password, Recruitment recruitment) {

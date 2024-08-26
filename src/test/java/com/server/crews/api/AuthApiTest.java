@@ -12,7 +12,6 @@ import com.server.crews.auth.dto.request.ApplicantLoginRequest;
 import com.server.crews.auth.dto.response.AdminLoginResponse;
 import com.server.crews.auth.dto.response.ApplicantLoginResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
-import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -47,7 +46,6 @@ public class AuthApiTest extends ApiTest {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(adminLoginResponse.accessToken()).isNotEmpty();
             softAssertions.assertThat(cookies.get("refreshToken")).isNotNull();
-            softAssertions.assertThat(adminLoginResponse.recruitmentProgress()).isEqualTo(RecruitmentProgress.READY);
         });
     }
 
@@ -73,7 +71,6 @@ public class AuthApiTest extends ApiTest {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(adminLoginResponse.accessToken()).isNotEmpty();
             softAssertions.assertThat(cookies.get("refreshToken")).isNotNull();
-            softAssertions.assertThat(adminLoginResponse.recruitmentProgress()).isEqualTo(RecruitmentProgress.READY);
         });
     }
 
@@ -103,7 +100,6 @@ public class AuthApiTest extends ApiTest {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(applicantLoginResponse.accessToken()).isNotEmpty();
             softAssertions.assertThat(cookies.get("refreshToken")).isNotNull();
-            softAssertions.assertThat(applicantLoginResponse.recruitmentProgress()).isEqualTo(RecruitmentProgress.READY);
         });
     }
 

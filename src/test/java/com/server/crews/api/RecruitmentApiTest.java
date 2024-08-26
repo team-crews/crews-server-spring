@@ -1,6 +1,7 @@
 package com.server.crews.api;
 
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode204;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
 import static com.server.crews.fixture.QuestionFixture.STRENGTH_QUESTION;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
@@ -17,6 +18,7 @@ import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.auth.dto.response.AdminLoginResponse;
 import com.server.crews.auth.dto.response.ApplicantLoginResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
+import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
 import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
@@ -25,6 +27,7 @@ import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.request.SectionSaveRequest;
 import com.server.crews.recruitment.dto.response.QuestionResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
+import com.server.crews.recruitment.dto.response.RecruitmentProgressResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
 import com.server.crews.recruitment.dto.response.SectionResponse;
 import io.restassured.RestAssured;
@@ -215,7 +218,7 @@ public class RecruitmentApiTest extends ApiTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.GET_RECRUITMENT_200_DOCUMENT())
+                .filter(RecruitmentApiDocuments.GET_READY_RECRUITMENT_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
                 .when().get("/recruitments/ready")
@@ -238,6 +241,26 @@ public class RecruitmentApiTest extends ApiTest {
                     .flatExtracting(QuestionResponse::choices)
                     .isNotEmpty();
         });
+    }
+
+    @Test
+    @DisplayName("작성중인 모집공고가 없다면 상세 정보 조회 시 204를 반환한다.")
+    void getRecruitmentDetailsWhenNotExisting() {
+        // given
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        String adminAccessToken = adminTokenResponse.accessToken();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.GET_READY_RECRUITMENT_204_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .when().get("/recruitments/ready")
+                .then().log().all()
+                .extract();
+
+        // then
+        checkStatusCode204(response);
     }
 
     @Test
@@ -285,6 +308,31 @@ public class RecruitmentApiTest extends ApiTest {
 
         // then
         checkStatusCode200(response);
+    }
+
+    @Test
+    @DisplayName("모집 공고의 단계를 조회한다.")
+    void getRecruitmentProgress() {
+        // given
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        String adminAccessToken = adminTokenResponse.accessToken();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.GET_RECRUITMENT_PROGRESS_200_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .when().get("/recruitments/progress")
+                .then().log().all()
+                .extract();
+
+        // then
+        RecruitmentProgressResponse recruitmentProgressResponse = response.as(RecruitmentProgressResponse.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode200(response, softAssertions);
+            softAssertions.assertThat(recruitmentProgressResponse.recruitmentProgress())
+                    .isEqualTo(RecruitmentProgress.READY);
+        });
     }
 
     @Test
