@@ -20,8 +20,8 @@ import com.server.crews.environ.service.ServiceTest;
 import com.server.crews.environ.service.TestRecruitment;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
-import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
 import com.server.crews.recruitment.dto.request.QuestionType;
@@ -134,18 +134,16 @@ class RecruitmentServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("지원서 양식의 모든 상세정보를 조회한다.")
-    void findRecruitmentDetails() {
+    @DisplayName("작성중인 지원서 양식의 모든 상세정보를 조회한다.")
+    void findRecruitmentDetailsInReady() {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
-        Long recruitmentId = LIKE_LION_RECRUITMENT(publisher)
+        LIKE_LION_RECRUITMENT(publisher)
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
-                .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
-                .recruitment()
-                .getId();
+                .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()));
 
         // when
-        RecruitmentDetailsResponse response = recruitmentService.findRecruitmentDetailsById(recruitmentId);
+        RecruitmentDetailsResponse response = recruitmentService.findRecruitmentDetailsInReady(publisher.getId());
 
         // then
         List<SectionResponse> sectionResponses = response.sections();

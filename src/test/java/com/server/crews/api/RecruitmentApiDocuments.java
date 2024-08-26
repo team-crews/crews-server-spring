@@ -96,9 +96,8 @@ public class RecruitmentApiDocuments {
     }
 
     public static RestDocumentationFilter GET_RECRUITMENT_200_DOCUMENT() {
-        return document(RECRUITMENT_API + "모집 공고(지원서 양식) 상세 조회",
-                new ResourceSnippetParametersBuilder().description("모집 공고(지원서 양식) 상세 정보를 조회한다.")
-                        .pathParameters(parameterWithName("recruitment-id").description("모집 공고 id")));
+        return document(RECRUITMENT_API + "작성중인 모집 공고(지원서 양식) 상세 조회",
+                new ResourceSnippetParametersBuilder().description("모집 공고(지원서 양식) 상세 정보를 조회한다."));
     }
 
     public static RestDocumentationFilter GET_RECRUITMENT_BY_CODE_200_DOCUMENT() {

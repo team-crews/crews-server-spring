@@ -13,14 +13,14 @@ public class RecruitmentDslRepositoryImpl implements RecruitmentDslRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Optional<Recruitment> findWithSectionsById(Long id) {
+    public Optional<Recruitment> findWithSectionsByPublisherId(Long publisherId) {
         QRecruitment qRecruitment = QRecruitment.recruitment;
         QSection qSection = QSection.section;
 
         Recruitment recruitment =  jpaQueryFactory.selectFrom(qRecruitment)
                 .leftJoin(qRecruitment.sections, qSection)
                 .fetchJoin()
-                .where(qRecruitment.id.eq(id))
+                .where(qRecruitment.publisher.id.eq(publisherId))
                 .fetchFirst();
         return Optional.ofNullable(recruitment);
     }

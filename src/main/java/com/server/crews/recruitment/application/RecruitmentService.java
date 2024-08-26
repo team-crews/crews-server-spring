@@ -71,8 +71,8 @@ public class RecruitmentService {
         return new RecruitmentStateInProgressResponse(applicationCount, recruitment.getDeadline());
     }
 
-    public RecruitmentDetailsResponse findRecruitmentDetailsById(Long recruitmentId) {
-        Recruitment recruitment = recruitmentRepository.findWithSectionsById(recruitmentId)
+    public RecruitmentDetailsResponse findRecruitmentDetailsInReady(Long publisherId) {
+        Recruitment recruitment = recruitmentRepository.findWithSectionsByPublisherId(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
         return findRecruitmentDetails(recruitment);
     }
