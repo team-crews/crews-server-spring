@@ -42,13 +42,11 @@ public class ApplicationApiDocuments {
     }
 
     public static RestDocumentationFilter SAVE_APPLICATION_404_DOCUMENT() {
-        return document(APPLICATION_API + "존재하지 않는 질문으로 지원서 저장",
-                new ResourceSnippetParametersBuilder().description("존재하지 않는 질문으로 지원서를 저장한다."));
+        return document(APPLICATION_API + "존재하지 않는 질문으로 지원서 저장");
     }
 
     public static RestDocumentationFilter SAVE_APPLICATION_400_DOCUMENT() {
-        return document(APPLICATION_API + "한 서술형 문항에 두 개 이상의 답변으로 지원서 저장",
-                new ResourceSnippetParametersBuilder().description("한 서술형 문항에 두 개 이상의 답변을 저장한다."));
+        return document(APPLICATION_API + "한 서술형 문항에 두 개 이상의 답변으로 지원서 저장");
     }
 
     public static RestDocumentationFilter GET_APPLICATION_200_DOCUMENT() {
