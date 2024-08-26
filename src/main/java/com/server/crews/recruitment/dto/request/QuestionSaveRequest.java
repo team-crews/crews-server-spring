@@ -1,8 +1,5 @@
 package com.server.crews.recruitment.dto.request;
 
-import com.server.crews.recruitment.domain.Choice;
-import com.server.crews.recruitment.domain.NarrativeQuestion;
-import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.presentation.QuestionTypeFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,21 +19,7 @@ public record QuestionSaveRequest(
         Integer wordLimit,
         Integer minimumSelection,
         Integer maximumSelection,
+        @NotNull(message = "선택지 리스트는 null일 수 없습니다. 빈 리스트를 보내주세요.")
         List<ChoiceSaveRequest> choices
 ) {
-
-    public SelectiveQuestion createSelectiveQuestion() {
-        return new SelectiveQuestion(id, createsChoices(), content, necessity, order, minimumSelection,
-                maximumSelection);
-    }
-
-    private List<Choice> createsChoices() {
-        return choices.stream()
-                .map(ChoiceSaveRequest::toEntity)
-                .toList();
-    }
-
-    public NarrativeQuestion createNarrativeQuestion() {
-        return new NarrativeQuestion(id, content, necessity, order, wordLimit);
-    }
 }

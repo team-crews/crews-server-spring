@@ -23,10 +23,10 @@ import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
 import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.request.SectionSaveRequest;
+import com.server.crews.recruitment.dto.response.QuestionResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
 import com.server.crews.recruitment.dto.response.SectionResponse;
-import com.server.crews.recruitment.dto.response.SelectiveQuestionResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -62,8 +62,8 @@ public class RecruitmentApiTest extends ApiTest {
 
         Long recruitmentId = savedRecruitmentResponse.id();
         Long sectionId = savedRecruitmentResponse.sections().get(0).id();
-        Long questionId = savedRecruitmentResponse.sections().get(0).selectiveQuestions().get(0).id();
-        Long choiceId = savedRecruitmentResponse.sections().get(0).selectiveQuestions().get(0).choices().get(0).id();
+        Long questionId = savedRecruitmentResponse.sections().get(0).questions().get(0).id();
+        Long choiceId = savedRecruitmentResponse.sections().get(0).questions().get(0).choices().get(0).id();
 
         ChoiceSaveRequest choiceUpdateRequest = new ChoiceSaveRequest(choiceId, "변경된 선택지 내용");
         QuestionSaveRequest selectiveQuestionUpdateRequest = new QuestionSaveRequest(questionId,
@@ -206,20 +206,19 @@ public class RecruitmentApiTest extends ApiTest {
     }
 
     @Test
-    @DisplayName("모집 공고 및 지원서 양식 상세 정보를 조회한다.")
+    @DisplayName("작성중인 모집 공고 및 지원서 양식 상세 정보를 조회한다.")
     void getRecruitmentDetails() {
         // given
         AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String adminAccessToken = adminTokenResponse.accessToken();
-        RecruitmentDetailsResponse savedRecruitmentDetailsResponse = createRecruitment(adminAccessToken);
+        createRecruitment(adminAccessToken);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
                 .filter(RecruitmentApiDocuments.GET_RECRUITMENT_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
-                .pathParam("recruitment-id", savedRecruitmentDetailsResponse.id())
-                .when().get("/recruitments/{recruitment-id}")
+                .when().get("/recruitments/ready")
                 .then().log().all()
                 .extract();
 
@@ -230,10 +229,14 @@ public class RecruitmentApiTest extends ApiTest {
             softAssertions.assertThat(recruitmentDetailsResponse.id()).isNotNull();
             softAssertions.assertThat(recruitmentDetailsResponse.sections()).isNotEmpty();
             softAssertions.assertThat(recruitmentDetailsResponse.sections())
-                    .flatExtracting(SectionResponse::narrativeQuestions).isNotEmpty();
+                    .flatExtracting(SectionResponse::questions)
+                    .filteredOn(questionResponse -> questionResponse.type() == QuestionType.NARRATIVE)
+                    .isNotEmpty();
             softAssertions.assertThat(recruitmentDetailsResponse.sections())
-                    .flatExtracting(SectionResponse::selectiveQuestions)
-                    .flatExtracting(SelectiveQuestionResponse::choices).isNotEmpty();
+                    .flatExtracting(SectionResponse::questions)
+                    .filteredOn(questionResponse -> questionResponse.type() == QuestionType.SELECTIVE)
+                    .flatExtracting(QuestionResponse::choices)
+                    .isNotEmpty();
         });
     }
 

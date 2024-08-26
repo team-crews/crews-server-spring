@@ -48,7 +48,7 @@ class RecruitmentControllerTest extends ControllerTest {
     void saveRecruitment() throws Exception {
         // given
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE, null,
-                null, LocalDateTime.now().toString());
+                List.of(), LocalDateTime.now().toString());
 
         // when & then
         mockMvc.perform(post("/recruitments")
@@ -158,13 +158,13 @@ class RecruitmentControllerTest extends ControllerTest {
     private static Stream<Arguments> invalidQuestionSaveRequests() {
         return Stream.of(
                 Arguments.of(new QuestionSaveRequest(null, null, INTRODUCTION_QUESTION, true, 1,
-                        300, null, null, null), "질문 타입은 공백일 수 없습니다."),
+                        300, null, null, List.of()), "질문 타입은 공백일 수 없습니다."),
                 Arguments.of(new QuestionSaveRequest(null, QuestionType.NARRATIVE.name(), "", true, 1,
-                        300, null, null, null), "질문 내용은 공백일 수 없습니다."),
+                        300, null, null, List.of()), "질문 내용은 공백일 수 없습니다."),
                 Arguments.of(new QuestionSaveRequest(null, QuestionType.NARRATIVE.name(), INTRODUCTION_QUESTION, null, 1,
-                        300, null, null, null), "필수 항목 여부는 null일 수 없습니다."),
+                        300, null, null, List.of()), "필수 항목 여부는 null일 수 없습니다."),
                 Arguments.of(new QuestionSaveRequest(null, QuestionType.NARRATIVE.name(), INTRODUCTION_QUESTION, true, null,
-                        300, null, null, null), "질문 순서는 null일 수 없습니다.")
+                        300, null, null, List.of()), "질문 순서는 null일 수 없습니다.")
         );
     }
 

@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,12 +54,11 @@ public class RecruitmentController {
     }
 
     /**
-     * 모집 공고 상세 정보를 id로 조회한다.
+     * 작성중인 모집 공고 상세 정보를 조회한다.
      */
-    @GetMapping("/{recruitment-id}")
-    public ResponseEntity<RecruitmentDetailsResponse> getRecruitmentDetails(
-            @PathVariable(value = "recruitment-id") Long recruitmentId) {
-        return ResponseEntity.ok(recruitmentService.findRecruitmentDetailsById(recruitmentId));
+    @GetMapping("/ready")
+    public ResponseEntity<RecruitmentDetailsResponse> getRecruitmentDetailsInReady(@AdminAuthentication LoginUser loginUser) {
+        return ResponseEntity.ok(recruitmentService.findRecruitmentDetailsInReady(loginUser.userId()));
     }
 
     /**

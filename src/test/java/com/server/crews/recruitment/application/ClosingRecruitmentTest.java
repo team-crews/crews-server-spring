@@ -53,6 +53,6 @@ public class ClosingRecruitmentTest {
 
         // then
         Recruitment updatedRecruitment = recruitmentRepository.findById(recruitment.getId()).get();
-        assertThat(updatedRecruitment.getRecruitmentProgress()).isEqualTo(RecruitmentProgress.COMPLETION);
+        assertThat(updatedRecruitment.getProgress()).isEqualTo(RecruitmentProgress.COMPLETION);
     }
 }

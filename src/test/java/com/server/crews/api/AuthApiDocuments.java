@@ -61,7 +61,6 @@ public class AuthApiDocuments {
     }
 
     public static RestDocumentationFilter AUTHORIZE_401_DOCUMENT() {
-        return document(AUTH_API + "인가 실패 예시",
-                new ResourceSnippetParametersBuilder().description("(인가 실패 예시) 지원자 권한으로 지원자 목록을 조회한다"));
+        return document(AUTH_API + "인가 실패 예시");
     }
 }
