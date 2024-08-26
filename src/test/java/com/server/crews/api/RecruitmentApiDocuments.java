@@ -68,7 +68,7 @@ public class RecruitmentApiDocuments {
 
     public static RestDocumentationFilter SAVE_RECRUITMENT_400_DOCUMENT() {
         return document(RECRUITMENT_API + "잘못된 마감일의 모집 공고 저장",
-                new ResourceSnippetParametersBuilder().description("잘못된 마감일로 모집 공고를 저장한다.")
+                new ResourceSnippetParametersBuilder()
                         .requestFields(
                                 fieldWithPath(".id").description("모집 공고 id"),
                                 fieldWithPath(".title").description("모집 공고 제목"),
@@ -83,8 +83,7 @@ public class RecruitmentApiDocuments {
     }
 
     public static RestDocumentationFilter START_RECRUITMENT_400_DOCUMENT() {
-        return document(RECRUITMENT_API + "유효하지 않은 모집 시작",
-                new ResourceSnippetParametersBuilder().description("이미 시작된 모집을 시작한다."));
+        return document(RECRUITMENT_API + "유효하지 않은 모집 시작");
     }
 
     public static RestDocumentationFilter GET_RECRUITMENT_STATUS_200_DOCUMENT() {
