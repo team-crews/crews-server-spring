@@ -22,7 +22,7 @@ public class RecruitmentFixture {
     public static final String DEFAULT_TITLE = "TITLE";
     public static final String DEFAULT_DESCRIPTION = "DESCRIPTION";
 
-    public static final QuestionSaveRequest NARRATIVE_QUESTION_REQUEST = new QuestionSaveRequest(null, QuestionType.NARRATIVE.name(), INTRODUCTION_QUESTION, true, 1, 100, null, null, null);
+    public static final QuestionSaveRequest NARRATIVE_QUESTION_REQUEST = new QuestionSaveRequest(null, QuestionType.NARRATIVE.name(), INTRODUCTION_QUESTION, true, 1, 100, null, null, List.of());
     public static final QuestionSaveRequest SELECTIVE_QUESTION_REQUEST = new QuestionSaveRequest(null, QuestionType.SELECTIVE.name(), STRENGTH_QUESTION, true, 2, null, 1, 2, STRENGTH_CHOICES_REQUEST);
     public static final List<QuestionSaveRequest> QUESTION_REQUESTS = List.of(NARRATIVE_QUESTION_REQUEST, SELECTIVE_QUESTION_REQUEST);
     public static final SectionSaveRequest BACKEND_SECTION_REQUEST = new SectionSaveRequest(null, BACKEND_SECTION_NAME, DEFAULT_DESCRIPTION, QUESTION_REQUESTS);

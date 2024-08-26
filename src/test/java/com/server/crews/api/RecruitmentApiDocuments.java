@@ -25,8 +25,7 @@ public class RecruitmentApiDocuments {
                                 fieldWithPath(".deadline")
                                         .description("모집 마감일"),
                                 fieldWithPath(".sections")
-                                        .description("섹션 목록")
-                                        .optional(),
+                                        .description("섹션 목록 (없을 경우 빈 리스트)"),
                                 fieldWithPath(".sections[].id")
                                         .description("섹션 id (최초 저장이 아닐 경우 필요함)")
                                         .optional(),
@@ -36,8 +35,7 @@ public class RecruitmentApiDocuments {
                                         .description("섹션 설명")
                                         .optional(),
                                 fieldWithPath(".sections[].questions")
-                                        .description("질문 목록")
-                                        .optional(),
+                                        .description("질문 목록 (없을 경우 빈 리스트)"),
                                 fieldWithPath(".sections[].questions[].id")
                                         .description("질문 id (최초 저장이 아닐 경우 필요함)")
                                         .optional(),
@@ -60,8 +58,7 @@ public class RecruitmentApiDocuments {
                                         .description("SELECTIVE 질문의 최대 선택 개수")
                                         .optional(),
                                 fieldWithPath(".sections[].questions[].choices")
-                                        .description("SELECTIVE 질문의 선택지 목록")
-                                        .optional(),
+                                        .description("SELECTIVE 질문의 선택지 목록 (없을 경우 빈 리스트)"),
                                 fieldWithPath(".sections[].questions[].choices[].id")
                                         .description("선택지 id (최초 저장이 아닐 경우 필요함)")
                                         .optional(),

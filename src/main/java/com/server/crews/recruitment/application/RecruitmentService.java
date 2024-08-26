@@ -51,7 +51,7 @@ public class RecruitmentService {
         Administrator publisher = administratorRepository.findById(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
         String code = UUID.randomUUID().toString();
-        Recruitment recruitment = request.toRecruitment(code, publisher);
+        Recruitment recruitment = RecruitmentMapper.recruitmentSaveRequestToRecruitment(request, code, publisher);
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
         return RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(savedRecruitment);
     }
