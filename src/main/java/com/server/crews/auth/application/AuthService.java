@@ -41,7 +41,7 @@ public class AuthService {
         String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, clubName);
         Optional<Recruitment> optionalRecruitment = recruitmentRepository.findByPublisher(administrator.getId());
         Long recruitmentId = optionalRecruitment.map(Recruitment::getId).orElse(null);
-        RecruitmentProgress recruitmentProgress = optionalRecruitment.map(Recruitment::getRecruitmentProgress)
+        RecruitmentProgress recruitmentProgress = optionalRecruitment.map(Recruitment::getProgress)
                 .orElse(RecruitmentProgress.READY);
         return new AdminLoginResponse(administrator.getId(), accessToken, recruitmentProgress, recruitmentId);
     }
@@ -64,7 +64,7 @@ public class AuthService {
                 .map(Application::getId)
                 .orElse(null);
         String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, email);
-        RecruitmentProgress recruitmentProgress = recruitment.getRecruitmentProgress();
+        RecruitmentProgress recruitmentProgress = recruitment.getProgress();
         return new ApplicantLoginResponse(applicant.getId(), accessToken, recruitmentProgress, applicationId);
     }
 

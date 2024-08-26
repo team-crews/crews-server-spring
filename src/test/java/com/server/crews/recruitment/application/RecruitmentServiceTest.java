@@ -28,9 +28,9 @@ import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.request.SectionSaveRequest;
 import com.server.crews.recruitment.dto.response.ChoiceResponse;
+import com.server.crews.recruitment.dto.response.QuestionResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.SectionResponse;
-import com.server.crews.recruitment.dto.response.SelectiveQuestionResponse;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -84,8 +84,8 @@ class RecruitmentServiceTest extends ServiceTest {
 
         Long recruitmentId = savedRecruitmentResponse.id();
         Long sectionId = savedRecruitmentResponse.sections().get(0).id();
-        Long questionId = savedRecruitmentResponse.sections().get(0).selectiveQuestions().get(0).id();
-        Long choiceId = savedRecruitmentResponse.sections().get(0).selectiveQuestions().get(0).choices().get(0).id();
+        Long questionId = savedRecruitmentResponse.sections().get(0).questions().get(0).id();
+        Long choiceId = savedRecruitmentResponse.sections().get(0).questions().get(0).choices().get(0).id();
 
         ChoiceSaveRequest choiceSaveRequest = new ChoiceSaveRequest(choiceId, "변경된 선택지 내용");
         QuestionSaveRequest selectiveQuestionSaveRequest = new QuestionSaveRequest(questionId,
@@ -105,15 +105,15 @@ class RecruitmentServiceTest extends ServiceTest {
             assertThat(response.title()).isEqualTo("변경된 모집 공고 제목");
             assertThat(response.sections()).extracting(SectionResponse::id).containsExactly(sectionId);
             assertThat(response.sections()).extracting(SectionResponse::name).containsExactly("변경된 섹션 이름");
-            assertThat(response.sections()).flatExtracting(SectionResponse::selectiveQuestions)
-                    .extracting(SelectiveQuestionResponse::id).containsExactly(questionId);
-            assertThat(response.sections()).flatExtracting(SectionResponse::selectiveQuestions)
-                    .extracting(SelectiveQuestionResponse::content).containsExactly("변경된 질문 내용");
-            assertThat(response.sections()).flatExtracting(SectionResponse::selectiveQuestions)
-                    .flatExtracting(SelectiveQuestionResponse::choices).extracting(ChoiceResponse::id)
+            assertThat(response.sections()).flatExtracting(SectionResponse::questions)
+                    .extracting(QuestionResponse::id).containsExactly(questionId);
+            assertThat(response.sections()).flatExtracting(SectionResponse::questions)
+                    .extracting(QuestionResponse::content).containsExactly("변경된 질문 내용");
+            assertThat(response.sections()).flatExtracting(SectionResponse::questions)
+                    .flatExtracting(QuestionResponse::choices).extracting(ChoiceResponse::id)
                     .containsExactly(choiceId);
-            assertThat(response.sections()).flatExtracting(SectionResponse::selectiveQuestions)
-                    .flatExtracting(SelectiveQuestionResponse::choices).extracting(ChoiceResponse::content)
+            assertThat(response.sections()).flatExtracting(SectionResponse::questions)
+                    .flatExtracting(QuestionResponse::choices).extracting(ChoiceResponse::content)
                     .containsExactly("변경된 선택지 내용");
         });
     }
@@ -130,7 +130,7 @@ class RecruitmentServiceTest extends ServiceTest {
 
         // then
         Recruitment updatedRecruitment = recruitmentRepository.findById(recruitment.getId()).get();
-        assertThat(updatedRecruitment.getRecruitmentProgress()).isEqualTo(RecruitmentProgress.IN_PROGRESS);
+        assertThat(updatedRecruitment.getProgress()).isEqualTo(RecruitmentProgress.IN_PROGRESS);
     }
 
     @Test
@@ -149,12 +149,15 @@ class RecruitmentServiceTest extends ServiceTest {
         List<SectionResponse> sectionResponses = response.sections();
         assertAll(
                 () -> assertThat(sectionResponses).hasSize(2),
-                () -> assertThat(sectionResponses).extracting(SectionResponse::narrativeQuestions)
+                () -> assertThat(sectionResponses).flatExtracting(SectionResponse::questions)
+                        .filteredOn(questionResponse -> questionResponse.type() == QuestionType.NARRATIVE)
                         .hasSize(2),
-                () -> assertThat(sectionResponses).extracting(SectionResponse::selectiveQuestions)
+                () -> assertThat(sectionResponses).flatExtracting(SectionResponse::questions)
+                        .filteredOn(questionResponse -> questionResponse.type() == QuestionType.SELECTIVE)
                         .hasSize(2),
-                () -> assertThat(sectionResponses).flatExtracting(SectionResponse::selectiveQuestions)
-                        .flatExtracting(SelectiveQuestionResponse::choices)
+                () -> assertThat(sectionResponses).flatExtracting(SectionResponse::questions)
+                        .filteredOn(questionResponse -> questionResponse.type() == QuestionType.SELECTIVE)
+                        .flatExtracting(QuestionResponse::choices)
                         .hasSize(6)
         );
     }
@@ -179,7 +182,7 @@ class RecruitmentServiceTest extends ServiceTest {
         // then
         Recruitment updatedRecruitment = recruitmentRepository.findById(recruitment.getId()).get();
         assertAll(
-                () -> assertThat(updatedRecruitment.getRecruitmentProgress()).isEqualTo(RecruitmentProgress.ANNOUNCED),
+                () -> assertThat(updatedRecruitment.getProgress()).isEqualTo(RecruitmentProgress.ANNOUNCED),
                 () -> assertThat(events.stream(OutcomeDeterminedEvent.class).count()).isSameAs(1L)
         );
     }

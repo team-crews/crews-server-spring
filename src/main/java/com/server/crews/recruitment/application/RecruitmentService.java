@@ -17,6 +17,7 @@ import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
+import com.server.crews.recruitment.mapper.RecruitmentMapper;
 import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
@@ -51,7 +52,8 @@ public class RecruitmentService {
                 .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
         String code = UUID.randomUUID().toString();
         Recruitment recruitment = request.toRecruitment(code, publisher);
-        return RecruitmentDetailsResponse.from(recruitmentRepository.save(recruitment));
+        Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
+        return RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(savedRecruitment);
     }
 
     @Transactional
@@ -74,25 +76,29 @@ public class RecruitmentService {
     public RecruitmentDetailsResponse findRecruitmentDetailsInReady(Long publisherId) {
         Recruitment recruitment = recruitmentRepository.findWithSectionsByPublisherId(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
-        return findRecruitmentDetails(recruitment);
+        return toRecruitmentDetailsWithQuestions(recruitment);
     }
 
     public RecruitmentDetailsResponse findRecruitmentDetailsByCode(String code) {
         Recruitment recruitment = recruitmentRepository.findWithSectionsByCode(code)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
-        return findRecruitmentDetails(recruitment);
+        return toRecruitmentDetailsWithQuestions(recruitment);
     }
 
-    public RecruitmentDetailsResponse findRecruitmentDetails(Recruitment recruitment) {
+    public RecruitmentDetailsResponse toRecruitmentDetailsWithQuestions(Recruitment recruitment) {
         List<Section> sections = recruitment.getSections();
         List<NarrativeQuestion> narrativeQuestions = narrativeQuestionRepository.findAllBySectionIn(sections);
         List<SelectiveQuestion> selectiveQuestions = selectiveQuestionRepository.findAllWithChoicesInSections(sections);
-
         Map<Section, List<NarrativeQuestion>> narrativeQuestionsBySection = narrativeQuestions.stream()
                 .collect(groupingBy(NarrativeQuestion::getSection));
         Map<Section, List<SelectiveQuestion>> selectiveQuestionsBySection = selectiveQuestions.stream()
                 .collect(groupingBy(SelectiveQuestion::getSection));
-        return RecruitmentDetailsResponse.from(recruitment, narrativeQuestionsBySection, selectiveQuestionsBySection);
+        sections.forEach(section -> {
+            List<NarrativeQuestion> narratives = narrativeQuestionsBySection.get(section);
+            List<SelectiveQuestion> selectives = selectiveQuestionsBySection.get(section);
+            section.replaceQuestions(narratives, selectives);
+        });
+        return RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(recruitment);
     }
 
     @Transactional
