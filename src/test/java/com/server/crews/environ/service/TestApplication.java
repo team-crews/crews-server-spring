@@ -6,8 +6,8 @@ import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
+import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +23,10 @@ public class TestApplication {
         this.selectiveAnswers = new ArrayList<>();
     }
 
-    public TestApplication create(Applicant applicant, String studentNumber, String major, String name) {
-        Application application = new Application(null, applicant, studentNumber, major, name, List.of(), List.of());
+    public TestApplication create(Applicant applicant, Recruitment recruitment, String studentNumber, String major,
+                                  String name) {
+        Application application = new Application(null, recruitment, applicant, studentNumber, major, name, List.of(),
+                List.of());
         this.application = environ.applicationRepository().save(application);
         return this;
     }

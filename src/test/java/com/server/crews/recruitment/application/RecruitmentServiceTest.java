@@ -171,10 +171,10 @@ class RecruitmentServiceTest extends ServiceTest {
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment();
-        Applicant jongmee = JONGMEE_APPLICANT(recruitment).applicant();
-        JONGMEE_APPLICATION(jongmee).pass();
-        Applicant kyungho = KYUNGHO_APPLICANT(recruitment).applicant();
-        KYUNGHO_APPLICATION(kyungho);
+        Applicant jongmee = JONGMEE_APPLICANT().applicant();
+        JONGMEE_APPLICATION(jongmee, recruitment).pass();
+        Applicant kyungho = KYUNGHO_APPLICANT().applicant();
+        KYUNGHO_APPLICATION(kyungho, recruitment);
 
         // when
         recruitmentService.announceRecruitmentOutcome(publisher.getId());
@@ -195,10 +195,10 @@ class RecruitmentServiceTest extends ServiceTest {
         TestRecruitment testRecruitment = LIKE_LION_RECRUITMENT(publisher)
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()));
-        Applicant jongmee = JONGMEE_APPLICANT(testRecruitment.recruitment()).applicant();
-        JONGMEE_APPLICATION(jongmee).pass();
-        Applicant kyungho = KYUNGHO_APPLICANT(testRecruitment.recruitment()).applicant();
-        KYUNGHO_APPLICATION(kyungho);
+        Applicant jongmee = JONGMEE_APPLICANT().applicant();
+        JONGMEE_APPLICATION(jongmee, testRecruitment.recruitment()).pass();
+        Applicant kyungho = KYUNGHO_APPLICANT().applicant();
+        KYUNGHO_APPLICATION(kyungho, testRecruitment.recruitment());
         testRecruitment.announce();
 
         // when & then

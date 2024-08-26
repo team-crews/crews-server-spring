@@ -180,12 +180,10 @@ public class RecruitmentApiTest extends ApiTest {
         AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String adminAccessToken = adminTokenResponse.accessToken();
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminAccessToken);
-        ApplicantLoginResponse applicantATokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
-                "A" + TEST_EMAIL, TEST_PASSWORD);
-        ApplicantLoginResponse applicantBTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
-                "B" + TEST_EMAIL, TEST_PASSWORD);
+        ApplicantLoginResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
+        ApplicantLoginResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 
-        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest();
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
         createTestApplication(applicantATokenResponse.accessToken(), applicationSaveRequest);
         createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
 
@@ -342,12 +340,10 @@ public class RecruitmentApiTest extends ApiTest {
         AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String adminAccessToken = adminTokenResponse.accessToken();
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminAccessToken);
-        ApplicantLoginResponse applicantATokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
-                "A" + TEST_EMAIL, TEST_PASSWORD);
-        ApplicantLoginResponse applicantBTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
-                "B" + TEST_EMAIL, TEST_PASSWORD);
+        ApplicantLoginResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
+        ApplicantLoginResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 
-        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest();
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
         createTestApplication(applicantATokenResponse.accessToken(), applicationSaveRequest);
         createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
 

@@ -1,5 +1,8 @@
 package com.server.crews.auth.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.auth.domain.Role;
@@ -11,15 +14,10 @@ import com.server.crews.auth.dto.response.ApplicantLoginResponse;
 import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.environ.service.ServiceTest;
-import com.server.crews.recruitment.domain.Recruitment;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class AuthServiceTest extends ServiceTest {
     @Autowired
@@ -75,11 +73,9 @@ class AuthServiceTest extends ServiceTest {
     @DisplayName("가입되지 않은 지원자가 로그인 요청을 하면 계정을 생성하고 액세스 토큰을 발급한다.")
     void loginNotSignedUpApplicant() {
         // given
-        Administrator publisher = LIKE_LION_ADMIN().administrator();
-        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
         String email = "new@gamil.com";
         String password = "new password";
-        ApplicantLoginRequest request = new ApplicantLoginRequest(recruitment.getCode(), email, password);
+        ApplicantLoginRequest request = new ApplicantLoginRequest(email, password);
 
         // when
         ApplicantLoginResponse applicantLoginResponse = authService.loginForApplicant(request);
@@ -96,10 +92,8 @@ class AuthServiceTest extends ServiceTest {
     @DisplayName("가입된 지원자가 로그인 요청을 하면 액세스 토큰을 발급한다.")
     void loginApplicant() {
         // given
-        Administrator publisher = LIKE_LION_ADMIN().administrator();
-        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
-        Applicant applicant = JONGMEE_APPLICANT(recruitment).applicant();
-        ApplicantLoginRequest request = new ApplicantLoginRequest(recruitment.getCode(), applicant.getEmail(), applicant.getPassword());
+        Applicant applicant = JONGMEE_APPLICANT().applicant();
+        ApplicantLoginRequest request = new ApplicantLoginRequest(applicant.getEmail(), applicant.getPassword());
 
         // when
         ApplicantLoginResponse applicantLoginResponse = authService.loginForApplicant(request);
@@ -116,9 +110,7 @@ class AuthServiceTest extends ServiceTest {
     @DisplayName("액세스 토큰으로 인증된 사용자를 조회한다.")
     void findAuthentication() {
         // given
-        Administrator publisher = LIKE_LION_ADMIN().administrator();
-        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
-        Applicant applicant = JONGMEE_APPLICANT(recruitment).applicant();
+        Applicant applicant = JONGMEE_APPLICANT().applicant();
         String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, applicant.getEmail());
 
         // when

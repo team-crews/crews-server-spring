@@ -3,10 +3,9 @@ package com.server.crews.applicant.dto.response;
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;
 import com.server.crews.applicant.domain.SelectiveAnswer;
-import lombok.Builder;
-
 import java.util.List;
 import java.util.Map;
+import lombok.Builder;
 
 @Builder
 public record ApplicationDetailsResponse(Long id, String studentNumber, String major, String name,

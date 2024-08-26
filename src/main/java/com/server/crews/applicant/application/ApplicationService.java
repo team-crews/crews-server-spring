@@ -23,10 +23,12 @@ import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
+import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.repository.ChoiceRepository;
 import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
+import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ApplicationService {
+    private final RecruitmentRepository recruitmentRepository;
     private final ApplicationRepository applicationRepository;
     private final ApplicantRepository applicantRepository;
     private final SelectiveQuestionRepository selectiveQuestionRepository;
@@ -51,15 +54,16 @@ public class ApplicationService {
 
     @Transactional
     public ApplicationDetailsResponse saveApplication(Long applicantId, ApplicationSaveRequest request) {
+        Recruitment recruitment = recruitmentRepository.findByCode(request.recruitmentCode())
+                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
 
         List<NarrativeAnswer> narrativeAnswers = extractNarrativeAnswers(request);
         List<SelectiveAnswer> selectiveAnswers = extractSelectiveAnswers(request);
 
-        Application application = new Application(request.id(), applicant, request.studentNumber(), request.major(),
-                request.name(),
-                narrativeAnswers, selectiveAnswers);
+        Application application = new Application(request.id(), recruitment, applicant, request.studentNumber(),
+                request.major(), request.name(), narrativeAnswers, selectiveAnswers);
 
         Application savedApplication = applicationRepository.save(application);
 

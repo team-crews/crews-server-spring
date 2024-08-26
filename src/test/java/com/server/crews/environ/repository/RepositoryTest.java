@@ -48,8 +48,8 @@ public abstract class RepositoryTest {
         return administrator;
     }
 
-    protected Applicant createDefaultApplicant(String email, Recruitment recruitment) {
-        Applicant applicant = new Applicant(email, TEST_PASSWORD, recruitment);
+    protected Applicant createDefaultApplicant(String email) {
+        Applicant applicant = new Applicant(email, TEST_PASSWORD);
         testRepository.save(applicant);
         return applicant;
     }
@@ -95,8 +95,8 @@ public abstract class RepositoryTest {
         return choices;
     }
 
-    protected Application createDefaultApplication(Applicant applicant) {
-        Application application = APPLICATION(applicant, List.of(), List.of());
+    protected Application createDefaultApplication(Applicant applicant, Recruitment recruitment) {
+        Application application = APPLICATION(applicant, recruitment, List.of(), List.of());
         testRepository.save(application);
         return application;
     }

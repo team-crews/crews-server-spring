@@ -1,17 +1,16 @@
 package com.server.crews.recruitment.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.environ.repository.RepositoryTest;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.Section;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class NarrativeQuestionRepositoryTest extends RepositoryTest {
     @Autowired

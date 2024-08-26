@@ -10,8 +10,7 @@ import org.springframework.data.repository.query.Param;
 public interface ApplicationRepository extends JpaRepository<Application, Long>, ApplicationDslRepository {
     @Query("""
             select count(application) from Application application
-            join application.applicant applicant
-            join applicant.recruitment recruitment
+            join application.recruitment recruitment
             where recruitment = :recruitment
             """)
     int countAllByRecruitment(@Param("recruitment") Recruitment recruitment);

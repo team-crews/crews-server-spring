@@ -74,10 +74,10 @@ class ApplicationServiceTest extends ServiceTest {
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment();
-        Applicant applicant = JONGMEE_APPLICANT(recruitment).applicant();
+        Applicant applicant = JONGMEE_APPLICANT().applicant();
 
-        ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(
-                null, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
+        ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR,
+                DEFAULT_NAME, answerSaveRequests, recruitment.getCode());
 
         // when
         ApplicationDetailsResponse applicationDetailsResponse = applicationService.saveApplication(applicant.getId(),
@@ -115,13 +115,13 @@ class ApplicationServiceTest extends ServiceTest {
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .recruitment();
-        Applicant applicant = JONGMEE_APPLICANT(recruitment).applicant();
-        Application application = JONGMEE_APPLICATION(applicant).application();
+        Applicant applicant = JONGMEE_APPLICANT().applicant();
+        Application application = JONGMEE_APPLICATION(applicant, recruitment).application();
 
         List<AnswerSaveRequest> invalidAnswerSaveRequests = List.of(
                 new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 3L, DEFAULT_NARRATIVE_ANSWER, null));
-        ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(
-                null, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, invalidAnswerSaveRequests);
+        ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR,
+                DEFAULT_NAME, invalidAnswerSaveRequests, recruitment.getCode());
 
         // when & then
         assertThatThrownBy(() -> applicationService.saveApplication(applicant.getId(), saveRequest))
@@ -136,11 +136,11 @@ class ApplicationServiceTest extends ServiceTest {
         TestRecruitment testRecruitment = LIKE_LION_RECRUITMENT(publisher)
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()));
-        Applicant applicant = JONGMEE_APPLICANT(testRecruitment.recruitment()).applicant();
+        Applicant applicant = JONGMEE_APPLICANT().applicant();
         NarrativeQuestion narrativeQuestion = testRecruitment.narrativeQuestions().get(0);
         SelectiveQuestion selectiveQuestion = testRecruitment.selectiveQuestions().get(0);
         List<Choice> choices = testRecruitment.choices(0);
-        Application application = JONGMEE_APPLICATION(applicant)
+        Application application = JONGMEE_APPLICATION(applicant, testRecruitment.recruitment())
                 .addNarrativeAnswers(narrativeQuestion, "안녕하세요")
                 .saveSelectiveAnswers(selectiveQuestion, choices.get(0))
                 .saveSelectiveAnswers(selectiveQuestion, choices.get(1))
@@ -167,8 +167,8 @@ class ApplicationServiceTest extends ServiceTest {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
         Recruitment testRecruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
-        Applicant applicant = JONGMEE_APPLICANT(testRecruitment).applicant();
-        Application application = JONGMEE_APPLICATION(applicant).application();
+        Applicant applicant = JONGMEE_APPLICANT().applicant();
+        Application application = JONGMEE_APPLICATION(applicant, testRecruitment).application();
 
         LoginUser loginUser = new LoginUser(1L, givenRole);
 
@@ -187,9 +187,9 @@ class ApplicationServiceTest extends ServiceTest {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
         Recruitment testRecruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
-        Applicant jongmeeApplicant = JONGMEE_APPLICANT(testRecruitment).applicant();
-        Application application = JONGMEE_APPLICATION(jongmeeApplicant).application();
-        Applicant kyunghoApplicant = KYUNGHO_APPLICANT(testRecruitment).applicant();
+        Applicant jongmeeApplicant = JONGMEE_APPLICANT().applicant();
+        Application application = JONGMEE_APPLICATION(jongmeeApplicant, testRecruitment).application();
+        Applicant kyunghoApplicant = KYUNGHO_APPLICANT().applicant();
 
         LoginUser loginUser = new LoginUser(kyunghoApplicant.getId(), Role.APPLICANT);
 
@@ -204,10 +204,10 @@ class ApplicationServiceTest extends ServiceTest {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
         Recruitment testRecruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
-        Applicant jongmeeAppicant = JONGMEE_APPLICANT(testRecruitment).applicant();
-        Application jongmeeApplication = JONGMEE_APPLICATION(jongmeeAppicant).application();
-        Applicant kyunghoApplicant = KYUNGHO_APPLICANT(testRecruitment).applicant();
-        Application kyunghoApplication = KYUNGHO_APPLICATION(kyunghoApplicant).application();
+        Applicant jongmeeAppicant = JONGMEE_APPLICANT().applicant();
+        Application jongmeeApplication = JONGMEE_APPLICATION(jongmeeAppicant, testRecruitment).application();
+        Applicant kyunghoApplicant = KYUNGHO_APPLICANT().applicant();
+        Application kyunghoApplication = KYUNGHO_APPLICATION(kyunghoApplicant, testRecruitment).application();
 
         EvaluationRequest evaluationRequest = new EvaluationRequest(List.of(kyunghoApplication.getId()));
 

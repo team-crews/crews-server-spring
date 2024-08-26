@@ -5,7 +5,11 @@ import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
 import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.auth.repository.ApplicantRepository;
-import com.server.crews.recruitment.repository.*;
+import com.server.crews.recruitment.repository.ChoiceRepository;
+import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
+import com.server.crews.recruitment.repository.RecruitmentRepository;
+import com.server.crews.recruitment.repository.SectionRepository;
+import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -47,19 +47,19 @@ public abstract class ServiceTest {
         return new TestAdmin(serviceTestEnviron).create("LIKE_LION", TEST_PASSWORD);
     }
 
-    protected TestApplicant JONGMEE_APPLICANT(Recruitment recruitment) {
-        return new TestApplicant(serviceTestEnviron).create("JONGMEE@gmail.com", TEST_PASSWORD, recruitment);
+    protected TestApplicant JONGMEE_APPLICANT() {
+        return new TestApplicant(serviceTestEnviron).create("JONGMEE@gmail.com", TEST_PASSWORD);
     }
 
-    protected TestApplicant KYUNGHO_APPLICANT(Recruitment recruitment) {
-        return new TestApplicant(serviceTestEnviron).create("KYUNGHO@gmail.com", TEST_PASSWORD, recruitment);
+    protected TestApplicant KYUNGHO_APPLICANT() {
+        return new TestApplicant(serviceTestEnviron).create("KYUNGHO@gmail.com", TEST_PASSWORD);
     }
 
-    protected TestApplication JONGMEE_APPLICATION(Applicant applicant) {
-        return new TestApplication(serviceTestEnviron).create(applicant, "20202020", "생명과학", "종미");
+    protected TestApplication JONGMEE_APPLICATION(Applicant applicant, Recruitment recruitment) {
+        return new TestApplication(serviceTestEnviron).create(applicant, recruitment, "20202020", "생명과학", "종미");
     }
 
-    protected TestApplication KYUNGHO_APPLICATION(Applicant applicant) {
-        return new TestApplication(serviceTestEnviron).create(applicant, "20202021", "컴퓨터공학", "경호");
+    protected TestApplication KYUNGHO_APPLICATION(Applicant applicant, Recruitment recruitment) {
+        return new TestApplication(serviceTestEnviron).create(applicant, recruitment, "20202021", "컴퓨터공학", "경호");
     }
 }

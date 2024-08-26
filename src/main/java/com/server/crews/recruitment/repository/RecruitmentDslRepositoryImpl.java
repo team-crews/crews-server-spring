@@ -4,9 +4,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.server.crews.recruitment.domain.QRecruitment;
 import com.server.crews.recruitment.domain.QSection;
 import com.server.crews.recruitment.domain.Recruitment;
-import lombok.RequiredArgsConstructor;
-
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class RecruitmentDslRepositoryImpl implements RecruitmentDslRepository {
@@ -17,7 +16,7 @@ public class RecruitmentDslRepositoryImpl implements RecruitmentDslRepository {
         QRecruitment qRecruitment = QRecruitment.recruitment;
         QSection qSection = QSection.section;
 
-        Recruitment recruitment =  jpaQueryFactory.selectFrom(qRecruitment)
+        Recruitment recruitment = jpaQueryFactory.selectFrom(qRecruitment)
                 .leftJoin(qRecruitment.sections, qSection)
                 .fetchJoin()
                 .where(qRecruitment.publisher.id.eq(publisherId))
@@ -30,7 +29,7 @@ public class RecruitmentDslRepositoryImpl implements RecruitmentDslRepository {
         QRecruitment qRecruitment = QRecruitment.recruitment;
         QSection qSection = QSection.section;
 
-        Recruitment recruitment =  jpaQueryFactory.selectFrom(qRecruitment)
+        Recruitment recruitment = jpaQueryFactory.selectFrom(qRecruitment)
                 .leftJoin(qRecruitment.sections, qSection)
                 .fetchJoin()
                 .where(qRecruitment.code.eq(code))

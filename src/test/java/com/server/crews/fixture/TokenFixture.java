@@ -1,13 +1,13 @@
 package com.server.crews.fixture;
 
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CODE;
+
 import com.server.crews.auth.dto.request.NewApplicantRequest;
 import com.server.crews.auth.dto.request.NewRecruitmentRequest;
 import com.server.crews.auth.dto.response.AdminLoginResponse;
 import io.restassured.RestAssured;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
-import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CODE;
 
 public class TokenFixture {
 

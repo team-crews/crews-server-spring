@@ -42,13 +42,12 @@ public class ApplicationApiTest extends ApiTest {
         // given
         AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(recruitmentDetailsResponse.code(), TEST_EMAIL,
-                TEST_PASSWORD);
+        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
         List<AnswerSaveRequest> firstAnswerSaveRequests = List.of(
                 new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 2L, DEFAULT_NARRATIVE_ANSWER, null),
                 new AnswerSaveRequest(null, QuestionType.SELECTIVE.name(), 1L, null, 2L));
         ApplicationSaveRequest applicationCreateRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
-                DEFAULT_MAJOR, DEFAULT_NAME, firstAnswerSaveRequests);
+                DEFAULT_MAJOR, DEFAULT_NAME, firstAnswerSaveRequests, recruitmentDetailsResponse.code());
         ApplicationDetailsResponse testApplication = createTestApplication(applicantLoginResponse.accessToken(),
                 applicationCreateRequest);
 
@@ -57,7 +56,8 @@ public class ApplicationApiTest extends ApiTest {
                 new AnswerSaveRequest(null, QuestionType.SELECTIVE.name(), 1L, null, 1L));
 
         ApplicationSaveRequest applicationUpdateRequest = new ApplicationSaveRequest(testApplication.id(),
-                DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, secondAnswerSaveRequests);
+                DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, secondAnswerSaveRequests,
+                recruitmentDetailsResponse.code());
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -88,12 +88,11 @@ public class ApplicationApiTest extends ApiTest {
         // given
         AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(recruitmentDetailsResponse.code(), TEST_EMAIL,
-                TEST_PASSWORD);
+        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
         List<AnswerSaveRequest> answerSaveRequests = List.of(
                 new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 10L, DEFAULT_NARRATIVE_ANSWER, null));
         ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
-                DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
+                DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests, recruitmentDetailsResponse.code());
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -116,13 +115,12 @@ public class ApplicationApiTest extends ApiTest {
         // given
         AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(recruitmentDetailsResponse.code(), TEST_EMAIL,
-                TEST_PASSWORD);
+        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
         List<AnswerSaveRequest> answerSaveRequests = List.of(
                 new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 1L, "동일한 내용", null),
                 new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 1L, "동일한 내용", null));
         ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
-                DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests);
+                DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests, recruitmentDetailsResponse.code());
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -145,10 +143,9 @@ public class ApplicationApiTest extends ApiTest {
         // given
         AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(recruitmentDetailsResponse.code(), TEST_EMAIL,
-                TEST_PASSWORD);
+        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
 
-        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest();
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
         ApplicationDetailsResponse testApplication = createTestApplication(applicantLoginResponse.accessToken(),
                 applicationSaveRequest);
 
@@ -180,12 +177,10 @@ public class ApplicationApiTest extends ApiTest {
         // given
         AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantATokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
-                "A" + TEST_EMAIL, TEST_PASSWORD);
-        ApplicantLoginResponse applicantBTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
-                "B" + TEST_EMAIL, TEST_PASSWORD);
+        ApplicantLoginResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
+        ApplicantLoginResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 
-        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest();
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
         ApplicationDetailsResponse applicationADetailsResponse = createTestApplication(
                 applicantATokenResponse.accessToken(), applicationSaveRequest);
         createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
@@ -213,12 +208,10 @@ public class ApplicationApiTest extends ApiTest {
         // given
         AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantATokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
-                "A" + TEST_EMAIL, TEST_PASSWORD);
-        ApplicantLoginResponse applicantBTokenResponse = signUpApplicant(recruitmentDetailsResponse.code(),
-                "B" + TEST_EMAIL, TEST_PASSWORD);
+        ApplicantLoginResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
+        ApplicantLoginResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 
-        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest();
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
         createTestApplication(applicantATokenResponse.accessToken(), applicationSaveRequest);
         createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
 

@@ -5,9 +5,8 @@ import com.server.crews.recruitment.domain.QChoice;
 import com.server.crews.recruitment.domain.QSelectiveQuestion;
 import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
-import lombok.RequiredArgsConstructor;
-
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class SelectiveQuestionDslRepositoryImpl implements SelectiveQuestionDslRepository {
