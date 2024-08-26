@@ -152,6 +152,15 @@ public class ApplicationService {
         return ApplicationDetailsResponse.of(application, narrativeAnswers, selectiveAnswers);
     }
 
+    public ApplicationDetailsResponse findMyApplicationDetails(Long applicantId, String code) {
+        Application application = applicationRepository.findByApplicantIdAndRecruitmentCode(applicantId, code)
+                .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
+        List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
+        Map<Long, List<SelectiveAnswer>> selectiveAnswers = collectSelectiveAnswersByQuestion(
+                selectiveAnswerRepository.findAllByApplication(application));
+        return ApplicationDetailsResponse.of(application, narrativeAnswers, selectiveAnswers);
+    }
+
     private void checkPermission(Application application, Long publisherId) {
         if (!application.canBeAccessedBy(publisherId)) {
             throw new CrewsException(ErrorCode.UNAUTHORIZED_USER);

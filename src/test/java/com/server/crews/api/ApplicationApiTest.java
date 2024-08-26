@@ -172,6 +172,39 @@ public class ApplicationApiTest extends ApiTest {
     }
 
     @Test
+    @DisplayName("지원자가 본인의 지원서 상세 정보를 조회한다.")
+    void getMyApplicationDetails() {
+        // given
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
+
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
+        createTestApplication(applicantLoginResponse.accessToken(), applicationSaveRequest);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(ApplicationApiDocuments.GET_MY_APPLICATION_200_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION,
+                        AuthorizationExtractor.BEARER_TYPE + applicantLoginResponse.accessToken())
+                .queryParam("code", recruitmentDetailsResponse.code())
+                .when().get("/applications/mine")
+                .then().log().all()
+                .extract();
+
+        // then
+        ApplicationDetailsResponse applicationDetailsResponse = response.as(ApplicationDetailsResponse.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode200(response, softAssertions);
+            softAssertions.assertThat(applicationDetailsResponse.id()).isNotNull();
+            softAssertions.assertThat(applicationDetailsResponse.narrativeAnswers()).isNotEmpty();
+            softAssertions.assertThat(applicationDetailsResponse.selectiveAnswers())
+                    .flatExtracting(SelectiveAnswerResponse::choices).isNotEmpty();
+        });
+    }
+
+    @Test
     @DisplayName("지원서들을 평가한다.")
     void evaluate() {
         // given

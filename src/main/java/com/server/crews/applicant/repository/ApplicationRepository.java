@@ -28,4 +28,12 @@ public interface ApplicationRepository extends JpaRepository<Application, Long>,
             where a.id = :id
             """)
     Optional<Application> findByIdWithRecruitmentAndPublisher(@Param("id") Long id);
+
+    @Query("""
+            select a from Application a
+            join fetch a.recruitment r
+            where a.applicant.id = :applicantId and r.code = :recruitmentCode
+            """)
+    Optional<Application> findByApplicantIdAndRecruitmentCode(@Param("applicantId") Long applicantId,
+                                                              @Param("recruitmentCode") String recruitmentCode);
 }

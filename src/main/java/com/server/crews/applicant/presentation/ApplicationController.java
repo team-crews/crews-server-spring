@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -44,6 +45,15 @@ public class ApplicationController {
             @AdminAuthentication LoginUser loginUser,
             @PathVariable(value = "application-id") Long applicationId) {
         return ResponseEntity.ok(applicationService.findApplicationDetails(applicationId, loginUser.userId()));
+    }
+
+    /**
+     * 지원자가 본인의 지원서를 조회한다.
+     */
+    @GetMapping("/mine")
+    public ResponseEntity<ApplicationDetailsResponse> getMyApplicationDetails(
+            @ApplicantAuthentication LoginUser loginUser, @RequestParam("code") String code) {
+        return ResponseEntity.ok(applicationService.findMyApplicationDetails(loginUser.userId(), code));
     }
 
     /**

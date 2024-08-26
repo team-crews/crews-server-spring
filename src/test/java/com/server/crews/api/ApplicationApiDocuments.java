@@ -55,6 +55,12 @@ public class ApplicationApiDocuments {
                         .pathParameters(parameterWithName("application-id").description("지원서 id")));
     }
 
+    public static RestDocumentationFilter GET_MY_APPLICATION_200_DOCUMENT() {
+        return document(APPLICATION_API + "지원자 지원서 상세 조회",
+                new ResourceSnippetParametersBuilder().description("지원자가 본인의 지원서 상세 정보를 조회한다.")
+                        .queryParameters(parameterWithName("code").description("모집공고 code")));
+    }
+
     public static RestDocumentationFilter GET_APPLICATIONS_200_DOCUMENT() {
         return document(APPLICATION_API + "지원서 목록 조회",
                 new ResourceSnippetParametersBuilder().description("지원서 목록을 조회한다."));
