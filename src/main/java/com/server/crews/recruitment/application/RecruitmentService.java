@@ -53,6 +53,7 @@ public class RecruitmentService {
         String code = UUID.randomUUID().toString();
         Recruitment recruitment = RecruitmentMapper.recruitmentSaveRequestToRecruitment(request, code, publisher);
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
+        savedRecruitment.sortQuestions();
         return RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(savedRecruitment);
     }
 
@@ -98,6 +99,7 @@ public class RecruitmentService {
             List<SelectiveQuestion> selectives = selectiveQuestionsBySection.get(section);
             section.replaceQuestions(narratives, selectives);
         });
+        recruitment.sortQuestions();
         return RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(recruitment);
     }
 

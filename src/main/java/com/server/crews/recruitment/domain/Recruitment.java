@@ -122,4 +122,8 @@ public class Recruitment {
     public boolean hasPassedDeadline(LocalDateTime now) {
         return now.isAfter(deadline) || now.equals(deadline);
     }
+
+    public void sortQuestions() {
+        this.sections.forEach(Section::sortQuestions);
+    }
 }
