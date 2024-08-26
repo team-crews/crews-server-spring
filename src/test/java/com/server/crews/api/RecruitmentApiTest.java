@@ -1,6 +1,7 @@
 package com.server.crews.api;
 
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode204;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
 import static com.server.crews.fixture.QuestionFixture.STRENGTH_QUESTION;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
@@ -240,6 +241,26 @@ public class RecruitmentApiTest extends ApiTest {
                     .flatExtracting(QuestionResponse::choices)
                     .isNotEmpty();
         });
+    }
+
+    @Test
+    @DisplayName("작성중인 모집공고가 없다면 상세 정보 조회 시 204를 반환한다.")
+    void getRecruitmentDetailsWhenNotExisting() {
+        // given
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        String adminAccessToken = adminTokenResponse.accessToken();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.GET_READY_RECRUITMENT_204_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .when().get("/recruitments/ready")
+                .then().log().all()
+                .extract();
+
+        // then
+        checkStatusCode204(response);
     }
 
     @Test

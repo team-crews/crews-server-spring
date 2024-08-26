@@ -27,6 +27,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,10 +77,9 @@ public class RecruitmentService {
         return new RecruitmentStateInProgressResponse(applicationCount, recruitment.getDeadline());
     }
 
-    public RecruitmentDetailsResponse findRecruitmentDetailsInReady(Long publisherId) {
-        Recruitment recruitment = recruitmentRepository.findWithSectionsByPublisherId(publisherId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
-        return toRecruitmentDetailsWithQuestions(recruitment);
+    public Optional<RecruitmentDetailsResponse> findRecruitmentDetailsInReady(Long publisherId) {
+        return recruitmentRepository.findWithSectionsByPublisherId(publisherId)
+                .map(this::toRecruitmentDetailsWithQuestions);
     }
 
     public RecruitmentDetailsResponse findRecruitmentDetailsByCode(String code) {

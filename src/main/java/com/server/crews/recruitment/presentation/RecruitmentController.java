@@ -9,6 +9,7 @@ import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentProgressResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +61,9 @@ public class RecruitmentController {
     @GetMapping("/ready")
     public ResponseEntity<RecruitmentDetailsResponse> getRecruitmentDetailsInReady(
             @AdminAuthentication LoginUser loginUser) {
-        return ResponseEntity.ok(recruitmentService.findRecruitmentDetailsInReady(loginUser.userId()));
+        Optional<RecruitmentDetailsResponse> recruitmentDetailsResponse = recruitmentService.findRecruitmentDetailsInReady(loginUser.userId());
+        return recruitmentDetailsResponse.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     /**
