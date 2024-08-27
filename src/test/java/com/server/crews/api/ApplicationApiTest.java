@@ -1,7 +1,6 @@
 package com.server.crews.api;
 
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
-import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode404;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
@@ -15,10 +14,9 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
+import com.server.crews.applicant.dto.response.AnswerResponse;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
-import com.server.crews.applicant.dto.response.NarrativeAnswerResponse;
-import com.server.crews.applicant.dto.response.SelectiveAnswerResponse;
 import com.server.crews.auth.dto.response.AdminLoginResponse;
 import com.server.crews.auth.dto.response.ApplicantLoginResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
@@ -75,10 +73,14 @@ public class ApplicationApiTest extends ApiTest {
         assertSoftly(softAssertions -> {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(applicationDetailsResponse.id()).isNotNull();
-            softAssertions.assertThat(applicationDetailsResponse.narrativeAnswers())
-                    .flatExtracting(NarrativeAnswerResponse::answerId).containsExactly(1L);
-            softAssertions.assertThat(applicationDetailsResponse.selectiveAnswers())
-                    .flatExtracting(SelectiveAnswerResponse::choices).hasSize(1);
+            softAssertions.assertThat(applicationDetailsResponse.answers())
+                    .filteredOn(answerResponse -> answerResponse.type() == QuestionType.NARRATIVE)
+                    .flatExtracting(AnswerResponse::answerId)
+                    .containsExactly(1L);
+            softAssertions.assertThat(applicationDetailsResponse.answers())
+                    .filteredOn(answerResponse -> answerResponse.type() == QuestionType.SELECTIVE)
+                    .flatExtracting(AnswerResponse::choiceId)
+                    .hasSize(1);
         });
     }
 
@@ -110,34 +112,6 @@ public class ApplicationApiTest extends ApiTest {
     }
 
     @Test
-    @DisplayName("한 서술형 문항에 두 개 이상의 답변을 저장한다.")
-    void saveApplicationWithDuplicatedNarrativeAnswer() {
-        // given
-        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
-        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
-        List<AnswerSaveRequest> answerSaveRequests = List.of(
-                new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 1L, "동일한 내용", null),
-                new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 1L, "동일한 내용", null));
-        ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
-                DEFAULT_MAJOR, DEFAULT_NAME, answerSaveRequests, recruitmentDetailsResponse.code());
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(ApplicationApiDocuments.SAVE_APPLICATION_400_DOCUMENT())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION,
-                        AuthorizationExtractor.BEARER_TYPE + applicantLoginResponse.accessToken())
-                .body(applicationSaveRequest)
-                .when().post("/applications")
-                .then().log().all()
-                .extract();
-
-        // then
-        checkStatusCode400(response);
-    }
-
-    @Test
     @DisplayName("동아리 관리자가 지원서 상세 정보를 조회한다.")
     void getApplicationDetails() {
         // given
@@ -165,9 +139,13 @@ public class ApplicationApiTest extends ApiTest {
         assertSoftly(softAssertions -> {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(applicationDetailsResponse.id()).isNotNull();
-            softAssertions.assertThat(applicationDetailsResponse.narrativeAnswers()).isNotEmpty();
-            softAssertions.assertThat(applicationDetailsResponse.selectiveAnswers())
-                    .flatExtracting(SelectiveAnswerResponse::choices).isNotEmpty();
+            softAssertions.assertThat(applicationDetailsResponse.answers())
+                    .filteredOn(answerResponse -> answerResponse.type() == QuestionType.NARRATIVE)
+                    .isNotEmpty();
+            softAssertions.assertThat(applicationDetailsResponse.answers())
+                    .filteredOn(answerResponse -> answerResponse.type() == QuestionType.SELECTIVE)
+                    .flatExtracting(AnswerResponse::choiceId)
+                    .isNotEmpty();
         });
     }
 
@@ -198,9 +176,13 @@ public class ApplicationApiTest extends ApiTest {
         assertSoftly(softAssertions -> {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(applicationDetailsResponse.id()).isNotNull();
-            softAssertions.assertThat(applicationDetailsResponse.narrativeAnswers()).isNotEmpty();
-            softAssertions.assertThat(applicationDetailsResponse.selectiveAnswers())
-                    .flatExtracting(SelectiveAnswerResponse::choices).isNotEmpty();
+            softAssertions.assertThat(applicationDetailsResponse.answers())
+                    .filteredOn(answerResponse -> answerResponse.type() == QuestionType.NARRATIVE)
+                    .isNotEmpty();
+            softAssertions.assertThat(applicationDetailsResponse.answers())
+                    .filteredOn(answerResponse -> answerResponse.type() == QuestionType.SELECTIVE)
+                    .flatExtracting(AnswerResponse::choiceId)
+                    .isNotEmpty();
         });
     }
 

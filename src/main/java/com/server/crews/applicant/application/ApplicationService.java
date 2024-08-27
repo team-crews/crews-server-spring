@@ -1,8 +1,5 @@
 package com.server.crews.applicant.application;
 
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 import com.server.crews.applicant.domain.Application;
@@ -13,6 +10,7 @@ import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
+import com.server.crews.applicant.mapper.ApplicationMapper;
 import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
@@ -31,7 +29,6 @@ import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -58,39 +55,24 @@ public class ApplicationService {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
 
-        List<NarrativeAnswer> narrativeAnswers = extractNarrativeAnswers(request);
-        List<SelectiveAnswer> selectiveAnswers = extractSelectiveAnswers(request);
+        validateNarrativeQuestions(request);
+        validateSelectiveQuestions(request);
 
-        Application application = new Application(request.id(), recruitment, applicant, request.studentNumber(),
-                request.major(), request.name(), narrativeAnswers, selectiveAnswers);
-
+        Application application = ApplicationMapper.applicationSaveRequestToApplication(request, recruitment,
+                applicant);
         Application savedApplication = applicationRepository.save(application);
-
-        return ApplicationDetailsResponse.of(savedApplication, narrativeAnswers,
-                collectSelectiveAnswersByQuestion(selectiveAnswers));
+        return ApplicationMapper.applicationToApplicationDetailsResponse(savedApplication);
     }
 
-    private List<NarrativeAnswer> extractNarrativeAnswers(ApplicationSaveRequest request) {
+    private void validateNarrativeQuestions(ApplicationSaveRequest request) {
         List<AnswerSaveRequest> narrativeAnswerSaveRequests = filterByQuestionType(QuestionType.NARRATIVE, request);
         Set<Long> narrativeQuestionIds = extractQuestionIds(narrativeAnswerSaveRequests);
-        if (narrativeQuestionIds.size() != narrativeAnswerSaveRequests.size()) {
-            throw new CrewsException(ErrorCode.DUPLICATE_NARRATIVE_ANSWERS);
-        }
         List<NarrativeQuestion> savedNarrativeQuestions = narrativeQuestionRepository.findAllByIdIn(
                 narrativeQuestionIds);
         validateQuestionIds(savedNarrativeQuestions, narrativeQuestionIds);
-
-        Map<Long, NarrativeQuestion> savedNarrativeQuestionsById = savedNarrativeQuestions.stream()
-                .collect(toMap(NarrativeQuestion::getId, identity()));
-
-        return narrativeAnswerSaveRequests.stream()
-                .map(narrativeQuestionAnswerRequest -> new NarrativeAnswer(narrativeQuestionAnswerRequest.answerId(),
-                        savedNarrativeQuestionsById.get(narrativeQuestionAnswerRequest.questionId()),
-                        narrativeQuestionAnswerRequest.content()))
-                .toList();
     }
 
-    private List<SelectiveAnswer> extractSelectiveAnswers(ApplicationSaveRequest request) {
+    private void validateSelectiveQuestions(ApplicationSaveRequest request) {
         List<AnswerSaveRequest> selectiveAnswerSaveRequests = filterByQuestionType(QuestionType.SELECTIVE, request);
         Set<Long> selectiveQuestionIds = extractQuestionIds(selectiveAnswerSaveRequests);
         List<SelectiveQuestion> savedSelectiveQuestions = selectiveQuestionRepository.findAllByIdIn(
@@ -104,16 +86,6 @@ public class ApplicationService {
         if (savedChoices.size() != choiceIds.size()) {
             throw new CrewsException(ErrorCode.CHOICE_NOT_FOUND);
         }
-
-        Map<Long, Choice> savedChoicesById = savedChoices.stream()
-                .collect(toMap(Choice::getId, identity()));
-        Map<Long, SelectiveQuestion> savedSelectiveQuestionsById = savedSelectiveQuestions.stream()
-                .collect(toMap(SelectiveQuestion::getId, identity()));
-
-        return selectiveAnswerSaveRequests.stream()
-                .map(selectiveQuestionAnswerRequest -> new SelectiveAnswer(selectiveQuestionAnswerRequest.answerId(),
-                        savedChoicesById.get(selectiveQuestionAnswerRequest.choiceId()),
-                        savedSelectiveQuestionsById.get(selectiveQuestionAnswerRequest.questionId()))).toList();
     }
 
     private List<AnswerSaveRequest> filterByQuestionType(QuestionType questionType,
@@ -138,7 +110,7 @@ public class ApplicationService {
     public List<ApplicationsResponse> findAllApplicationsByRecruitment(Long publisherId) {
         List<Application> applications = applicationRepository.findAllWithApplicantByPublisherId(publisherId);
         return applications.stream()
-                .map(ApplicationsResponse::from)
+                .map(ApplicationMapper::applicationToApplicationsResponse)
                 .toList();
     }
 
@@ -147,18 +119,10 @@ public class ApplicationService {
                 .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
         checkPermission(application, publisherId);
         List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
-        Map<Long, List<SelectiveAnswer>> selectiveAnswers = collectSelectiveAnswersByQuestion(
-                selectiveAnswerRepository.findAllByApplication(application));
-        return ApplicationDetailsResponse.of(application, narrativeAnswers, selectiveAnswers);
-    }
-
-    public ApplicationDetailsResponse findMyApplicationDetails(Long applicantId, String code) {
-        Application application = applicationRepository.findByApplicantIdAndRecruitmentCode(applicantId, code)
-                .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
-        List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
-        Map<Long, List<SelectiveAnswer>> selectiveAnswers = collectSelectiveAnswersByQuestion(
-                selectiveAnswerRepository.findAllByApplication(application));
-        return ApplicationDetailsResponse.of(application, narrativeAnswers, selectiveAnswers);
+        List<SelectiveAnswer> selectiveAnswers = selectiveAnswerRepository.findAllByApplication(application);
+        application.replaceNarrativeAnswers(narrativeAnswers);
+        application.replaceSelectiveAnswers(selectiveAnswers);
+        return ApplicationMapper.applicationToApplicationDetailsResponse(application);
     }
 
     private void checkPermission(Application application, Long publisherId) {
@@ -167,9 +131,14 @@ public class ApplicationService {
         }
     }
 
-    private Map<Long, List<SelectiveAnswer>> collectSelectiveAnswersByQuestion(List<SelectiveAnswer> selectiveAnswers) {
-        return selectiveAnswers.stream()
-                .collect(groupingBy(selectiveAnswer -> selectiveAnswer.getSelectiveQuestion().getId()));
+    public ApplicationDetailsResponse findMyApplicationDetails(Long applicantId, String code) {
+        Application application = applicationRepository.findByApplicantIdAndRecruitmentCode(applicantId, code)
+                .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
+        List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
+        List<SelectiveAnswer> selectiveAnswers = selectiveAnswerRepository.findAllByApplication(application);
+        application.replaceNarrativeAnswers(narrativeAnswers);
+        application.replaceSelectiveAnswers(selectiveAnswers);
+        return ApplicationMapper.applicationToApplicationDetailsResponse(application);
     }
 
     @Transactional

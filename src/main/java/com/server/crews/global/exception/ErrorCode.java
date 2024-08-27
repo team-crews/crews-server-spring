@@ -13,7 +13,6 @@ public enum ErrorCode {
     INVALID_DEADLINE(HttpStatus.BAD_REQUEST, "모집 마감 기한은 현재 시각 이전이며 한 시간 단위입니다."),
     ALREADY_ANNOUNCED(HttpStatus.BAD_REQUEST, "모집 공고 결과 발표가 이미 완료되었습니다."),
     RECRUITMENT_ALREADY_STARTED(HttpStatus.BAD_REQUEST, "모집이 이미 시작되었습니다."),
-    DUPLICATE_NARRATIVE_ANSWERS(HttpStatus.BAD_REQUEST, "같은 서술형 문항에 대해 여러 답변이 존재할 수 없습니다."),
 
     NO_TOKEN(HttpStatus.UNAUTHORIZED, "토큰이 존재하지 않습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "토큰 형식이 잘못 되었습니다."),

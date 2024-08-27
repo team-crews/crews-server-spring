@@ -49,10 +49,10 @@ public class Application {
     private String name;
 
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<NarrativeAnswer> narrativeAnswers = new ArrayList<>();
+    private List<NarrativeAnswer> narrativeAnswers;
 
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SelectiveAnswer> selectiveAnswers = new ArrayList<>();
+    private List<SelectiveAnswer> selectiveAnswers;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "recruitment_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
@@ -72,19 +72,19 @@ public class Application {
         this.studentNumber = studentNumber;
         this.major = major;
         this.name = name;
-        updateNarrativeAnswers(narrativeAnswers);
-        updateSelectiveAnswers(selectiveAnswers);
         this.outcome = Outcome.PENDING;
+        replaceNarrativeAnswers(narrativeAnswers);
+        replaceSelectiveAnswers(selectiveAnswers);
     }
 
-    public void updateNarrativeAnswers(List<NarrativeAnswer> narrativeAnswers) {
-        this.narrativeAnswers.addAll(narrativeAnswers);
+    public void replaceNarrativeAnswers(List<NarrativeAnswer> narrativeAnswers) {
         narrativeAnswers.forEach(narrativeAnswer -> narrativeAnswer.updateApplication(this));
+        this.narrativeAnswers = new ArrayList<>(narrativeAnswers);
     }
 
-    public void updateSelectiveAnswers(List<SelectiveAnswer> selectiveAnswers) {
-        this.selectiveAnswers.addAll(selectiveAnswers);
+    public void replaceSelectiveAnswers(List<SelectiveAnswer> selectiveAnswers) {
         selectiveAnswers.forEach(selectiveAnswer -> selectiveAnswer.updateApplication(this));
+        this.selectiveAnswers = new ArrayList<>(selectiveAnswers);
     }
 
     public void pass() {

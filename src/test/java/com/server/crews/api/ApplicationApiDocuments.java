@@ -45,10 +45,6 @@ public class ApplicationApiDocuments {
         return document(APPLICATION_API + "존재하지 않는 질문으로 지원서 저장");
     }
 
-    public static RestDocumentationFilter SAVE_APPLICATION_400_DOCUMENT() {
-        return document(APPLICATION_API + "한 서술형 문항에 두 개 이상의 답변으로 지원서 저장");
-    }
-
     public static RestDocumentationFilter GET_APPLICATION_200_DOCUMENT() {
         return document(APPLICATION_API + "동아리 관리자 지원서 상세 조회",
                 new ResourceSnippetParametersBuilder().description("동아리 관리자가 지원서 상세 정보를 조회한다.")

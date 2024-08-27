@@ -19,10 +19,8 @@ import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
+import com.server.crews.applicant.dto.response.AnswerResponse;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
-import com.server.crews.applicant.dto.response.NarrativeAnswerResponse;
-import com.server.crews.applicant.dto.response.SelectedChoiceResponse;
-import com.server.crews.applicant.dto.response.SelectiveAnswerResponse;
 import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
@@ -148,10 +146,12 @@ class ApplicationServiceTest extends ServiceTest {
 
         // then
         assertAll(() -> {
-            assertThat(response.narrativeAnswers()).extracting(NarrativeAnswerResponse::content)
+            assertThat(response.answers()).filteredOn(answerResponse -> answerResponse.type() == QuestionType.NARRATIVE)
+                    .extracting(AnswerResponse::content)
                     .containsExactly("안녕하세요");
-            assertThat(response.selectiveAnswers()).flatExtracting(SelectiveAnswerResponse::choices)
-                    .flatExtracting(SelectedChoiceResponse::choiceId).contains(1L, 2L);
+            assertThat(response.answers()).filteredOn(answerResponse -> answerResponse.type() == QuestionType.SELECTIVE)
+                    .flatExtracting(AnswerResponse::choiceId)
+                    .contains(1L, 2L);
         });
     }
 
