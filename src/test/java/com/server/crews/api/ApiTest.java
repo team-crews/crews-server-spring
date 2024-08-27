@@ -62,13 +62,13 @@ public abstract class ApiTest {
         databaseCleaner.clear();
     }
 
-    protected ApplicationSaveRequest applicationSaveRequest() {
+    protected ApplicationSaveRequest applicationSaveRequest(String recruitmentCode) {
         List<AnswerSaveRequest> answerSaveRequests = List.of(
                 new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 2L, DEFAULT_NARRATIVE_ANSWER, null),
                 new AnswerSaveRequest(null, QuestionType.SELECTIVE.name(), 1L, null, 1L),
                 new AnswerSaveRequest(null, QuestionType.SELECTIVE.name(), 1L, null, 2L));
         return new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME,
-                answerSaveRequests);
+                answerSaveRequests, recruitmentCode);
     }
 
     protected AdminLoginResponse signUpAdmin(String clubName, String password) {
@@ -98,10 +98,10 @@ public abstract class ApiTest {
         return response.as(RecruitmentDetailsResponse.class);
     }
 
-    protected ApplicantLoginResponse signUpApplicant(String recruitmentCode, String email, String password) {
+    protected ApplicantLoginResponse signUpApplicant(String email, String password) {
         ExtractableResponse<Response> response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(new ApplicantLoginRequest(recruitmentCode, email, password))
+                .body(new ApplicantLoginRequest(email, password))
                 .when().post("/auth/applicant/login")
                 .then()
                 .statusCode(HttpStatus.OK.value())

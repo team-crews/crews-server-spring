@@ -1,10 +1,9 @@
 package com.server.crews.fixture;
 
-import com.server.crews.recruitment.domain.Section;
-
-import java.util.List;
-
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
+
+import com.server.crews.recruitment.domain.Section;
+import java.util.List;
 
 public class SectionFixture {
     public static final String BACKEND_SECTION_NAME = "BACKEND";

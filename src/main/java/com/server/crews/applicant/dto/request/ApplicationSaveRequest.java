@@ -11,6 +11,8 @@ public record ApplicationSaveRequest(
         String major,
         @NotBlank(message = "이름은 공백일 수 없습니다.")
         String name,
-        List<AnswerSaveRequest> answers
+        List<AnswerSaveRequest> answers,
+        @NotBlank(message = "모집 공고 코드는 공백일 수 없습니다.")
+        String recruitmentCode
 ) {
 }

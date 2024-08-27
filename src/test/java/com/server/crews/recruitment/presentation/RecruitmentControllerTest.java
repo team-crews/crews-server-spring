@@ -8,11 +8,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.server.crews.global.config.WebMvcConfiguration;
 import com.server.crews.auth.presentation.AuthenticationArgumentResolver;
 import com.server.crews.auth.presentation.AuthenticationValidator;
 import com.server.crews.environ.presentation.ControllerTest;
 import com.server.crews.environ.presentation.TestAuthArgumentResolverConfig;
+import com.server.crews.global.config.WebMvcConfiguration;
 import com.server.crews.recruitment.application.RecruitmentService;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
 import com.server.crews.recruitment.dto.request.QuestionType;
@@ -161,10 +161,12 @@ class RecruitmentControllerTest extends ControllerTest {
                         300, null, null, List.of()), "질문 타입은 공백일 수 없습니다."),
                 Arguments.of(new QuestionSaveRequest(null, QuestionType.NARRATIVE.name(), "", true, 1,
                         300, null, null, List.of()), "질문 내용은 공백일 수 없습니다."),
-                Arguments.of(new QuestionSaveRequest(null, QuestionType.NARRATIVE.name(), INTRODUCTION_QUESTION, null, 1,
-                        300, null, null, List.of()), "필수 항목 여부는 null일 수 없습니다."),
-                Arguments.of(new QuestionSaveRequest(null, QuestionType.NARRATIVE.name(), INTRODUCTION_QUESTION, true, null,
-                        300, null, null, List.of()), "질문 순서는 null일 수 없습니다.")
+                Arguments.of(
+                        new QuestionSaveRequest(null, QuestionType.NARRATIVE.name(), INTRODUCTION_QUESTION, null, 1,
+                                300, null, null, List.of()), "필수 항목 여부는 null일 수 없습니다."),
+                Arguments.of(
+                        new QuestionSaveRequest(null, QuestionType.NARRATIVE.name(), INTRODUCTION_QUESTION, true, null,
+                                300, null, null, List.of()), "질문 순서는 null일 수 없습니다.")
         );
     }
 

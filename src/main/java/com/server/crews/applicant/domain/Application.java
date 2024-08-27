@@ -2,6 +2,7 @@ package com.server.crews.applicant.domain;
 
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.auth.domain.Role;
+import com.server.crews.recruitment.domain.Recruitment;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
@@ -12,8 +13,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class Application {
     @Column(name = "outcome", nullable = false)
     private Outcome outcome;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "applicant_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Applicant applicant;
 
@@ -48,31 +49,42 @@ public class Application {
     private String name;
 
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<NarrativeAnswer> narrativeAnswers = new ArrayList<>();
+    private List<NarrativeAnswer> narrativeAnswers;
 
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SelectiveAnswer> selectiveAnswers = new ArrayList<>();
+    private List<SelectiveAnswer> selectiveAnswers;
 
-    public Application(Long id, Applicant applicant, String studentNumber, String major, String name,
-                       List<NarrativeAnswer> narrativeAnswers, List<SelectiveAnswer> selectiveAnswers) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "recruitment_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Recruitment recruitment;
+
+    public Application(Long id,
+                       Recruitment recruitment,
+                       Applicant applicant,
+                       String studentNumber,
+                       String major,
+                       String name,
+                       List<NarrativeAnswer> narrativeAnswers,
+                       List<SelectiveAnswer> selectiveAnswers) {
         this.id = id;
+        this.recruitment = recruitment;
         this.applicant = applicant;
         this.studentNumber = studentNumber;
         this.major = major;
         this.name = name;
-        updateNarrativeAnswers(narrativeAnswers);
-        updateSelectiveAnswers(selectiveAnswers);
         this.outcome = Outcome.PENDING;
+        replaceNarrativeAnswers(narrativeAnswers);
+        replaceSelectiveAnswers(selectiveAnswers);
     }
 
-    public void updateNarrativeAnswers(List<NarrativeAnswer> narrativeAnswers) {
-        this.narrativeAnswers.addAll(narrativeAnswers);
+    public void replaceNarrativeAnswers(List<NarrativeAnswer> narrativeAnswers) {
         narrativeAnswers.forEach(narrativeAnswer -> narrativeAnswer.updateApplication(this));
+        this.narrativeAnswers = new ArrayList<>(narrativeAnswers);
     }
 
-    public void updateSelectiveAnswers(List<SelectiveAnswer> selectiveAnswers) {
-        this.selectiveAnswers.addAll(selectiveAnswers);
+    public void replaceSelectiveAnswers(List<SelectiveAnswer> selectiveAnswers) {
         selectiveAnswers.forEach(selectiveAnswer -> selectiveAnswer.updateApplication(this));
+        this.selectiveAnswers = new ArrayList<>(selectiveAnswers);
     }
 
     public void pass() {
@@ -87,10 +99,7 @@ public class Application {
         return outcome.equals(Outcome.PENDING);
     }
 
-    public boolean canBeAccessedBy(Long userId, Role role) {
-        if (role == Role.ADMIN) {
-            return true;
-        }
-        return applicant.getId().equals(userId);
+    public boolean canBeAccessedBy(Long publisherId) {
+        return this.recruitment.isPublishedBy(publisherId);
     }
 }

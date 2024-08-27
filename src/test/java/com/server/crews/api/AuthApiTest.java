@@ -78,11 +78,7 @@ public class AuthApiTest extends ApiTest {
     @DisplayName("[지원자] 가입하지 않은 지원자가 로그인 해 토큰을 발급 받는다.")
     void loginNotSignedUpApplicant() {
         // given
-        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
-        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-
-        ApplicantLoginRequest applicantLoginRequest = new ApplicantLoginRequest(recruitmentDetailsResponse.code(),
-                TEST_EMAIL, TEST_PASSWORD);
+        ApplicantLoginRequest applicantLoginRequest = new ApplicantLoginRequest(TEST_EMAIL, TEST_PASSWORD);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -109,8 +105,7 @@ public class AuthApiTest extends ApiTest {
         // given
         AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(recruitmentDetailsResponse.code(), TEST_EMAIL,
-                TEST_PASSWORD);
+        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()

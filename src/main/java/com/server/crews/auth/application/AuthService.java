@@ -14,7 +14,6 @@ import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
-import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -49,11 +48,9 @@ public class AuthService {
     public ApplicantLoginResponse loginForApplicant(ApplicantLoginRequest request) {
         String email = request.email();
         String password = request.password();
-        Recruitment recruitment = recruitmentRepository.findByCode(request.recruitmentCode())
-                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
 
-        Applicant applicant = applicantRepository.findByEmailAndRecruitment(email, recruitment)
-                .orElseGet(() -> createApplicant(email, password, recruitment));
+        Applicant applicant = applicantRepository.findByEmail(email)
+                .orElseGet(() -> createApplicant(email, password));
         Long applicationId = applicationRepository.findByApplicantId(applicant.getId())
                 .map(Application::getId)
                 .orElse(null);
@@ -61,8 +58,8 @@ public class AuthService {
         return new ApplicantLoginResponse(applicant.getId(), accessToken, applicationId);
     }
 
-    private Applicant createApplicant(String email, String password, Recruitment recruitment) {
-        Applicant applicant = new Applicant(email, password, recruitment);
+    private Applicant createApplicant(String email, String password) {
+        Applicant applicant = new Applicant(email, password);
         return applicantRepository.save(applicant);
     }
 

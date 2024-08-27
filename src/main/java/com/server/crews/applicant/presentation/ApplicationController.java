@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -36,16 +37,23 @@ public class ApplicationController {
                 .body(applicationService.saveApplication(loginUser.userId(), request));
     }
 
-    // Todo: 지원서 수정 api 추가
-
     /**
-     * 특정 지원자의 지원서를 조회한다.
+     * 동아리 관리자가 특정 지원자의 지원서를 조회한다.
      */
     @GetMapping("/{application-id}")
     public ResponseEntity<ApplicationDetailsResponse> getApplicationDetails(
-            @ApplicantAuthentication LoginUser loginUser,
+            @AdminAuthentication LoginUser loginUser,
             @PathVariable(value = "application-id") Long applicationId) {
-        return ResponseEntity.ok(applicationService.findApplicationDetails(applicationId, loginUser));
+        return ResponseEntity.ok(applicationService.findApplicationDetails(applicationId, loginUser.userId()));
+    }
+
+    /**
+     * 지원자가 본인의 지원서를 조회한다.
+     */
+    @GetMapping("/mine")
+    public ResponseEntity<ApplicationDetailsResponse> getMyApplicationDetails(
+            @ApplicantAuthentication LoginUser loginUser, @RequestParam("code") String code) {
+        return ResponseEntity.ok(applicationService.findMyApplicationDetails(loginUser.userId(), code));
     }
 
     /**

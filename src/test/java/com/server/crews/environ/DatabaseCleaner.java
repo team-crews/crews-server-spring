@@ -1,11 +1,10 @@
 package com.server.crews.environ;
 
 import jakarta.persistence.EntityManager;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

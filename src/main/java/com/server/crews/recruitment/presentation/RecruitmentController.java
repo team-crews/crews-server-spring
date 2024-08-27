@@ -61,7 +61,8 @@ public class RecruitmentController {
     @GetMapping("/ready")
     public ResponseEntity<RecruitmentDetailsResponse> getRecruitmentDetailsInReady(
             @AdminAuthentication LoginUser loginUser) {
-        Optional<RecruitmentDetailsResponse> recruitmentDetailsResponse = recruitmentService.findRecruitmentDetailsInReady(loginUser.userId());
+        Optional<RecruitmentDetailsResponse> recruitmentDetailsResponse = recruitmentService.findRecruitmentDetailsInReady(
+                loginUser.userId());
         return recruitmentDetailsResponse.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.noContent().build());
     }

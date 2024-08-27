@@ -3,9 +3,8 @@ package com.server.crews.auth.presentation;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpHeaders;
-
 import java.util.Objects;
+import org.springframework.http.HttpHeaders;
 
 public class AuthorizationExtractor {
     public static final String BEARER_TYPE = "Bearer ";

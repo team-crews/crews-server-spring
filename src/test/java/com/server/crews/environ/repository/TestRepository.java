@@ -10,7 +10,7 @@ public class TestRepository {
     private final EntityManager em;
 
     public void save(Object... objects) {
-        for(Object o: objects) {
+        for (Object o : objects) {
             em.persist(o);
         }
     }
