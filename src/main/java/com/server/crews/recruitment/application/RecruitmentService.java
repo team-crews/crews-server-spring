@@ -85,6 +85,9 @@ public class RecruitmentService {
     public RecruitmentDetailsResponse findRecruitmentDetailsByCode(String code) {
         Recruitment recruitment = recruitmentRepository.findWithSectionsByCode(code)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+        if (!recruitment.isStarted()) {
+            throw new CrewsException(ErrorCode.RECRUITMENT_NOT_STARTED);
+        }
         return toRecruitmentDetailsWithQuestions(recruitment);
     }
 

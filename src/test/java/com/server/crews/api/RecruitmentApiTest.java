@@ -269,6 +269,11 @@ public class RecruitmentApiTest extends ApiTest {
         String adminAccessToken = adminTokenResponse.accessToken();
         RecruitmentDetailsResponse savedRecruitmentDetailsResponse = createRecruitment(adminAccessToken);
 
+        RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .when().patch("/recruitments/in-progress");
+
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
                 .filter(RecruitmentApiDocuments.GET_RECRUITMENT_BY_CODE_200_DOCUMENT())
@@ -281,6 +286,28 @@ public class RecruitmentApiTest extends ApiTest {
 
         // then
         checkStatusCode200(response);
+    }
+
+    @Test
+    @DisplayName("준비 중인 모집 공고를 코드로 조회한다.")
+    void getReadyRecruitmentDetailsByCode() {
+        // given
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        String adminAccessToken = adminTokenResponse.accessToken();
+        RecruitmentDetailsResponse savedRecruitmentDetailsResponse = createRecruitment(adminAccessToken);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.GET_RECRUITMENT_BY_CODE_400_DOCUMENT())
+                .queryParam("code", savedRecruitmentDetailsResponse.code())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .when().get("/recruitments")
+                .then().log().all()
+                .extract();
+
+        // then
+        checkStatusCode400(response);
     }
 
     @Test

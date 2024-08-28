@@ -79,6 +79,11 @@ public class Recruitment {
         addSections(sections);
     }
 
+    public void updateDeadline(LocalDateTime deadline) {
+        validateDeadline(deadline);
+        this.deadline = deadline;
+    }
+
     private void validateDeadline(LocalDateTime deadline) {
         LocalDateTime now = LocalDateTime.now(Clock.system(ZoneId.of("Asia/Seoul")));
         if (deadline.isBefore(now)) {
@@ -104,11 +109,6 @@ public class Recruitment {
 
     public void close() {
         this.progress = RecruitmentProgress.COMPLETION;
-    }
-
-    public void updateDeadline(LocalDateTime deadline) {
-        validateDeadline(deadline);
-        this.deadline = deadline;
     }
 
     public boolean isAnnounced() {
