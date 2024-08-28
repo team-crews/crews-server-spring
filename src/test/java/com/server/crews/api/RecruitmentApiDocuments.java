@@ -106,6 +106,11 @@ public class RecruitmentApiDocuments {
                         .queryParameters(parameterWithName("code").description("모집 공고 코드")));
     }
 
+    public static RestDocumentationFilter GET_RECRUITMENT_BY_CODE_400_DOCUMENT() {
+        return document(RECRUITMENT_API + "준비 중인 모집 공고 코드 확인",
+                new ResourceSnippetParametersBuilder().queryParameters(parameterWithName("code").description("모집 공고 코드")));
+    }
+
     public static RestDocumentationFilter GET_RECRUITMENT_PROGRESS_200_DOCUMENT() {
         return document(RECRUITMENT_API + "모집 공고 단계 조회",
                 new ResourceSnippetParametersBuilder().description("모집공고의 단계를 조회한다."));
