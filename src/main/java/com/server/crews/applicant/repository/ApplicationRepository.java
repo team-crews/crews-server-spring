@@ -25,12 +25,6 @@ public interface ApplicationRepository extends JpaRepository<Application, Long>,
 
     @Query("""
             select a from Application a
-            where a.applicant.id = :applicantId
-            """)
-    Optional<Application> findByApplicantId(@Param("applicantId") Long applicantId);
-
-    @Query("""
-            select a from Application a
             join fetch a.recruitment r
             join fetch r.publisher
             where a.id = :id
