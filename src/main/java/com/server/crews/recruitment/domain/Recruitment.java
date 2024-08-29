@@ -8,6 +8,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
@@ -53,6 +55,7 @@ public class Recruitment {
     private String description;
 
     @Column(name = "progress", nullable = false)
+    @Enumerated(EnumType.STRING)
     private RecruitmentProgress progress;
 
     @Column(name = "deadline", nullable = false)
