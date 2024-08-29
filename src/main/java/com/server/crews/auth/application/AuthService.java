@@ -1,7 +1,5 @@
 package com.server.crews.auth.application;
 
-import com.server.crews.applicant.domain.Application;
-import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.auth.domain.Role;
@@ -23,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
     private final AdministratorRepository administratorRepository;
     private final ApplicantRepository applicantRepository;
-    private final ApplicationRepository applicationRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
@@ -49,11 +46,8 @@ public class AuthService {
 
         Applicant applicant = applicantRepository.findByEmail(email)
                 .orElseGet(() -> createApplicant(email, password));
-        Long applicationId = applicationRepository.findByApplicantId(applicant.getId())
-                .map(Application::getId)
-                .orElse(null);
         String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, email);
-        return new ApplicantLoginResponse(applicant.getId(), accessToken, applicationId);
+        return new ApplicantLoginResponse(applicant.getId(), accessToken);
     }
 
     private Applicant createApplicant(String email, String password) {
