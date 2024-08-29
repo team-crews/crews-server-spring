@@ -8,6 +8,7 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -19,7 +20,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @AllArgsConstructor
-@Table(name = "narrative_question")
+@Table(name = "narrative_question",
+        indexes = @Index(columnList = "section_id", name = "idx_section_id")
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NarrativeQuestion {
     @Id

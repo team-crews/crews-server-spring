@@ -9,6 +9,7 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -21,7 +22,9 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "selective_question")
+@Table(name = "selective_question",
+        indexes = @Index(columnList = "section_id", name = "idx_section_id")
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SelectiveQuestion {
     @Id
