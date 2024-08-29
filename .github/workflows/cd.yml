@@ -73,7 +73,10 @@ jobs:
             sudo chmod 666 /var/run/docker.sock
             docker rm -f $(docker ps -qa)
             docker pull ${{ secrets.DOCKER_SERVER_IMAGE_NAME }}
-            docker run -d -p 80:8080 --name crews-server ${{ secrets.DOCKER_SERVER_IMAGE_NAME }} --spring.profiles.active=prod
-            
+            docker run -d -p 80:8080 --name crews-server \
+              -e JAVA_OPTS="-XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=70.0 -XX:MaxRAMPercentage=70.0" \
+              -e SPRING_PROFILES_ACTIVE=prod \
+              ${{ secrets.DOCKER_SERVER_IMAGE_NAME }}
+
             docker image prune -f
             docker volume prune -f
