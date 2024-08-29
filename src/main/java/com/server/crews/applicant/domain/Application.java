@@ -1,7 +1,6 @@
 package com.server.crews.applicant.domain;
 
 import com.server.crews.auth.domain.Applicant;
-import com.server.crews.auth.domain.Role;
 import com.server.crews.recruitment.domain.Recruitment;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -12,6 +11,7 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -24,7 +24,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "application")
+@Table(name = "application",
+        indexes = {
+                @Index(columnList = "recruitment_id", name = "idx_recruitment_id"),
+                @Index(columnList = "applicant_id", name = "idx_applicant_id")
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Application {
 
