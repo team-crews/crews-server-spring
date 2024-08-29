@@ -14,7 +14,6 @@ import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
-import com.server.crews.recruitment.repository.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
     private final AdministratorRepository administratorRepository;
     private final ApplicantRepository applicantRepository;
-    private final RecruitmentRepository recruitmentRepository;
     private final ApplicationRepository applicationRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
