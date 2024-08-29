@@ -2,7 +2,7 @@ name: crews backend cd
 
 on:
   push:
-    branches: [ "cd/#11-set-cd" ]
+    branches: [ "dev" ]
 
 permissions:
   contents: read
@@ -74,7 +74,7 @@ jobs:
             docker rm -f $(docker ps -qa)
             docker pull ${{ secrets.DOCKER_SERVER_IMAGE_NAME }}
             docker run -d -p 80:8080 --name crews-server \
-              -e JAVA_OPTS="-XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=70.0 -XX:MaxRAMPercentage=70.0" \
+              -e JAVA_OPTS="-XX:InitialRAMPercentage=70.0 -XX:MaxRAMPercentage=70.0" \
               -e SPRING_PROFILES_ACTIVE=prod \
               ${{ secrets.DOCKER_SERVER_IMAGE_NAME }}
 
