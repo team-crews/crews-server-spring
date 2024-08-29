@@ -2,7 +2,7 @@ name: crews backend cd
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "cd/#11-set-cd" ]
 
 permissions:
   contents: read
@@ -55,3 +55,25 @@ jobs:
           platforms: |
             linux/amd64
             linux/arm64
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          key: ${{ secrets.KEY }}
+          script: |
+            cd /home/ubuntu
+            
+            sudo chmod 666 /var/run/docker.sock
+            docker rm -f $(docker ps -qa)
+            docker pull ${{ secrets.DOCKER_SERVER_IMAGE_NAME }}
+            docker run -d -p 80:8080 --name crews-server ${{ secrets.DOCKER_SERVER_IMAGE_NAME }} --spring.profiles.active=prod
+            
+            docker image prune -f
+            docker volume prune -f
