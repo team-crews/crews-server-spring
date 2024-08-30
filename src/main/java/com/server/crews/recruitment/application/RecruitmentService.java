@@ -74,7 +74,8 @@ public class RecruitmentService {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
         int applicationCount = applicationRepository.countAllByRecruitment(recruitment);
-        return new RecruitmentStateInProgressResponse(applicationCount, recruitment.getDeadline());
+        return new RecruitmentStateInProgressResponse(applicationCount, recruitment.getDeadline(),
+                recruitment.getCode());
     }
 
     public Optional<RecruitmentDetailsResponse> findRecruitmentDetailsInReady(Long publisherId) {
