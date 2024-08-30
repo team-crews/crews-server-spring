@@ -44,7 +44,7 @@ class AuthServiceTest extends ServiceTest {
         AdminLoginResponse adminLoginResponse = authService.loginForAdmin(request);
 
         // then
-        Optional<Administrator> createdAdmin = administratorRepository.findById(adminLoginResponse.adminId());
+        Optional<Administrator> createdAdmin = administratorRepository.findByClubName(adminLoginResponse.username());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdAdmin).isNotEmpty();
             softAssertions.assertThat(adminLoginResponse.accessToken()).isNotNull();
@@ -62,7 +62,7 @@ class AuthServiceTest extends ServiceTest {
         AdminLoginResponse adminLoginResponse = authService.loginForAdmin(request);
 
         // then
-        Optional<Administrator> createdAdmin = administratorRepository.findById(adminLoginResponse.adminId());
+        Optional<Administrator> createdAdmin = administratorRepository.findByClubName(adminLoginResponse.username());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdAdmin).isNotEmpty();
             softAssertions.assertThat(adminLoginResponse.accessToken()).isNotNull();
@@ -81,7 +81,7 @@ class AuthServiceTest extends ServiceTest {
         ApplicantLoginResponse applicantLoginResponse = authService.loginForApplicant(request);
 
         // then
-        Optional<Applicant> createdApplicant = applicantRepository.findById(applicantLoginResponse.applicantId());
+        Optional<Applicant> createdApplicant = applicantRepository.findByEmail(applicantLoginResponse.username());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdApplicant).isNotEmpty();
             softAssertions.assertThat(applicantLoginResponse.accessToken()).isNotNull();
@@ -99,7 +99,7 @@ class AuthServiceTest extends ServiceTest {
         ApplicantLoginResponse applicantLoginResponse = authService.loginForApplicant(request);
 
         // then
-        Optional<Applicant> createdApplicant = applicantRepository.findById(applicantLoginResponse.applicantId());
+        Optional<Applicant> createdApplicant = applicantRepository.findByEmail(applicantLoginResponse.username());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdApplicant).isNotEmpty();
             softAssertions.assertThat(applicantLoginResponse.accessToken()).isNotNull();

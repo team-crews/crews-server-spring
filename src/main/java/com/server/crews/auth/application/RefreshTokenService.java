@@ -27,21 +27,24 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public RefreshTokenWithValidity createRefreshToken(Role role, Long id) {
-        String refreshToken = jwtTokenProvider.createRefreshToken(role, String.valueOf(id));
-        refreshTokenRepository.deleteByOwnerId(id);
-        refreshTokenRepository.save(new RefreshToken(refreshToken, id));
+    public RefreshTokenWithValidity createRefreshToken(Role role, String username) {
+        String refreshToken = jwtTokenProvider.createRefreshToken(role, username);
+        refreshTokenRepository.deleteByUsername(username);
+        refreshTokenRepository.save(new RefreshToken(username, refreshToken));
         return new RefreshTokenWithValidity(refreshTokenValidityInSecond, refreshToken);
     }
 
     public TokenRefreshResponse renew(String refreshToken) {
         jwtTokenProvider.validateRefreshToken(refreshToken);
-        refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new CrewsException(ErrorCode.INVALID_REFRESH_TOKEN));
+        String username = jwtTokenProvider.getPayload(refreshToken);
+        RefreshToken savedRefreshToken = refreshTokenRepository.findByUsername(username)
+                .orElseThrow(() -> new CrewsException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
+        if (!savedRefreshToken.isSameToken(refreshToken)) {
+            throw new CrewsException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
 
-        String payload = jwtTokenProvider.getPayload(refreshToken);
         Role role = jwtTokenProvider.getRole(refreshToken);
-        String accessToken = jwtTokenProvider.createAccessToken(role, payload);
+        String accessToken = jwtTokenProvider.createAccessToken(role, username);
         return new TokenRefreshResponse(accessToken);
     }
 }

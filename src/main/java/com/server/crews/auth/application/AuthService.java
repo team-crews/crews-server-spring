@@ -31,7 +31,7 @@ public class AuthService {
         Administrator administrator = administratorRepository.findByClubName(clubName)
                 .orElseGet(() -> createAdmin(clubName, password));
         String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, clubName);
-        return new AdminLoginResponse(administrator.getId(), accessToken);
+        return new AdminLoginResponse(administrator.getClubName(), accessToken);
     }
 
     private Administrator createAdmin(String clubName, String password) {
@@ -47,7 +47,7 @@ public class AuthService {
         Applicant applicant = applicantRepository.findByEmail(email)
                 .orElseGet(() -> createApplicant(email, password));
         String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, email);
-        return new ApplicantLoginResponse(applicant.getId(), accessToken);
+        return new ApplicantLoginResponse(applicant.getEmail(), accessToken);
     }
 
     private Applicant createApplicant(String email, String password) {
