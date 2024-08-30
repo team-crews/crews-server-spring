@@ -11,7 +11,8 @@ public class TestApplicant {
     }
 
     public TestApplicant create(String email, String password) {
-        Applicant applicant = new Applicant(email, password);
+        String encodedPassword = environ.passwordEncoder().encode(password);
+        Applicant applicant = new Applicant(email, encodedPassword);
         this.applicant = environ.applicantRepository().save(applicant);
         return this;
     }

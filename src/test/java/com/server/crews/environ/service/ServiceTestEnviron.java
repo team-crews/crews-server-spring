@@ -11,6 +11,7 @@ import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.SectionRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -26,6 +27,7 @@ public class ServiceTestEnviron {
     private final ApplicationRepository applicationRepository;
     private final NarrativeAnswerRepository narrativeAnswerRepository;
     private final SelectiveAnswerRepository selectiveAnswerRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public ApplicantRepository applicantRepository() {
         return applicantRepository;
@@ -65,5 +67,9 @@ public class ServiceTestEnviron {
 
     public SelectiveAnswerRepository selectiveAnswerRepository() {
         return selectiveAnswerRepository;
+    }
+
+    public PasswordEncoder passwordEncoder() {
+        return passwordEncoder;
     }
 }

@@ -13,6 +13,7 @@ import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ public class AuthService {
     private final AdministratorRepository administratorRepository;
     private final ApplicantRepository applicantRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public AdminLoginResponse loginForAdmin(AdminLoginRequest request) {
@@ -29,13 +31,19 @@ public class AuthService {
         String password = request.password();
 
         Administrator administrator = administratorRepository.findByClubName(clubName)
+                .map(savedAdmin -> {
+                    validatePassword(password, savedAdmin.getPassword());
+                    return savedAdmin;
+                })
                 .orElseGet(() -> createAdmin(clubName, password));
+
         String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, clubName);
         return new AdminLoginResponse(administrator.getClubName(), accessToken);
     }
 
     private Administrator createAdmin(String clubName, String password) {
-        Administrator administrator = new Administrator(clubName, password);
+        String encodedPassword = passwordEncoder.encode(password);
+        Administrator administrator = new Administrator(clubName, encodedPassword);
         return administratorRepository.save(administrator);
     }
 
@@ -45,14 +53,26 @@ public class AuthService {
         String password = request.password();
 
         Applicant applicant = applicantRepository.findByEmail(email)
+                .map(savedApplicant -> {
+                    validatePassword(password, savedApplicant.getPassword());
+                    return savedApplicant;
+                })
                 .orElseGet(() -> createApplicant(email, password));
+
         String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, email);
         return new ApplicantLoginResponse(applicant.getEmail(), accessToken);
     }
 
     private Applicant createApplicant(String email, String password) {
-        Applicant applicant = new Applicant(email, password);
+        String encodedPassword = passwordEncoder.encode(password);
+        Applicant applicant = new Applicant(email, encodedPassword);
         return applicantRepository.save(applicant);
+    }
+
+    private void validatePassword(String password, String encodedPassword) {
+        if (!passwordEncoder.matches(password, encodedPassword)) {
+            throw new CrewsException(ErrorCode.WRONG_PASSWORD);
+        }
     }
 
     public LoginUser findAdminAuthentication(String accessToken) {
