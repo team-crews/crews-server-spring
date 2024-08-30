@@ -1,5 +1,6 @@
 package com.server.crews.auth.application;
 
+import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -56,7 +57,7 @@ class AuthServiceTest extends ServiceTest {
     void loginAdmin() {
         // given
         Administrator administrator = LIKE_LION_ADMIN().administrator();
-        AdminLoginRequest request = new AdminLoginRequest(administrator.getClubName(), administrator.getPassword());
+        AdminLoginRequest request = new AdminLoginRequest(administrator.getClubName(), TEST_PASSWORD);
 
         // when
         AdminLoginResponse adminLoginResponse = authService.loginForAdmin(request);
@@ -93,7 +94,7 @@ class AuthServiceTest extends ServiceTest {
     void loginApplicant() {
         // given
         Applicant applicant = JONGMEE_APPLICANT().applicant();
-        ApplicantLoginRequest request = new ApplicantLoginRequest(applicant.getEmail(), applicant.getPassword());
+        ApplicantLoginRequest request = new ApplicantLoginRequest(applicant.getEmail(), TEST_PASSWORD);
 
         // when
         ApplicantLoginResponse applicantLoginResponse = authService.loginForApplicant(request);

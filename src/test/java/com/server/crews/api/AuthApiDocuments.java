@@ -53,6 +53,10 @@ public class AuthApiDocuments {
                                         .description("지원서 id (없다면 null)")));
     }
 
+    public static RestDocumentationFilter LOGIN_ADMIN_400_DOCUMENT() {
+        return document(AUTH_API + "동아리 관리자 로그인 비밀번호 불일치");
+    }
+
     public static RestDocumentationFilter REFRESH_TOKEN_200_DOCUMENT() {
         return document(AUTH_API + "토큰 재발급",
                 new ResourceSnippetParametersBuilder().description("access token을 재발급 받는다.")
