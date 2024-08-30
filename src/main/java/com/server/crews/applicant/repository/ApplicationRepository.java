@@ -2,6 +2,7 @@ package com.server.crews.applicant.repository;
 
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.recruitment.domain.Recruitment;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,10 +17,11 @@ public interface ApplicationRepository extends JpaRepository<Application, Long>,
     int countAllByRecruitment(@Param("recruitment") Recruitment recruitment);
 
     @Query("""
-            select a from Application a
-            where a.applicant.id = :applicantId
+            select application from Application application
+            join fetch application.applicant
+            where application.recruitment = :recruitment
             """)
-    Optional<Application> findByApplicantId(@Param("applicantId") Long applicantId);
+    List<Application> findAllByRecruitmentWithApplicant(@Param("recruitment") Recruitment recruitment);
 
     @Query("""
             select a from Application a
