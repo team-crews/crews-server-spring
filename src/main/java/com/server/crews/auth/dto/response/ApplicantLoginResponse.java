@@ -1,4 +1,4 @@
 package com.server.crews.auth.dto.response;
 
-public record ApplicantLoginResponse(Long applicantId, String accessToken) {
+public record ApplicantLoginResponse(String username, String accessToken) {
 }

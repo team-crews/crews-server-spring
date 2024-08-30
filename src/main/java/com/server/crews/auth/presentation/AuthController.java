@@ -34,7 +34,7 @@ public class AuthController {
     public ResponseEntity<AdminLoginResponse> loginForAdmin(@RequestBody AdminLoginRequest request) {
         AdminLoginResponse loginResponse = authService.loginForAdmin(request);
         RefreshTokenWithValidity refreshTokenWithValidity = refreshTokenService.createRefreshToken(Role.ADMIN,
-                loginResponse.adminId());
+                loginResponse.username());
         ResponseCookie cookie = refreshTokenWithValidity.toCookie();
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -48,7 +48,7 @@ public class AuthController {
     public ResponseEntity<ApplicantLoginResponse> loginForApplicant(@RequestBody ApplicantLoginRequest request) {
         ApplicantLoginResponse loginResponse = authService.loginForApplicant(request);
         RefreshTokenWithValidity refreshTokenWithValidity = refreshTokenService.createRefreshToken(Role.APPLICANT,
-                loginResponse.applicantId());
+                loginResponse.username());
         ResponseCookie cookie = refreshTokenWithValidity.toCookie();
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
