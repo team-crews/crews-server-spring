@@ -7,6 +7,7 @@ import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_TITLE;
 import static com.server.crews.fixture.RecruitmentFixture.RECRUITMENT_SAVE_REQUEST;
+import static com.server.crews.fixture.RecruitmentFixture.SECTION_REQUESTS;
 import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
 import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +33,11 @@ import com.server.crews.recruitment.dto.response.QuestionResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.SectionResponse;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,6 +68,24 @@ class RecruitmentServiceTest extends ServiceTest {
 
         // then
         assertThat(response.id()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("모집 마감일은 지금 이전이 될 수 없다.")
+    void validateDeadline() {
+        // given
+        Administrator publisher = LIKE_LION_ADMIN().administrator();
+
+        LocalTime time = LocalTime.of(0, 0);
+        LocalDate date = LocalDate.now(Clock.system(ZoneId.of("Asia/Seoul"))).minusDays(1);
+        LocalDateTime invalidDeadline = LocalDateTime.of(date, time);
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE, DEFAULT_DESCRIPTION, SECTION_REQUESTS,
+                invalidDeadline.toString());
+
+        // when & then
+        assertThatThrownBy(() -> recruitmentService.saveRecruitment(publisher.getId(), recruitmentSaveRequest))
+                .isInstanceOf(CrewsException.class)
+                .hasMessage(ErrorCode.INVALID_DEADLINE.getMessage());
     }
 
     @Test

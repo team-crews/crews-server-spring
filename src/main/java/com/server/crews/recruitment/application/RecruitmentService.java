@@ -25,6 +25,7 @@ import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,9 +56,20 @@ public class RecruitmentService {
                 .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
         String code = UUID.randomUUID().toString();
         Recruitment recruitment = RecruitmentMapper.recruitmentSaveRequestToRecruitment(request, code, publisher);
+        validateDeadline(recruitment.getDeadline());
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
         savedRecruitment.sortQuestions();
         return RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(savedRecruitment);
+    }
+
+    private void validateDeadline(LocalDateTime deadline) {
+        LocalDateTime now = LocalDateTime.now(Clock.system(ZoneId.of("Asia/Seoul")));
+        if (deadline.isBefore(now)) {
+            throw new CrewsException(ErrorCode.INVALID_DEADLINE);
+        }
+        if (deadline.getMinute() != 0 || deadline.getSecond() != 0 || deadline.getNano() != 0) {
+            throw new CrewsException(ErrorCode.INVALID_DEADLINE);
+        }
     }
 
     @Transactional
@@ -121,7 +133,8 @@ public class RecruitmentService {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
         LocalDateTime deadline = LocalDateTime.parse(request.deadline());
-        recruitment.updateDeadline(deadline);
+        validateDeadline(deadline);
+        recruitment.updateDeadline(deadline); // Todo: progress 검증, 이전 마감일 이후인지 검증
     }
 
     @Transactional
