@@ -9,6 +9,7 @@ import com.server.crews.auth.domain.Applicant;
 import com.server.crews.environ.DatabaseCleaner;
 import com.server.crews.environ.repository.TestRepository;
 import com.server.crews.external.application.EmailService;
+import com.server.crews.global.config.DatabaseInitializer;
 import com.server.crews.recruitment.domain.Recruitment;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public abstract class ServiceTest {
 
     @MockBean
     private EmailService emailService;
+
+    @MockBean
+    private DatabaseInitializer databaseInitializer;
 
     @BeforeEach
     void setUp() {

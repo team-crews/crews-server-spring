@@ -34,7 +34,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -316,10 +315,15 @@ public class RecruitmentApiTest extends ApiTest {
         // given
         AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String adminAccessToken = adminTokenResponse.accessToken();
-        createRecruitment(adminAccessToken);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminAccessToken);
+
+        RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .when().patch("/recruitments/in-progress");
 
         DeadlineUpdateRequest deadlineUpdateRequest = new DeadlineUpdateRequest(
-                LocalDateTime.of(2030, 8, 5, 18, 0).toString());
+                recruitmentDetailsResponse.deadline().plusDays(1).toString());
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()

@@ -14,6 +14,7 @@ public enum ErrorCode {
     ALREADY_ANNOUNCED(HttpStatus.BAD_REQUEST, "모집 공고 결과 발표가 이미 완료되었습니다."),
     RECRUITMENT_ALREADY_STARTED(HttpStatus.BAD_REQUEST, "모집이 이미 시작되었습니다."),
     RECRUITMENT_NOT_STARTED(HttpStatus.BAD_REQUEST, "모집이 시작되지 않았습니다."),
+    INVALID_MODIFIED_DEADLINE(HttpStatus.BAD_REQUEST, "수정된 모집 마감 기한은 기존 기한 이후이며 모집 진행 중에만 수정할 수 있습니다."),
 
     NO_TOKEN(HttpStatus.UNAUTHORIZED, "토큰이 존재하지 않습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "토큰 형식이 잘못 되었습니다."),

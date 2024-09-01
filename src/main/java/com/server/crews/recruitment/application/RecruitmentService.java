@@ -25,6 +25,7 @@ import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,9 +56,20 @@ public class RecruitmentService {
                 .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
         String code = UUID.randomUUID().toString();
         Recruitment recruitment = RecruitmentMapper.recruitmentSaveRequestToRecruitment(request, code, publisher);
+        validateDeadline(recruitment.getDeadline());
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
         savedRecruitment.sortQuestions();
         return RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(savedRecruitment);
+    }
+
+    private void validateDeadline(LocalDateTime deadline) {
+        LocalDateTime now = LocalDateTime.now(Clock.system(ZoneId.of("Asia/Seoul")));
+        if (deadline.isBefore(now)) {
+            throw new CrewsException(ErrorCode.INVALID_DEADLINE);
+        }
+        if (deadline.getMinute() != 0 || deadline.getSecond() != 0 || deadline.getNano() != 0) {
+            throw new CrewsException(ErrorCode.INVALID_DEADLINE);
+        }
     }
 
     @Transactional
@@ -120,8 +132,12 @@ public class RecruitmentService {
     public void updateDeadline(Long publisherId, DeadlineUpdateRequest request) {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
-        LocalDateTime deadline = LocalDateTime.parse(request.deadline());
-        recruitment.updateDeadline(deadline);
+
+        LocalDateTime modifiedDeadline = LocalDateTime.parse(request.deadline());
+        if (!recruitment.hasOnOrAfterDeadline(modifiedDeadline) || !recruitment.isInProgress()) {
+            throw new CrewsException(ErrorCode.INVALID_MODIFIED_DEADLINE);
+        }
+        recruitment.updateDeadline(modifiedDeadline);
     }
 
     @Transactional
@@ -130,7 +146,7 @@ public class RecruitmentService {
         LocalDateTime now = LocalDateTime.now(clock);
         List<Recruitment> recruitments = recruitmentRepository.findAll();
         recruitments.stream()
-                .filter(recruitment -> recruitment.hasPassedDeadline(now))
+                .filter(recruitment -> recruitment.hasOnOrAfterDeadline(now))
                 .forEach(Recruitment::close);
     }
 

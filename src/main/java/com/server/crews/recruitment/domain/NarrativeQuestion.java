@@ -56,8 +56,4 @@ public class NarrativeQuestion {
     public void updateSection(final Section section) {
         this.section = section;
     }
-
-    public void setByExistingId(Long id) {
-        this.id = id;
-    }
 }

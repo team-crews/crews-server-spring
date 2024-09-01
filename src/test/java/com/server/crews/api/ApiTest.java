@@ -18,6 +18,7 @@ import com.server.crews.auth.dto.response.ApplicantLoginResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.environ.DatabaseCleaner;
 import com.server.crews.external.application.EmailService;
+import com.server.crews.global.config.DatabaseInitializer;
 import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
@@ -50,6 +51,9 @@ public abstract class ApiTest {
 
     @MockBean
     private EmailService emailService;
+
+    @MockBean
+    private DatabaseInitializer databaseInitializer;
 
     protected RequestSpecification spec;
 

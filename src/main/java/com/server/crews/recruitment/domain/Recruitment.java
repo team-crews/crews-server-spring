@@ -1,8 +1,6 @@
 package com.server.crews.recruitment.domain;
 
 import com.server.crews.auth.domain.Administrator;
-import com.server.crews.global.exception.CrewsException;
-import com.server.crews.global.exception.ErrorCode;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
@@ -20,9 +18,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.Clock;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -77,7 +73,6 @@ public class Recruitment {
 
     public Recruitment(Long id, String code, String title, String description, LocalDateTime deadline,
                        Administrator publisher, List<Section> sections) {
-        validateDeadline(deadline);
         this.id = id;
         this.code = code;
         this.title = title;
@@ -89,18 +84,7 @@ public class Recruitment {
     }
 
     public void updateDeadline(LocalDateTime deadline) {
-        validateDeadline(deadline);
         this.deadline = deadline;
-    }
-
-    private void validateDeadline(LocalDateTime deadline) {
-        LocalDateTime now = LocalDateTime.now(Clock.system(ZoneId.of("Asia/Seoul")));
-        if (deadline.isBefore(now)) {
-            throw new CrewsException(ErrorCode.INVALID_DEADLINE);
-        }
-        if (deadline.getMinute() != 0 || deadline.getSecond() != 0 || deadline.getNano() != 0) {
-            throw new CrewsException(ErrorCode.INVALID_DEADLINE);
-        }
     }
 
     public void addSections(List<Section> sections) {
@@ -128,8 +112,12 @@ public class Recruitment {
         return this.progress != RecruitmentProgress.READY;
     }
 
-    public boolean hasPassedDeadline(LocalDateTime now) {
-        return now.isAfter(deadline) || now.equals(deadline);
+    public boolean isInProgress() {
+        return this.progress == RecruitmentProgress.IN_PROGRESS;
+    }
+
+    public boolean hasOnOrAfterDeadline(LocalDateTime other) {
+        return other.isAfter(deadline) || other.equals(deadline);
     }
 
     public void sortQuestions() {

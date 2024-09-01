@@ -7,6 +7,7 @@ import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_TITLE;
 import static com.server.crews.fixture.RecruitmentFixture.RECRUITMENT_SAVE_REQUEST;
+import static com.server.crews.fixture.RecruitmentFixture.SECTION_REQUESTS;
 import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
 import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,6 +24,7 @@ import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
+import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
 import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
@@ -32,6 +34,11 @@ import com.server.crews.recruitment.dto.response.QuestionResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.SectionResponse;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,6 +69,25 @@ class RecruitmentServiceTest extends ServiceTest {
 
         // then
         assertThat(response.id()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("모집 마감일은 지금 이전이 될 수 없다.")
+    void validateDeadline() {
+        // given
+        Administrator publisher = LIKE_LION_ADMIN().administrator();
+
+        LocalTime time = LocalTime.of(0, 0);
+        LocalDate date = LocalDate.now(Clock.system(ZoneId.of("Asia/Seoul"))).minusDays(1);
+        LocalDateTime invalidDeadline = LocalDateTime.of(date, time);
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE,
+                DEFAULT_DESCRIPTION, SECTION_REQUESTS,
+                invalidDeadline.toString());
+
+        // when & then
+        assertThatThrownBy(() -> recruitmentService.saveRecruitment(publisher.getId(), recruitmentSaveRequest))
+                .isInstanceOf(CrewsException.class)
+                .hasMessage(ErrorCode.INVALID_DEADLINE.getMessage());
     }
 
     @Test
@@ -160,6 +186,38 @@ class RecruitmentServiceTest extends ServiceTest {
                         .flatExtracting(QuestionResponse::choices)
                         .hasSize(6)
         );
+    }
+
+    @Test
+    @DisplayName("수정된 모집 마감 기한은 기존 기한 이후이다.")
+    void validateModifiedDeadline() {
+        // given
+        Administrator publisher = LIKE_LION_ADMIN().administrator();
+        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher).start().recruitment();
+
+        LocalDateTime invalidDeadline = recruitment.getDeadline().minusDays(1);
+        DeadlineUpdateRequest request = new DeadlineUpdateRequest(invalidDeadline.toString());
+
+        // when & then
+        assertThatThrownBy(() -> recruitmentService.updateDeadline(publisher.getId(), request))
+                .isInstanceOf(CrewsException.class)
+                .hasMessage(ErrorCode.INVALID_MODIFIED_DEADLINE.getMessage());
+    }
+
+    @Test
+    @DisplayName("모집 기한 수정은 모집 진행 중에만 할 수 있다.")
+    void validateRecruitmentProgressWhenUpdateDeadline() {
+        // given
+        Administrator publisher = LIKE_LION_ADMIN().administrator();
+        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
+
+        LocalDateTime invalidDeadline = recruitment.getDeadline().plusDays(1);
+        DeadlineUpdateRequest request = new DeadlineUpdateRequest(invalidDeadline.toString());
+
+        // when & then
+        assertThatThrownBy(() -> recruitmentService.updateDeadline(publisher.getId(), request))
+                .isInstanceOf(CrewsException.class)
+                .hasMessage(ErrorCode.INVALID_MODIFIED_DEADLINE.getMessage());
     }
 
     @Test
