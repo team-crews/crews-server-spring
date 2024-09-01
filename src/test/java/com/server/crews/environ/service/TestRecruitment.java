@@ -60,6 +60,12 @@ public class TestRecruitment {
                 .toList();
     }
 
+    public TestRecruitment start() {
+        this.recruitment.start();
+        environ.recruitmentRepository().save(this.recruitment);
+        return this;
+    }
+
     public TestRecruitment announce() {
         this.recruitment.announce();
         environ.recruitmentRepository().save(this.recruitment);

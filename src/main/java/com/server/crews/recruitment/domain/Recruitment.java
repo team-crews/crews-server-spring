@@ -112,8 +112,12 @@ public class Recruitment {
         return this.progress != RecruitmentProgress.READY;
     }
 
-    public boolean hasPassedDeadline(LocalDateTime now) {
-        return now.isAfter(deadline) || now.equals(deadline);
+    public boolean isInProgress() {
+        return this.progress == RecruitmentProgress.IN_PROGRESS;
+    }
+
+    public boolean hasOnOrAfterDeadline(LocalDateTime other) {
+        return other.isAfter(deadline) || other.equals(deadline);
     }
 
     public void sortQuestions() {

@@ -132,9 +132,12 @@ public class RecruitmentService {
     public void updateDeadline(Long publisherId, DeadlineUpdateRequest request) {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
                 .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
-        LocalDateTime deadline = LocalDateTime.parse(request.deadline());
-        validateDeadline(deadline);
-        recruitment.updateDeadline(deadline); // Todo: progress 검증, 이전 마감일 이후인지 검증
+
+        LocalDateTime modifiedDeadline = LocalDateTime.parse(request.deadline());
+        if (!recruitment.hasOnOrAfterDeadline(modifiedDeadline) || !recruitment.isInProgress()) {
+            throw new CrewsException(ErrorCode.INVALID_MODIFIED_DEADLINE);
+        }
+        recruitment.updateDeadline(modifiedDeadline);
     }
 
     @Transactional
@@ -143,7 +146,7 @@ public class RecruitmentService {
         LocalDateTime now = LocalDateTime.now(clock);
         List<Recruitment> recruitments = recruitmentRepository.findAll();
         recruitments.stream()
-                .filter(recruitment -> recruitment.hasPassedDeadline(now))
+                .filter(recruitment -> recruitment.hasOnOrAfterDeadline(now))
                 .forEach(Recruitment::close);
     }
 

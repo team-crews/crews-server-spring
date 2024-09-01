@@ -24,6 +24,7 @@ import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
+import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
 import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
@@ -79,7 +80,8 @@ class RecruitmentServiceTest extends ServiceTest {
         LocalTime time = LocalTime.of(0, 0);
         LocalDate date = LocalDate.now(Clock.system(ZoneId.of("Asia/Seoul"))).minusDays(1);
         LocalDateTime invalidDeadline = LocalDateTime.of(date, time);
-        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE, DEFAULT_DESCRIPTION, SECTION_REQUESTS,
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE,
+                DEFAULT_DESCRIPTION, SECTION_REQUESTS,
                 invalidDeadline.toString());
 
         // when & then
@@ -184,6 +186,38 @@ class RecruitmentServiceTest extends ServiceTest {
                         .flatExtracting(QuestionResponse::choices)
                         .hasSize(6)
         );
+    }
+
+    @Test
+    @DisplayName("수정된 모집 마감 기한은 기존 기한 이후이다.")
+    void validateModifiedDeadline() {
+        // given
+        Administrator publisher = LIKE_LION_ADMIN().administrator();
+        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher).start().recruitment();
+
+        LocalDateTime invalidDeadline = recruitment.getDeadline().minusDays(1);
+        DeadlineUpdateRequest request = new DeadlineUpdateRequest(invalidDeadline.toString());
+
+        // when & then
+        assertThatThrownBy(() -> recruitmentService.updateDeadline(publisher.getId(), request))
+                .isInstanceOf(CrewsException.class)
+                .hasMessage(ErrorCode.INVALID_MODIFIED_DEADLINE.getMessage());
+    }
+
+    @Test
+    @DisplayName("모집 기한 수정은 모집 진행 중에만 할 수 있다.")
+    void validateRecruitmentProgressWhenUpdateDeadline() {
+        // given
+        Administrator publisher = LIKE_LION_ADMIN().administrator();
+        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
+
+        LocalDateTime invalidDeadline = recruitment.getDeadline().plusDays(1);
+        DeadlineUpdateRequest request = new DeadlineUpdateRequest(invalidDeadline.toString());
+
+        // when & then
+        assertThatThrownBy(() -> recruitmentService.updateDeadline(publisher.getId(), request))
+                .isInstanceOf(CrewsException.class)
+                .hasMessage(ErrorCode.INVALID_MODIFIED_DEADLINE.getMessage());
     }
 
     @Test
