@@ -27,6 +27,10 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
                                      NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String accessToken = AuthorizationExtractor.extract(request);
+        if (parameter.hasParameterAnnotation(AdminAuthentication.class)
+                && parameter.hasParameterAnnotation(ApplicantAuthentication.class)) {
+            return authService.findAuthentication(accessToken);
+        }
         if (parameter.hasParameterAnnotation(AdminAuthentication.class)) {
             return authService.findAdminAuthentication(accessToken);
         }

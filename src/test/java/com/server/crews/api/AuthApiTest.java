@@ -1,7 +1,6 @@
 package com.server.crews.api;
 
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
-import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode401;
 import static com.server.crews.fixture.UserFixture.TEST_CLUB_NAME;
 import static com.server.crews.fixture.UserFixture.TEST_EMAIL;
@@ -15,6 +14,7 @@ import com.server.crews.auth.dto.response.ApplicantLoginResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
+import io.restassured.http.Cookie;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Map;
@@ -146,6 +146,30 @@ public class AuthApiTest extends ApiTest {
         assertSoftly(softAssertions -> {
             checkStatusCode200(response);
             softAssertions.assertThat(adminLoginResponse.accessToken()).isNotNull();
+        });
+    }
+
+    @Test
+    @DisplayName("로그아웃한다.")
+    void logout() {
+        // given
+        AdminLoginResponse adminLoginResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(AuthApiDocuments.LOGOUT_200_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION,
+                        AuthorizationExtractor.BEARER_TYPE + adminLoginResponse.accessToken())
+                .when().post("/auth/logout")
+                .then().log().all()
+                .extract();
+
+        // then
+        Cookie cookie = response.detailedCookie("refreshToken");
+        assertSoftly(softAssertions -> {
+            checkStatusCode200(response, softAssertions);
+            softAssertions.assertThat(cookie.getMaxAge()).isEqualTo(0);
         });
     }
 }
