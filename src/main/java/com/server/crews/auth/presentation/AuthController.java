@@ -3,6 +3,7 @@ package com.server.crews.auth.presentation;
 import com.server.crews.auth.application.AuthService;
 import com.server.crews.auth.application.RefreshTokenService;
 import com.server.crews.auth.domain.Role;
+import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.dto.RefreshTokenWithValidity;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
@@ -61,5 +62,19 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<TokenRefreshResponse> renew(@CookieValue("refreshToken") String refreshToken) {
         return ResponseEntity.ok(refreshTokenService.renew(refreshToken));
+    }
+
+    /**
+     * 로그아웃한다.
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@AdminAuthentication @ApplicantAuthentication LoginUser loginUser) {
+        refreshTokenService.delete(loginUser.userId(), loginUser.role());
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
+                .maxAge(0)
+                .build();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .build();
     }
 }

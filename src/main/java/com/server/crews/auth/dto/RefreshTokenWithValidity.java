@@ -9,6 +9,7 @@ public record RefreshTokenWithValidity(long validity, String token) {
                 .httpOnly(true)
                 .secure(true)
                 .path("/auth/refresh")
+                .path("/auth/logout")
                 .maxAge(validity)
                 .build();
     }

@@ -64,6 +64,11 @@ public class AuthApiDocuments {
                                 .description("리프레시 토큰")));
     }
 
+    public static RestDocumentationFilter LOGOUT_200_DOCUMENT() {
+        return document(AUTH_API + "로그아웃",
+                new ResourceSnippetParametersBuilder().description("로그아웃한다."));
+    }
+
     public static RestDocumentationFilter AUTHORIZE_401_DOCUMENT() {
         return document(AUTH_API + "인가 실패 예시");
     }

@@ -106,4 +106,18 @@ public class AuthService {
             throw new CrewsException(ErrorCode.UNAUTHORIZED_USER);
         }
     }
+
+    public LoginUser findAuthentication(String accessToken) {
+        jwtTokenProvider.validateAccessToken(accessToken);
+        Role role = jwtTokenProvider.getRole(accessToken);
+        String payload = jwtTokenProvider.getPayload(accessToken);
+        if (role == Role.APPLICANT) {
+            Applicant applicant = applicantRepository.findByEmail(payload)
+                    .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
+            return new LoginUser(applicant.getId(), Role.APPLICANT);
+        }
+        Administrator administrator = administratorRepository.findByClubName(payload)
+                .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
+        return new LoginUser(administrator.getId(), Role.ADMIN);
+    }
 }
