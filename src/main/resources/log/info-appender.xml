@@ -20,7 +20,6 @@
         <jsonGeneratorDecorator class="net.logstash.logback.decorate.CompositeJsonGeneratorDecorator">
             <decorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
         </jsonGeneratorDecorator>
-        <timestampPattern>yyyyMMddHHmmss.SSSSSS</timestampPattern>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
         <fileNamePattern>info-history.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
