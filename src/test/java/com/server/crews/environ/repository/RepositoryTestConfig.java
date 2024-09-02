@@ -1,6 +1,5 @@
 package com.server.crews.environ.repository;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.server.crews.environ.DatabaseCleaner;
 import com.server.crews.global.config.JpaConfig;
 import jakarta.persistence.EntityManager;
@@ -14,12 +13,6 @@ import org.springframework.context.annotation.Import;
 public class RepositoryTestConfig {
     @PersistenceContext
     private EntityManager em;
-
-
-    @Bean
-    public JPAQueryFactory jpaQueryFactory() {
-        return new JPAQueryFactory(em);
-    }
 
     @Bean
     public TestRepository testRepository() {
