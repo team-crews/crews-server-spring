@@ -49,7 +49,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private void logErrorMessage(Throwable e) {
         MDC.put("lineNumber", String.valueOf(e.getStackTrace()[0].getLineNumber()));
-        MDC.put("exceptionName", e.getClass().getName());
+        MDC.put("className", e.getStackTrace()[0].getClassName());
+        MDC.put("exceptionName", e.getClass().getSimpleName());
         MDC.put("exceptionMessage", e.getMessage());
         log.error("An error occurred");
         MDC.clear();
