@@ -76,6 +76,7 @@ jobs:
             docker run -d -p 80:8080 --name crews-server \
               -e JAVA_OPTS="-XX:InitialRAMPercentage=70.0 -XX:MaxRAMPercentage=70.0" \
               -e SPRING_PROFILES_ACTIVE=prod \
+              -v /home/ubuntu/logs:/logs \
               ${{ secrets.DOCKER_SERVER_IMAGE_NAME }}
 
             docker image prune -f
