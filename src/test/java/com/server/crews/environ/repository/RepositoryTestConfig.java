@@ -5,8 +5,6 @@ import com.server.crews.environ.DatabaseCleaner;
 import com.server.crews.global.config.JpaConfig;
 import com.server.crews.recruitment.repository.RecruitmentDslRepository;
 import com.server.crews.recruitment.repository.RecruitmentDslRepositoryImpl;
-import com.server.crews.recruitment.repository.SelectiveQuestionDslRepository;
-import com.server.crews.recruitment.repository.SelectiveQuestionDslRepositoryImpl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -28,11 +26,6 @@ public class RepositoryTestConfig {
     @Bean
     public RecruitmentDslRepository recruitmentDslRepository() {
         return new RecruitmentDslRepositoryImpl(jpaQueryFactory());
-    }
-
-    @Bean
-    public SelectiveQuestionDslRepository selectiveQuestionDslRepository() {
-        return new SelectiveQuestionDslRepositoryImpl(jpaQueryFactory());
     }
 
     @Bean
