@@ -65,6 +65,11 @@ dependencies {
     testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.18.4'
     testImplementation 'com.epages:restdocs-api-spec-restassured:0.18.4'
     testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
+
+    // logback
+    implementation 'ch.qos.logback.contrib:logback-jackson:0.1.5'
+    implementation 'ch.qos.logback.contrib:logback-json-classic:0.1.5'
+    implementation 'net.logstash.logback:logstash-logback-encoder:6.1'
 }
 
 tasks.named('test') {
