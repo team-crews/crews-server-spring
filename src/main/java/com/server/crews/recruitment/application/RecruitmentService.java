@@ -113,8 +113,8 @@ public class RecruitmentService {
         Map<Section, List<SelectiveQuestion>> selectiveQuestionsBySection = selectiveQuestions.stream()
                 .collect(groupingBy(SelectiveQuestion::getSection));
         sections.forEach(section -> {
-            List<NarrativeQuestion> narratives = narrativeQuestionsBySection.get(section);
-            List<SelectiveQuestion> selectives = selectiveQuestionsBySection.get(section);
+            List<NarrativeQuestion> narratives = narrativeQuestionsBySection.getOrDefault(section, List.of());
+            List<SelectiveQuestion> selectives = selectiveQuestionsBySection.getOrDefault(section, List.of());
             section.replaceQuestions(narratives, selectives);
         });
         recruitment.sortQuestions();
