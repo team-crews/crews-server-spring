@@ -16,10 +16,12 @@
         </root>
     </springProfile>
 
-    <root level="info">
-        <appender-ref ref="CONSOLE_GENERAL"/>
-        <appender-ref ref="CONSOLE_ERROR"/>
-    </root>
+    <springProfile name="!prod">
+        <root level="info">
+            <appender-ref ref="CONSOLE_GENERAL"/>
+            <appender-ref ref="CONSOLE_ERROR"/>
+        </root>
+    </springProfile>
 
     <springProperty name="AWS_ACCESS_KEY" source="cloud.aws.credentials.accessKey"/>
     <springProperty name="AWS_SECRET_KEY" source="cloud.aws.credentials.secretKey"/>
