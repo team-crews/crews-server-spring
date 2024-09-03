@@ -6,19 +6,33 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface RecruitmentRepository extends JpaRepository<Recruitment, Long>, RecruitmentDslRepository {
+public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> {
     Optional<Recruitment> findByCode(String code);
 
     @Query("""
-            SELECT r FROM Recruitment r
-            WHERE r.publisher.id = :publisherId
+            select r from Recruitment r
+            where r.publisher.id = :publisherId
             """)
     Optional<Recruitment> findByPublisher(@Param("publisherId") Long publisherId);
 
     @Query("""
-            SELECT r FROM Recruitment r
+            select r from Recruitment r
             join fetch r.publisher p
-            WHERE p.id = :publisherId
+            where p.id = :publisherId
             """)
     Optional<Recruitment> findWithPublisherByPublisher(@Param("publisherId") Long publisherId);
+
+    @Query("""
+            select r from Recruitment r
+            left join fetch r.sections
+            where r.publisher.id = :publisherId
+            """)
+    Optional<Recruitment> findWithSectionsByPublisherId(@Param("publisherId") Long publisherId);
+
+    @Query("""
+            select r from Recruitment r
+            left join fetch r.sections
+            where r.code = :code
+            """)
+    Optional<Recruitment> findWithSectionsByCode(@Param("code") String code);
 }

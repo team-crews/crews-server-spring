@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface ApplicationRepository extends JpaRepository<Application, Long>, ApplicationDslRepository {
+public interface ApplicationRepository extends JpaRepository<Application, Long> {
     @Query("""
             select count(application) from Application application
             join application.recruitment recruitment
@@ -38,4 +38,11 @@ public interface ApplicationRepository extends JpaRepository<Application, Long>,
             """)
     Optional<Application> findByApplicantIdAndRecruitmentCode(@Param("applicantId") Long applicantId,
                                                               @Param("recruitmentCode") String recruitmentCode);
+
+    @Query("""
+            select a from Application a
+            join fetch a.recruitment r
+            where r.publisher.id = :publisherId
+            """)
+    List<Application> findAllWithApplicantByPublisherId(@Param("publisherId") Long publisherId);
 }

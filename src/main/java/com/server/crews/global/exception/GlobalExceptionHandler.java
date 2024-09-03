@@ -1,5 +1,6 @@
 package com.server.crews.global.exception;
 
+import com.server.crews.global.CustomLogger;
 import java.util.Objects;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -7,12 +8,14 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
-public class ExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+    private final CustomLogger customLogger = new CustomLogger(GlobalExceptionHandler.class);
 
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException e,
@@ -31,14 +34,15 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(new ErrorDto(errorMessage));
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(CrewsException.class)
+    @ExceptionHandler(CrewsException.class)
     public ResponseEntity<ErrorDto> crewsExceptionHandler(CrewsException e) {
+        customLogger.error(e);
         return ResponseEntity.status(e.getHttpStatus()).body(new ErrorDto(e.getMessage()));
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(Throwable.class)
-    public ResponseEntity<ErrorDto> handleException(Throwable e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorDto(e.getMessage()));
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Void> handleException(Exception e) {
+        customLogger.error(e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }
