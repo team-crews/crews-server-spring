@@ -20,4 +20,7 @@
         <appender-ref ref="CONSOLE_GENERAL"/>
         <appender-ref ref="CONSOLE_ERROR"/>
     </root>
+
+    <springProperty name="AWS_ACCESS_KEY" source="cloud.aws.credentials.accessKey"/>
+    <springProperty name="AWS_SECRET_KEY" source="cloud.aws.credentials.secretKey"/>
 </configuration>
