@@ -2,7 +2,6 @@ package com.server.crews.global.exception;
 
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -37,22 +36,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(CrewsException.class)
     public ResponseEntity<ErrorDto> crewsExceptionHandler(CrewsException e) {
-        logErrorMessage(e);
+        ErrorLogger.log(e);
         return ResponseEntity.status(e.getHttpStatus()).body(new ErrorDto(e.getMessage()));
     }
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<Void> handleException(Throwable e) {
-        logErrorMessage(e);
+        ErrorLogger.log(e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
-
-    private void logErrorMessage(Throwable e) {
-        MDC.put("lineNumber", String.valueOf(e.getStackTrace()[0].getLineNumber()));
-        MDC.put("className", e.getStackTrace()[0].getClassName());
-        MDC.put("exceptionName", e.getClass().getSimpleName());
-        MDC.put("exceptionMessage", e.getMessage());
-        log.error("An error occurred");
-        MDC.clear();
     }
 }
