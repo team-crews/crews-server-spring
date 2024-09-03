@@ -20,6 +20,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -126,5 +128,11 @@ public class Recruitment {
 
     public boolean isPublishedBy(Long publisherId) {
         return this.publisher.getId().equals(publisherId);
+    }
+
+    public List<Section> getSections() {
+        List<Section> sortedSections = new ArrayList<>(sections);
+        sortedSections.sort(Comparator.comparingLong(Section::getId));
+        return sortedSections;
     }
 }
