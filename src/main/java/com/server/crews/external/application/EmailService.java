@@ -2,7 +2,6 @@ package com.server.crews.external.application;
 
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.Outcome;
-import com.server.crews.global.exception.CrewsException;
 import com.server.crews.recruitment.domain.Recruitment;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +24,7 @@ public class EmailService {
     public void send(Application application, Recruitment recruitment) {
         MimeMessagePreparator message = createMessage(application, recruitment);
 
-        try {
-            javaMailSender.send(message);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new CrewsException(e.getMessage());
-        }
+        javaMailSender.send(message);
     }
 
     private MimeMessagePreparator createMessage(Application application, Recruitment recruitment) {
