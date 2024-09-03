@@ -12,7 +12,9 @@
                 <pattern>
                     {
                     "timestamp": "%date{yyyy-MM-dd HH:mm:ss.SSSSSS}",
-                    "message": "%message"
+                    "message": "%message",
+                    "logger": "%logger",
+                    "thread": "%thread"
                     }
                 </pattern>
             </pattern>

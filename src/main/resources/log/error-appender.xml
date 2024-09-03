@@ -12,7 +12,8 @@
                 <pattern>
                     {
                     "timestamp": "%date{yyyy-MM-dd HH:mm:ss.SSSSSS}",
-                    "thread": "%thread"
+                    "thread": "%thread",
+                    "logger": "%logger"
                     }
                 </pattern>
             </pattern>
