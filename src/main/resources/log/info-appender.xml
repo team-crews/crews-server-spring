@@ -1,10 +1,18 @@
-<appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>./logs/info.log</file>
+<appender name="INFO" class="ca.pjer.logback.AwsLogsAppender">
     <filter class="ch.qos.logback.classic.filter.LevelFilter">
         <level>INFO</level>
         <onMatch>ACCEPT</onMatch>
         <onMismatch>DENY</onMismatch>
     </filter>
+    <logGroupName>/crews-server/info</logGroupName>
+    <logStreamUuidPrefix>crews-server-info-</logStreamUuidPrefix>
+    <logRegion>ap-northeast-2</logRegion>
+    <maxBatchLogEvents>50</maxBatchLogEvents>
+    <maxFlushTimeMillis>30000</maxFlushTimeMillis>
+    <maxBlockTimeMillis>5000</maxBlockTimeMillis>
+    <retentionTimeDays>7</retentionTimeDays>
+    <accessKeyId>${AWS_ACCESS_KEY}</accessKeyId>
+    <secretAccessKey>${AWS_SECRET_KEY}</secretAccessKey>
     <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
         <providers>
             <mdc/>
@@ -23,9 +31,4 @@
             <decorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
         </jsonGeneratorDecorator>
     </encoder>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-        <fileNamePattern>info-history.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
-        <maxHistory>15</maxHistory>
-        <totalSizeCap>2GB</totalSizeCap>
-    </rollingPolicy>
 </appender>
