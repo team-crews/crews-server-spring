@@ -1,12 +1,14 @@
 package com.server.crews.recruitment.application;
 
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.joining;
 
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.event.OutcomeDeterminedEvent;
 import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.repository.AdministratorRepository;
+import com.server.crews.global.CustomLogger;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
@@ -49,6 +51,7 @@ public class RecruitmentService {
     private final ApplicationRepository applicationRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final Clock clock;
+    private final CustomLogger customLogger = new CustomLogger(RecruitmentService.class);
 
     @Transactional
     public RecruitmentDetailsResponse saveRecruitment(Long publisherId, RecruitmentSaveRequest request) {
@@ -145,9 +148,15 @@ public class RecruitmentService {
     public void closeRecruitments() {
         LocalDateTime now = LocalDateTime.now(clock);
         List<Recruitment> recruitments = recruitmentRepository.findAll();
-        recruitments.stream()
+        List<Recruitment> recruitmentsToBeClosed = recruitments.stream()
                 .filter(recruitment -> recruitment.hasOnOrAfterDeadline(now))
-                .forEach(Recruitment::close);
+                .toList();
+        recruitmentsToBeClosed.forEach(Recruitment::close);
+        String closedRecruitmentIds = recruitmentsToBeClosed.stream()
+                .map(Recruitment::getId)
+                .map(String::valueOf)
+                .collect(joining(" "));
+        customLogger.info("closeRecruitments - closedRecruitmentIds: {}", closedRecruitmentIds);
     }
 
     @Transactional

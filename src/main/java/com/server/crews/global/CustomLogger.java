@@ -20,7 +20,7 @@ public class CustomLogger {
         MDC.clear();
     }
 
-    public void info(Exception e) {
-        logger.info(e.getMessage());
+    public void info(String var1, Object... var2) {
+        logger.info(var1, var2);
     }
 }
