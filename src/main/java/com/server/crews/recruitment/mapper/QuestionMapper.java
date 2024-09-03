@@ -20,6 +20,7 @@ public class QuestionMapper {
                 .necessity(narrativeQuestion.getNecessity())
                 .order(narrativeQuestion.getOrder())
                 .wordLimit(narrativeQuestion.getWordLimit())
+                .choices(List.of())
                 .build();
     }
 
