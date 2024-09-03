@@ -1,14 +1,14 @@
 package com.server.crews.global.exception;
 
+import com.server.crews.global.CustomLogger;
 import java.lang.reflect.Method;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 
-@Slf4j
 public class AsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
+    private final CustomLogger customLogger = new CustomLogger(AsyncExceptionHandler.class);
 
     @Override
     public void handleUncaughtException(Throwable e, Method method, Object... params) {
-        ErrorLogger.log(e);
+        customLogger.error((Exception) e);
     }
 }
