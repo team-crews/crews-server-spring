@@ -172,7 +172,7 @@ class ApplicationServiceTest extends ServiceTest {
         applicationService.decideOutcome(evaluationRequest, publisher.getId());
 
         // then
-        List<Application> applications = applicationRepository.findAllWithApplicantByPublisherId(
+        List<Application> applications = applicationRepository.findAllWithRecruitmentByPublisherId(
                 testRecruitment.getId());
         applications.sort(Comparator.comparingLong(Application::getId));
         assertThat(applications).hasSize(2)

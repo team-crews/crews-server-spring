@@ -64,9 +64,9 @@ public class ApplicationController {
      * 한 공고의 모든 지원서 목록을 조회한다.
      */
     @GetMapping
-    public ResponseEntity<List<ApplicationsResponse>> getAllApplicationsByRecruitment(
+    public ResponseEntity<List<ApplicationsResponse>> getAllApplicationsByPublisher(
             @AdminAuthentication LoginUser loginUser) {
-        return ResponseEntity.ok(applicationService.findAllApplicationsByRecruitment(loginUser.userId()));
+        return ResponseEntity.ok(applicationService.findAllApplicationsByPublisher(loginUser.userId()));
     }
 
     /**

@@ -108,8 +108,8 @@ public class ApplicationService {
         }
     }
 
-    public List<ApplicationsResponse> findAllApplicationsByRecruitment(Long publisherId) {
-        List<Application> applications = applicationRepository.findAllWithApplicantByPublisherId(publisherId);
+    public List<ApplicationsResponse> findAllApplicationsByPublisher(Long publisherId) {
+        List<Application> applications = applicationRepository.findAllWithRecruitmentByPublisherId(publisherId);
         return applications.stream()
                 .map(ApplicationMapper::applicationToApplicationsResponse)
                 .toList();
@@ -147,7 +147,7 @@ public class ApplicationService {
 
     @Transactional
     public void decideOutcome(EvaluationRequest request, Long publisherId) {
-        List<Application> applications = applicationRepository.findAllWithApplicantByPublisherId(publisherId);
+        List<Application> applications = applicationRepository.findAllWithRecruitmentByPublisherId(publisherId);
         Set<Long> passApplicationIds = new HashSet<>(request.passApplicationIds());
 
         applications.stream()

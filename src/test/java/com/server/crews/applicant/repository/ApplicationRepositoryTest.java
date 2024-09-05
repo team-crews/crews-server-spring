@@ -17,7 +17,7 @@ class ApplicationRepositoryTest extends RepositoryTest {
     ApplicationRepository applicationRepository;
 
     @Test
-    @DisplayName("모집 공고의 모든 [지원서 + 지원자 정보]를 조회한다.")
+    @DisplayName("모집 공고의 모든 지원서를 조회한다.")
     void findAllWithApplicantByRecruitment() {
         // given
         Administrator admin = createDefaultAdmin();
@@ -26,7 +26,7 @@ class ApplicationRepositoryTest extends RepositoryTest {
         Application application = createDefaultApplication(applicant, recruitment);
 
         // when
-        List<Application> applications = applicationRepository.findAllWithApplicantByPublisherId(admin.getId());
+        List<Application> applications = applicationRepository.findAllWithRecruitmentByPublisherId(admin.getId());
 
         // then
         assertThat(applications).hasSize(1);
