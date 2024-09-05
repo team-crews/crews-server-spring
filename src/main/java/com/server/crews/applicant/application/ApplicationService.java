@@ -29,6 +29,7 @@ import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -131,14 +132,17 @@ public class ApplicationService {
         }
     }
 
-    public ApplicationDetailsResponse findMyApplicationDetails(Long applicantId, String code) {
-        Application application = applicationRepository.findByApplicantIdAndRecruitmentCode(applicantId, code)
-                .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
-        List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
-        List<SelectiveAnswer> selectiveAnswers = selectiveAnswerRepository.findAllByApplication(application);
-        application.replaceNarrativeAnswers(narrativeAnswers);
-        application.replaceSelectiveAnswers(selectiveAnswers);
-        return ApplicationMapper.applicationToApplicationDetailsResponse(application);
+    public Optional<ApplicationDetailsResponse> findMyApplicationDetails(Long applicantId, String code) {
+        return applicationRepository.findByApplicantIdAndRecruitmentCode(applicantId, code)
+                .map(application -> {
+                    List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(
+                            application);
+                    List<SelectiveAnswer> selectiveAnswers = selectiveAnswerRepository.findAllByApplication(
+                            application);
+                    application.replaceNarrativeAnswers(narrativeAnswers);
+                    application.replaceSelectiveAnswers(selectiveAnswers);
+                    return ApplicationMapper.applicationToApplicationDetailsResponse(application);
+                });
     }
 
     @Transactional

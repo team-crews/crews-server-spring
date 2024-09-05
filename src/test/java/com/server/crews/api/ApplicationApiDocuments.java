@@ -57,6 +57,10 @@ public class ApplicationApiDocuments {
                         .queryParameters(parameterWithName("code").description("모집공고 code")));
     }
 
+    public static RestDocumentationFilter GET_MY_APPLICATION_204_DOCUMENT() {
+        return document(APPLICATION_API + "지원자 존재하지 않는 지원서 상세 조회");
+    }
+
     public static RestDocumentationFilter GET_APPLICATIONS_200_DOCUMENT() {
         return document(APPLICATION_API + "지원서 목록 조회",
                 new ResourceSnippetParametersBuilder().description("지원서 목록을 조회한다."));

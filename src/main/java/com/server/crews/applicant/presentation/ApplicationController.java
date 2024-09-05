@@ -9,6 +9,7 @@ import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.presentation.AdminAuthentication;
 import com.server.crews.auth.presentation.ApplicantAuthentication;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +54,10 @@ public class ApplicationController {
     @GetMapping("/mine")
     public ResponseEntity<ApplicationDetailsResponse> getMyApplicationDetails(
             @ApplicantAuthentication LoginUser loginUser, @RequestParam("code") String code) {
-        return ResponseEntity.ok(applicationService.findMyApplicationDetails(loginUser.userId(), code));
+        Optional<ApplicationDetailsResponse> myApplicationDetails = applicationService.findMyApplicationDetails(
+                loginUser.userId(), code);
+        return myApplicationDetails.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     /**
