@@ -134,7 +134,7 @@ public class AuthApiTest extends ApiTest {
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
                 .filter(AuthApiDocuments.REFRESH_TOKEN_200_DOCUMENT())
-                .cookie("refreshToken", refreshToken)
+                .header("Cookie", "refreshToken=" + refreshToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(adminLoginRequest)
                 .when().post("/auth/refresh")
