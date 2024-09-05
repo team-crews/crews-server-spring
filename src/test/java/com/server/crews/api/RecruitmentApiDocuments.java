@@ -66,7 +66,11 @@ public class RecruitmentApiDocuments {
 
     public static RestDocumentationFilter GET_RECRUITMENT_STATUS_200_DOCUMENT() {
         return document(RECRUITMENT_API + "모집 중 지원 상태를 조회",
-                "모집 중 지원 상태를 조회한다.");
+                "모집 중 지원 상태를 조회한다.",
+                responseFields(
+                        fieldWithPath("applicationCount").description("지원서 수"),
+                        fieldWithPath("deadline").description("모집 마감 기한"),
+                        fieldWithPath("code").description("모집 공고 코드")));
     }
 
     public static RestDocumentationFilter GET_READY_RECRUITMENT_200_DOCUMENT() {
@@ -80,7 +84,7 @@ public class RecruitmentApiDocuments {
     }
 
     public static RestDocumentationFilter GET_RECRUITMENT_BY_CODE_200_DOCUMENT() {
-        return document(RECRUITMENT_API + "모집 공고 코드 확인",
+        return document(RECRUITMENT_API + "코드로 모집 공고 조회",
                 "코드로 모집공고 상세 정보를 조회한다.",
                 queryParameters(
                         parameterWithName("code").description("모집 공고 코드")),
@@ -88,12 +92,14 @@ public class RecruitmentApiDocuments {
     }
 
     public static RestDocumentationFilter GET_RECRUITMENT_BY_CODE_400_DOCUMENT() {
-        return document(RECRUITMENT_API + "준비 중인 모집 공고 코드 확인");
+        return document(RECRUITMENT_API + "준비 중인 모집 공고를 코드로 조회");
     }
 
     public static RestDocumentationFilter GET_RECRUITMENT_PROGRESS_200_DOCUMENT() {
         return document(RECRUITMENT_API + "모집 공고 단계 조회",
-                "모집공고의 단계를 조회한다.");
+                "모집공고의 단계를 조회한다.",
+                responseFields(
+                        fieldWithPath(".recruitmentProgress").description("모집 공고 단계(Progress)")));
     }
 
     public static RestDocumentationFilter UPDATE_RECRUITMENT_DEADLINE_200_DOCUMENT() {

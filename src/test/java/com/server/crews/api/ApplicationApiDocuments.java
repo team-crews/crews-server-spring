@@ -57,7 +57,13 @@ public class ApplicationApiDocuments {
 
     public static RestDocumentationFilter GET_APPLICATIONS_200_DOCUMENT() {
         return document(APPLICATION_API + "지원서 목록 조회",
-                "지원서 목록을 조회한다.");
+                "지원서 목록을 조회한다.",
+                responseFields(
+                        fieldWithPath("[].id").description("지원서 id"),
+                        fieldWithPath("[].studentNumber").description("학번"),
+                        fieldWithPath("[].name").description("지원자 이름"),
+                        fieldWithPath("[].major").description("전공"),
+                        fieldWithPath("[].outcome").description("지원 결과 (PENDING, PASS, FAIL 중 하나)")));
     }
 
     public static RestDocumentationFilter EVALUATE_APPLICATIONS_200_DOCUMENT() {

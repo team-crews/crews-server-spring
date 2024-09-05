@@ -47,12 +47,16 @@ public class AuthApiDocuments {
         return document(AUTH_API + "토큰 재발급",
                 "access token을 재발급 받는다.",
                 requestHeaders(
-                        headerWithName("Cookie").description("리프레시 토큰")));
+                        headerWithName("Cookie").description("리프레시 토큰")),
+                responseFields(
+                        fieldWithPath(".accessToken").description("access token")));
     }
 
     public static RestDocumentationFilter LOGOUT_200_DOCUMENT() {
         return document(AUTH_API + "로그아웃",
-                "로그아웃한다.");
+                "로그아웃한다.",
+                responseHeaders(
+                        headerWithName("Set-Cookie").description("만료된 쿠키")));
     }
 
     public static RestDocumentationFilter AUTHORIZE_401_DOCUMENT() {
