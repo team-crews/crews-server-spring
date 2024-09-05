@@ -29,6 +29,7 @@ import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -107,8 +108,8 @@ public class ApplicationService {
         }
     }
 
-    public List<ApplicationsResponse> findAllApplicationsByRecruitment(Long publisherId) {
-        List<Application> applications = applicationRepository.findAllWithApplicantByPublisherId(publisherId);
+    public List<ApplicationsResponse> findAllApplicationsByPublisher(Long publisherId) {
+        List<Application> applications = applicationRepository.findAllWithRecruitmentByPublisherId(publisherId);
         return applications.stream()
                 .map(ApplicationMapper::applicationToApplicationsResponse)
                 .toList();
@@ -131,27 +132,39 @@ public class ApplicationService {
         }
     }
 
-    public ApplicationDetailsResponse findMyApplicationDetails(Long applicantId, String code) {
-        Application application = applicationRepository.findByApplicantIdAndRecruitmentCode(applicantId, code)
-                .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
-        List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
-        List<SelectiveAnswer> selectiveAnswers = selectiveAnswerRepository.findAllByApplication(application);
-        application.replaceNarrativeAnswers(narrativeAnswers);
-        application.replaceSelectiveAnswers(selectiveAnswers);
-        return ApplicationMapper.applicationToApplicationDetailsResponse(application);
+    public Optional<ApplicationDetailsResponse> findMyApplicationDetails(Long applicantId, String code) {
+        return applicationRepository.findByApplicantIdAndRecruitmentCode(applicantId, code)
+                .map(application -> {
+                    List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(
+                            application);
+                    List<SelectiveAnswer> selectiveAnswers = selectiveAnswerRepository.findAllByApplication(
+                            application);
+                    application.replaceNarrativeAnswers(narrativeAnswers);
+                    application.replaceSelectiveAnswers(selectiveAnswers);
+                    return ApplicationMapper.applicationToApplicationDetailsResponse(application);
+                });
     }
 
     @Transactional
     public void decideOutcome(EvaluationRequest request, Long publisherId) {
-        List<Application> applications = applicationRepository.findAllWithApplicantByPublisherId(publisherId);
-        Set<Long> passApplicationIds = new HashSet<>(request.passApplicationIds());
+        List<Application> applications = applicationRepository.findAllWithRecruitmentByPublisherId(publisherId);
+        applications.stream().findAny()
+                .map(Application::getRecruitment)
+                .ifPresent(this::checkRecruitmentAnnouncedProgress);
 
+        Set<Long> passApplicationIds = new HashSet<>(request.passApplicationIds());
         applications.stream()
                 .filter(application -> containedInPassList(application, passApplicationIds))
                 .forEach(Application::pass);
         applications.stream()
                 .filter(application -> !containedInPassList(application, passApplicationIds))
                 .forEach(Application::reject);
+    }
+
+    private void checkRecruitmentAnnouncedProgress(Recruitment recruitment) {
+        if (recruitment.isAnnounced()) {
+            throw new CrewsException(ErrorCode.ALREADY_ANNOUNCED);
+        }
     }
 
     private boolean containedInPassList(Application application, Set<Long> passApplicationIds) {

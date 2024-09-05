@@ -1,10 +1,11 @@
 package com.server.crews.auth.presentation;
 
 import com.server.crews.auth.application.AuthService;
+import com.server.crews.auth.application.RefreshTokenCookieGenerator;
 import com.server.crews.auth.application.RefreshTokenService;
+import com.server.crews.auth.domain.RefreshToken;
 import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.LoginUser;
-import com.server.crews.auth.dto.RefreshTokenWithValidity;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
 import com.server.crews.auth.dto.response.AdminLoginResponse;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final RefreshTokenService refreshTokenService;
     private final AuthService authService;
+    private final RefreshTokenCookieGenerator refreshTokenCookieGenerator;
 
     /**
      * [동아리 관리자] 로그인 해 토큰을 발급 받는다. 모집 공고가 존재하지 않는다면 모집 공고를 새로 생성한다.
@@ -34,9 +36,8 @@ public class AuthController {
     @PostMapping("/admin/login")
     public ResponseEntity<AdminLoginResponse> loginForAdmin(@RequestBody AdminLoginRequest request) {
         AdminLoginResponse loginResponse = authService.loginForAdmin(request);
-        RefreshTokenWithValidity refreshTokenWithValidity = refreshTokenService.createRefreshToken(Role.ADMIN,
-                loginResponse.username());
-        ResponseCookie cookie = refreshTokenWithValidity.toCookie();
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(Role.ADMIN, loginResponse.username());
+        ResponseCookie cookie = refreshTokenCookieGenerator.generateWithDefaultValidity(refreshToken.getToken());
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(loginResponse);
@@ -48,9 +49,8 @@ public class AuthController {
     @PostMapping("/applicant/login")
     public ResponseEntity<ApplicantLoginResponse> loginForApplicant(@RequestBody ApplicantLoginRequest request) {
         ApplicantLoginResponse loginResponse = authService.loginForApplicant(request);
-        RefreshTokenWithValidity refreshTokenWithValidity = refreshTokenService.createRefreshToken(Role.APPLICANT,
-                loginResponse.username());
-        ResponseCookie cookie = refreshTokenWithValidity.toCookie();
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(Role.APPLICANT, loginResponse.username());
+        ResponseCookie cookie = refreshTokenCookieGenerator.generateWithDefaultValidity(refreshToken.getToken());
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(loginResponse);
@@ -70,9 +70,7 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@AdminAuthentication @ApplicantAuthentication LoginUser loginUser) {
         refreshTokenService.delete(loginUser.userId(), loginUser.role());
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
-                .maxAge(0)
-                .build();
+        ResponseCookie cookie = refreshTokenCookieGenerator.generate(0, "");
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .build();

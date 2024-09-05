@@ -9,6 +9,7 @@ import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.presentation.AdminAuthentication;
 import com.server.crews.auth.presentation.ApplicantAuthentication;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,16 +54,19 @@ public class ApplicationController {
     @GetMapping("/mine")
     public ResponseEntity<ApplicationDetailsResponse> getMyApplicationDetails(
             @ApplicantAuthentication LoginUser loginUser, @RequestParam("code") String code) {
-        return ResponseEntity.ok(applicationService.findMyApplicationDetails(loginUser.userId(), code));
+        Optional<ApplicationDetailsResponse> myApplicationDetails = applicationService.findMyApplicationDetails(
+                loginUser.userId(), code);
+        return myApplicationDetails.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     /**
      * 한 공고의 모든 지원서 목록을 조회한다.
      */
     @GetMapping
-    public ResponseEntity<List<ApplicationsResponse>> getAllApplicationsByRecruitment(
+    public ResponseEntity<List<ApplicationsResponse>> getAllApplicationsByPublisher(
             @AdminAuthentication LoginUser loginUser) {
-        return ResponseEntity.ok(applicationService.findAllApplicationsByRecruitment(loginUser.userId()));
+        return ResponseEntity.ok(applicationService.findAllApplicationsByPublisher(loginUser.userId()));
     }
 
     /**

@@ -44,5 +44,5 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
             join fetch a.recruitment r
             where r.publisher.id = :publisherId
             """)
-    List<Application> findAllWithApplicantByPublisherId(@Param("publisherId") Long publisherId);
+    List<Application> findAllWithRecruitmentByPublisherId(@Param("publisherId") Long publisherId);
 }

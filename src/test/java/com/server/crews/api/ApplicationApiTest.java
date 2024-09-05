@@ -1,6 +1,8 @@
 package com.server.crews.api;
 
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode204;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode404;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
@@ -187,6 +189,29 @@ public class ApplicationApiTest extends ApiTest {
     }
 
     @Test
+    @DisplayName("지원자가 아직 작성하지 않은 본인의 지원서 상세 정보를 조회한다.")
+    void getMyApplicationDetailsNotExisting() {
+        // given
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(ApplicationApiDocuments.GET_MY_APPLICATION_204_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION,
+                        AuthorizationExtractor.BEARER_TYPE + applicantLoginResponse.accessToken())
+                .queryParam("code", recruitmentDetailsResponse.code())
+                .when().get("/applications/mine")
+                .then().log().all()
+                .extract();
+
+        // then
+        checkStatusCode204(response);
+    }
+
+    @Test
     @DisplayName("지원서들을 평가한다.")
     void evaluate() {
         // given
@@ -215,6 +240,41 @@ public class ApplicationApiTest extends ApiTest {
 
         // then
         checkStatusCode200(response);
+    }
+
+    @Test
+    @DisplayName("평가 완료된 모집 공고의 지원서들을 평가한다.")
+    void evaluateWhenRecruitmentIsAnnounced() {
+        // given
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        ApplicantLoginResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
+        ApplicantLoginResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
+
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
+        ApplicationDetailsResponse applicationADetailsResponse = createTestApplication(
+                applicantATokenResponse.accessToken(), applicationSaveRequest);
+        createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
+        EvaluationRequest evaluationRequest = new EvaluationRequest(List.of(applicationADetailsResponse.id()));
+
+        RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
+                .when().post("/recruitments/announcement");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(ApplicationApiDocuments.EVALUATE_APPLICATIONS_400_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(evaluationRequest)
+                .header(HttpHeaders.AUTHORIZATION,
+                        AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
+                .when().post("/applications/evaluation")
+                .then().log().all()
+                .extract();
+
+        // then
+        checkStatusCode400(response);
     }
 
     @Test
