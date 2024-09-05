@@ -148,14 +148,23 @@ public class ApplicationService {
     @Transactional
     public void decideOutcome(EvaluationRequest request, Long publisherId) {
         List<Application> applications = applicationRepository.findAllWithRecruitmentByPublisherId(publisherId);
-        Set<Long> passApplicationIds = new HashSet<>(request.passApplicationIds());
+        applications.stream().findAny()
+                .map(Application::getRecruitment)
+                .ifPresent(this::checkRecruitmentAnnouncedProgress);
 
+        Set<Long> passApplicationIds = new HashSet<>(request.passApplicationIds());
         applications.stream()
                 .filter(application -> containedInPassList(application, passApplicationIds))
                 .forEach(Application::pass);
         applications.stream()
                 .filter(application -> !containedInPassList(application, passApplicationIds))
                 .forEach(Application::reject);
+    }
+
+    private void checkRecruitmentAnnouncedProgress(Recruitment recruitment) {
+        if (recruitment.isAnnounced()) {
+            throw new CrewsException(ErrorCode.ALREADY_ANNOUNCED);
+        }
     }
 
     private boolean containedInPassList(Application application, Set<Long> passApplicationIds) {

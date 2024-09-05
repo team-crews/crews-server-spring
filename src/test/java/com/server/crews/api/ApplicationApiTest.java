@@ -2,6 +2,7 @@ package com.server.crews.api;
 
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode204;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode404;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
@@ -239,6 +240,41 @@ public class ApplicationApiTest extends ApiTest {
 
         // then
         checkStatusCode200(response);
+    }
+
+    @Test
+    @DisplayName("평가 완료된 모집 공고의 지원서들을 평가한다.")
+    void evaluateWhenRecruitmentIsAnnounced() {
+        // given
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        ApplicantLoginResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
+        ApplicantLoginResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
+
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
+        ApplicationDetailsResponse applicationADetailsResponse = createTestApplication(
+                applicantATokenResponse.accessToken(), applicationSaveRequest);
+        createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
+        EvaluationRequest evaluationRequest = new EvaluationRequest(List.of(applicationADetailsResponse.id()));
+
+        RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
+                .when().post("/recruitments/announcement");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(ApplicationApiDocuments.EVALUATE_APPLICATIONS_400_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(evaluationRequest)
+                .header(HttpHeaders.AUTHORIZATION,
+                        AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
+                .when().post("/applications/evaluation")
+                .then().log().all()
+                .extract();
+
+        // then
+        checkStatusCode400(response);
     }
 
     @Test
