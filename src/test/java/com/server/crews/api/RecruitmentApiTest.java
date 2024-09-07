@@ -3,11 +3,13 @@ package com.server.crews.api;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode204;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
+import static com.server.crews.fixture.QuestionFixture.INTRODUCTION_QUESTION;
 import static com.server.crews.fixture.QuestionFixture.STRENGTH_QUESTION;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_TITLE;
 import static com.server.crews.fixture.RecruitmentFixture.QUESTION_REQUESTS;
+import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
 import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
 import static com.server.crews.fixture.UserFixture.TEST_CLUB_NAME;
 import static com.server.crews.fixture.UserFixture.TEST_EMAIL;
@@ -97,6 +99,85 @@ public class RecruitmentApiTest extends ApiTest {
     }
 
     @Test
+    @DisplayName("모집 공고 필드의 글자수를 검증한다.")
+    void saveWithLetterNumberValidation() {
+        // given
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null,
+                "DEFAULT_TITLE_DEFAULT_TITLE_31_", DEFAULT_DESCRIPTION, List.of(), DEFAULT_DEADLINE.toString());
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.SAVE_RECRUITMENT_400_DOCUMENT_WRONG_LETTER_LENGTH())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION,
+                        AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
+                .body(recruitmentSaveRequest)
+                .when().post("/recruitments")
+                .then().log().all()
+                .extract();
+
+        // then
+        checkStatusCode400(response);
+    }
+
+    @Test
+    @DisplayName("서술형 문항의 최대 글자 수를 검증한다.")
+    void validateNarrativeQuestionWordLimit() {
+        // given
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+
+        QuestionSaveRequest questionSaveRequest = new QuestionSaveRequest(null, QuestionType.NARRATIVE.name(),
+                INTRODUCTION_QUESTION, true, 1, 1501, null, null, List.of());
+        SectionSaveRequest sectionSaveRequest = new SectionSaveRequest(null, BACKEND_SECTION_NAME, DEFAULT_DESCRIPTION,
+                List.of(questionSaveRequest));
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE,
+                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_DEADLINE.toString());
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.SAVE_RECRUITMENT_400_DOCUMENT_WRONG_NARRATIVE_QUESTION_WORD_LIMIT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION,
+                        AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
+                .body(recruitmentSaveRequest)
+                .when().post("/recruitments")
+                .then().log().all()
+                .extract();
+
+        // then
+        checkStatusCode400(response);
+    }
+
+    @Test
+    @DisplayName("선택형 문항의 최소, 최대 선택 개수를 검증한다.")
+    void validateSelectiveQuestionSelectionCount() {
+        // given
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+
+        QuestionSaveRequest questionSaveRequest = new QuestionSaveRequest(null, QuestionType.SELECTIVE.name(),
+                STRENGTH_QUESTION, true, 1, null, 11, 11, List.of());
+        SectionSaveRequest sectionSaveRequest = new SectionSaveRequest(null, BACKEND_SECTION_NAME, DEFAULT_DESCRIPTION,
+                List.of(questionSaveRequest));
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE,
+                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_DEADLINE.toString());
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.SAVE_RECRUITMENT_400_DOCUMENT_WRONG_SELECTIVE_QUESTION_SELECTION_COUNT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION,
+                        AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
+                .body(recruitmentSaveRequest)
+                .when().post("/recruitments")
+                .then().log().all()
+                .extract();
+
+        // then
+        checkStatusCode400(response);
+    }
+
+    @Test
     @DisplayName("유효하지 않은 마감일로 모집 공고를 저장한다.")
     void saveRecruitmentWithInvalidDeadline() {
         // given
@@ -111,7 +192,7 @@ public class RecruitmentApiTest extends ApiTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.SAVE_RECRUITMENT_400_DOCUMENT())
+                .filter(RecruitmentApiDocuments.SAVE_RECRUITMENT_400_DOCUMENT_INVALID_DEADLINE())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .body(recruitmentSaveRequest)

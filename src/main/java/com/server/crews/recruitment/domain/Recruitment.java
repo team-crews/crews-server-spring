@@ -18,9 +18,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import lombok.AccessLevel;
@@ -49,13 +49,15 @@ public class Recruitment {
     @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    @Column(name = "code", nullable = false)
+    @Column(name = "code", nullable = false, columnDefinition = "CHAR(36)")
     private String code;
 
-    @Column(name = "title", nullable = false)
+    @Size(max = 30, message = "모집 공고 제목은 30자 이하입니다.")
+    @Column(name = "title", nullable = false, length = 30)
     private String title;
 
-    @Column(name = "description")
+    @Size(max = 1500, message = "모집 공고 내용은 1500자 이하입니다.")
+    @Column(name = "description", length = 1500)
     private String description;
 
     @Column(name = "progress", nullable = false)

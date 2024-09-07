@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +29,8 @@ public class Choice {
     @JoinColumn(name = "selective_question_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private SelectiveQuestion selectiveQuestion;
 
-    @Column(name = "content", nullable = false)
+    @Size(max = 50, message = "선택지 내용은 50자 이하입니다.")
+    @Column(name = "content", nullable = false, length = 50)
     private String content;
 
     public Choice(Long id, String content) {

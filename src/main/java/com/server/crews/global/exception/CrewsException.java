@@ -8,15 +8,13 @@ public class CrewsException extends RuntimeException {
     private final HttpStatus httpStatus;
     private final String message;
 
-    public CrewsException(final ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.httpStatus = errorCode.getHttpStatus();
-        this.message = errorCode.getMessage();
+    public CrewsException(GeneralErrorCode generalErrorCode) {
+        this(generalErrorCode.getHttpStatus(), generalErrorCode.getMessage());
     }
 
-    public CrewsException(final String errorMessage) {
-        super(errorMessage);
-        this.httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        this.message = errorMessage;
+    public CrewsException(HttpStatus httpStatus, String message) {
+        super(message);
+        this.httpStatus = httpStatus;
+        this.message = message;
     }
 }

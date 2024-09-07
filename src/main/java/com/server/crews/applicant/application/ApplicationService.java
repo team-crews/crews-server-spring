@@ -17,7 +17,8 @@ import com.server.crews.applicant.repository.SelectiveAnswerRepository;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.global.exception.CrewsException;
-import com.server.crews.global.exception.ErrorCode;
+import com.server.crews.global.exception.GeneralErrorCode;
+import com.server.crews.global.exception.NotFoundException;
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
@@ -52,9 +53,9 @@ public class ApplicationService {
     @Transactional
     public ApplicationDetailsResponse saveApplication(Long applicantId, ApplicationSaveRequest request) {
         Recruitment recruitment = recruitmentRepository.findByCode(request.recruitmentCode())
-                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("모집 공고 코드", "모집 공고"));
         Applicant applicant = applicantRepository.findById(applicantId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CrewsException(GeneralErrorCode.USER_NOT_FOUND));
 
         validateNarrativeQuestions(request);
         validateSelectiveQuestions(request);
@@ -85,7 +86,7 @@ public class ApplicationService {
                 .collect(toSet());
         List<Choice> savedChoices = choiceRepository.findAllByIdIn(choiceIds);
         if (savedChoices.size() != choiceIds.size()) {
-            throw new CrewsException(ErrorCode.CHOICE_NOT_FOUND);
+            throw new NotFoundException("선택지 id", "선택지");
         }
     }
 
@@ -104,7 +105,7 @@ public class ApplicationService {
 
     private void validateQuestionIds(List<?> savedQuestions, Set<Long> questionIds) {
         if (savedQuestions.size() != questionIds.size()) {
-            throw new CrewsException(ErrorCode.QUESTION_NOT_FOUND);
+            throw new NotFoundException("질문 id", "질문");
         }
     }
 
@@ -117,7 +118,7 @@ public class ApplicationService {
 
     public ApplicationDetailsResponse findApplicationDetails(Long applicationId, Long publisherId) {
         Application application = applicationRepository.findByIdWithRecruitmentAndPublisher(applicationId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.APPLICATION_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("지원서 id", "지원서"));
         checkPermission(application, publisherId);
         List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
         List<SelectiveAnswer> selectiveAnswers = selectiveAnswerRepository.findAllByApplication(application);
@@ -128,7 +129,7 @@ public class ApplicationService {
 
     private void checkPermission(Application application, Long publisherId) {
         if (!application.canBeAccessedBy(publisherId)) {
-            throw new CrewsException(ErrorCode.UNAUTHORIZED_USER);
+            throw new CrewsException(GeneralErrorCode.UNAUTHORIZED_USER);
         }
     }
 
@@ -163,7 +164,7 @@ public class ApplicationService {
 
     private void checkRecruitmentAnnouncedProgress(Recruitment recruitment) {
         if (recruitment.isAnnounced()) {
-            throw new CrewsException(ErrorCode.ALREADY_ANNOUNCED);
+            throw new CrewsException(GeneralErrorCode.ALREADY_ANNOUNCED);
         }
     }
 

@@ -5,7 +5,7 @@ import static io.jsonwebtoken.SignatureAlgorithm.HS384;
 
 import com.server.crews.auth.domain.Role;
 import com.server.crews.global.exception.CrewsException;
-import com.server.crews.global.exception.ErrorCode;
+import com.server.crews.global.exception.GeneralErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -84,13 +84,13 @@ public class JwtTokenProvider {
 
     public void validateAccessToken(String token) {
         if (!validateToken(token).equals(ACCESS_TOKEN_ALGORITHM)) {
-            throw new CrewsException(ErrorCode.INVALID_ACCESS_TOKEN);
+            throw new CrewsException(GeneralErrorCode.INVALID_ACCESS_TOKEN);
         }
     }
 
     public void validateRefreshToken(String token) {
         if (!validateToken(token).equals(REFRESH_TOKEN_ALGORITHM)) {
-            throw new CrewsException(ErrorCode.INVALID_REFRESH_TOKEN);
+            throw new CrewsException(GeneralErrorCode.INVALID_REFRESH_TOKEN);
         }
     }
 
@@ -104,13 +104,13 @@ public class JwtTokenProvider {
                     .getAlgorithm();
             return SignatureAlgorithm.forName(algorithm);
         } catch (MalformedJwtException e) {
-            throw new CrewsException(ErrorCode.MALFORMED_JWT);
+            throw new CrewsException(GeneralErrorCode.MALFORMED_JWT);
         } catch (ExpiredJwtException e) {
-            throw new CrewsException(ErrorCode.EXPIRED_JWT);
+            throw new CrewsException(GeneralErrorCode.EXPIRED_JWT);
         } catch (UnsupportedJwtException e) {
-            throw new CrewsException(ErrorCode.UNSUPPORTED_JWT);
+            throw new CrewsException(GeneralErrorCode.UNSUPPORTED_JWT);
         } catch (IllegalArgumentException e) {
-            throw new CrewsException(ErrorCode.INVALID_JWT);
+            throw new CrewsException(GeneralErrorCode.INVALID_JWT);
         }
     }
 }

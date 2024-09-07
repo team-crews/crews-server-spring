@@ -12,6 +12,9 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,15 +36,18 @@ public class NarrativeQuestion {
     @JoinColumn(name = "section_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Section section;
 
-    @Column(name = "content", nullable = false)
+    @Size(max = 250, message = "질문 내용은 250자 이하입니다.")
+    @Column(name = "content", nullable = false, length = 250)
     private String content;
 
     @Column(name = "necessity", nullable = false)
     private Boolean necessity;
 
-    @Column(name = "order", nullable = false)
+    @Column(name = "order_number", nullable = false)
     private Integer order;
 
+    @NotNull(message = "글자 수 제한은 null일 수 없습니다.")
+    @Max(value = 1500, message = "글자 수 제한은 최대 1500입니다.")
     @Column(name = "word_limit", nullable = false)
     private Integer wordLimit;
 

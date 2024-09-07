@@ -11,6 +11,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,7 +35,8 @@ public class NarrativeAnswer {
     @ManyToOne(fetch = FetchType.LAZY)
     private NarrativeQuestion narrativeQuestion;
 
-    @Column(name = "content", nullable = false)
+    @Size(max = 1500, message = "서술형 답안 내용은 1500자 이하입니다.")
+    @Column(name = "content", nullable = false, length = 1500)
     private String content;
 
     public NarrativeAnswer(Long id, NarrativeQuestion narrativeQuestion, String content) {
