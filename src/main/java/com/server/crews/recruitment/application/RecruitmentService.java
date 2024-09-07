@@ -22,10 +22,11 @@ import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentProgressResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
-import com.server.crews.recruitment.mapper.RecruitmentMapper;
 import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
+import com.server.crews.recruitment.util.QuestionSorter;
+import com.server.crews.recruitment.util.RecruitmentMapper;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -62,8 +63,10 @@ public class RecruitmentService {
         Recruitment recruitment = RecruitmentMapper.recruitmentSaveRequestToRecruitment(request, code, publisher);
         validateDeadline(recruitment.getDeadline());
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
-        savedRecruitment.sortQuestions();
-        return RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(savedRecruitment);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(
+                savedRecruitment);
+        QuestionSorter.sort(recruitmentDetailsResponse);
+        return recruitmentDetailsResponse;
     }
 
     private void validateDeadline(LocalDateTime deadline) {
@@ -121,8 +124,10 @@ public class RecruitmentService {
             List<SelectiveQuestion> selectives = selectiveQuestionsBySection.getOrDefault(section, List.of());
             section.replaceQuestions(narratives, selectives);
         });
-        recruitment.sortQuestions();
-        return RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(recruitment);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(
+                recruitment);
+        QuestionSorter.sort(recruitmentDetailsResponse);
+        return recruitmentDetailsResponse;
     }
 
     public RecruitmentProgressResponse findRecruitmentProgress(Long publisherId) {

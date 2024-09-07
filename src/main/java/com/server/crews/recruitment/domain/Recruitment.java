@@ -124,10 +124,6 @@ public class Recruitment {
         return other.isAfter(deadline) || other.equals(deadline);
     }
 
-    public void sortQuestions() {
-        this.sections.forEach(Section::sortQuestions);
-    }
-
     public boolean isPublishedBy(Long publisherId) {
         return this.publisher.getId().equals(publisherId);
     }
