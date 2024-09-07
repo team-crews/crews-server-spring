@@ -49,7 +49,8 @@ public class AuthApiDocuments {
                 requestHeaders(
                         headerWithName("Cookie").description("리프레시 토큰")),
                 responseFields(
-                        fieldWithPath(".accessToken").description("access token")));
+                        fieldWithPath(".accessToken").description("access token"),
+                        fieldWithPath(".username").description("동아리 관리자라면 동아리 이름, 지원자라면 이메일")));
     }
 
     public static RestDocumentationFilter LOGOUT_200_DOCUMENT() {

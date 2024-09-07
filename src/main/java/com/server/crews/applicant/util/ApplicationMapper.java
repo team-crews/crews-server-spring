@@ -1,4 +1,4 @@
-package com.server.crews.applicant.mapper;
+package com.server.crews.applicant.util;
 
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;

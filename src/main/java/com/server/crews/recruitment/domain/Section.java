@@ -15,7 +15,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -66,10 +65,5 @@ public class Section {
 
     public void updateRecruitment(Recruitment recruitment) {
         this.recruitment = recruitment;
-    }
-
-    public void sortQuestions() {
-        this.narrativeQuestions.sort(Comparator.comparingInt(NarrativeQuestion::getOrder));
-        this.selectiveQuestions.sort(Comparator.comparingInt(SelectiveQuestion::getOrder));
     }
 }

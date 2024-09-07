@@ -1,4 +1,4 @@
-package com.server.crews.recruitment.mapper;
+package com.server.crews.recruitment.util;
 
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Section;

@@ -19,8 +19,7 @@ import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.AnswerResponse;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
-import com.server.crews.auth.dto.response.AdminLoginResponse;
-import com.server.crews.auth.dto.response.ApplicantLoginResponse;
+import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
@@ -40,15 +39,15 @@ public class ApplicationApiTest extends ApiTest {
     @DisplayName("지원자가 로그인하여 지원서를 저장한다.")
     void saveApplication() {
         // given
-        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
+        TokenResponse applicantTokenResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
         List<AnswerSaveRequest> firstAnswerSaveRequests = List.of(
                 new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 2L, DEFAULT_NARRATIVE_ANSWER, null),
                 new AnswerSaveRequest(null, QuestionType.SELECTIVE.name(), 1L, null, 2L));
         ApplicationSaveRequest applicationCreateRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
                 DEFAULT_MAJOR, DEFAULT_NAME, firstAnswerSaveRequests, recruitmentDetailsResponse.code());
-        ApplicationDetailsResponse testApplication = createTestApplication(applicantLoginResponse.accessToken(),
+        ApplicationDetailsResponse testApplication = createTestApplication(applicantTokenResponse.accessToken(),
                 applicationCreateRequest);
 
         List<AnswerSaveRequest> secondAnswerSaveRequests = List.of(
@@ -64,7 +63,7 @@ public class ApplicationApiTest extends ApiTest {
                 .filter(ApplicationApiDocuments.SAVE_APPLICATION_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION,
-                        AuthorizationExtractor.BEARER_TYPE + applicantLoginResponse.accessToken())
+                        AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
                 .body(applicationUpdateRequest)
                 .when().post("/applications")
                 .then().log().all()
@@ -90,9 +89,9 @@ public class ApplicationApiTest extends ApiTest {
     @DisplayName("존재하지 않는 질문에 대해 답변을 저장한다.")
     void saveApplicationWithNotExistingQuestion() {
         // given
-        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
+        TokenResponse applicantTokenResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
         List<AnswerSaveRequest> answerSaveRequests = List.of(
                 new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 10L, DEFAULT_NARRATIVE_ANSWER, null));
         ApplicationSaveRequest applicationSaveRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
@@ -103,7 +102,7 @@ public class ApplicationApiTest extends ApiTest {
                 .filter(ApplicationApiDocuments.SAVE_APPLICATION_404_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION,
-                        AuthorizationExtractor.BEARER_TYPE + applicantLoginResponse.accessToken())
+                        AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
                 .body(applicationSaveRequest)
                 .when().post("/applications")
                 .then().log().all()
@@ -117,12 +116,12 @@ public class ApplicationApiTest extends ApiTest {
     @DisplayName("동아리 관리자가 지원서 상세 정보를 조회한다.")
     void getApplicationDetails() {
         // given
-        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
+        TokenResponse applicantTokenResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
 
         ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
-        ApplicationDetailsResponse testApplication = createTestApplication(applicantLoginResponse.accessToken(),
+        ApplicationDetailsResponse testApplication = createTestApplication(applicantTokenResponse.accessToken(),
                 applicationSaveRequest);
 
         // when
@@ -155,19 +154,19 @@ public class ApplicationApiTest extends ApiTest {
     @DisplayName("지원자가 본인의 지원서 상세 정보를 조회한다.")
     void getMyApplicationDetails() {
         // given
-        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
+        TokenResponse applicantTokenResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
 
         ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
-        createTestApplication(applicantLoginResponse.accessToken(), applicationSaveRequest);
+        createTestApplication(applicantTokenResponse.accessToken(), applicationSaveRequest);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
                 .filter(ApplicationApiDocuments.GET_MY_APPLICATION_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION,
-                        AuthorizationExtractor.BEARER_TYPE + applicantLoginResponse.accessToken())
+                        AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
                 .queryParam("code", recruitmentDetailsResponse.code())
                 .when().get("/applications/mine")
                 .then().log().all()
@@ -192,16 +191,16 @@ public class ApplicationApiTest extends ApiTest {
     @DisplayName("지원자가 아직 작성하지 않은 본인의 지원서 상세 정보를 조회한다.")
     void getMyApplicationDetailsNotExisting() {
         // given
-        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
+        TokenResponse applicantTokenResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
                 .filter(ApplicationApiDocuments.GET_MY_APPLICATION_204_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION,
-                        AuthorizationExtractor.BEARER_TYPE + applicantLoginResponse.accessToken())
+                        AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
                 .queryParam("code", recruitmentDetailsResponse.code())
                 .when().get("/applications/mine")
                 .then().log().all()
@@ -215,10 +214,10 @@ public class ApplicationApiTest extends ApiTest {
     @DisplayName("지원서들을 평가한다.")
     void evaluate() {
         // given
-        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
-        ApplicantLoginResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
+        TokenResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
+        TokenResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 
         ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
         ApplicationDetailsResponse applicationADetailsResponse = createTestApplication(
@@ -246,10 +245,10 @@ public class ApplicationApiTest extends ApiTest {
     @DisplayName("평가 완료된 모집 공고의 지원서들을 평가한다.")
     void evaluateWhenRecruitmentIsAnnounced() {
         // given
-        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
-        ApplicantLoginResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
+        TokenResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
+        TokenResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 
         ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
         ApplicationDetailsResponse applicationADetailsResponse = createTestApplication(
@@ -259,7 +258,8 @@ public class ApplicationApiTest extends ApiTest {
 
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
+                .header(HttpHeaders.AUTHORIZATION,
+                        AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
                 .when().post("/recruitments/announcement");
 
         // when
@@ -281,10 +281,10 @@ public class ApplicationApiTest extends ApiTest {
     @DisplayName("한 공고의 모든 지원서 목록을 조회한다.")
     void getAllApplicationsByRecruitment() {
         // given
-        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
-        ApplicantLoginResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
+        TokenResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
+        TokenResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 
         ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
         createTestApplication(applicantATokenResponse.accessToken(), applicationSaveRequest);
