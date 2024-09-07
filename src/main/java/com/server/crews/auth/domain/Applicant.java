@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,10 +25,11 @@ public class Applicant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Size(max = 30, message = "이메일은 30자 이하입니다.")
+    @Column(name = "email", nullable = false, unique = true, length = 30)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = false, length = 100)
     private String password;
 
     public Applicant(String email, String password) {
