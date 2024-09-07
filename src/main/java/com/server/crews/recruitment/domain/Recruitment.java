@@ -49,7 +49,7 @@ public class Recruitment {
     @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    @Column(name = "code", nullable = false, length = 36)
+    @Column(name = "code", nullable = false, columnDefinition = "CHAR(36)")
     private String code;
 
     @Size(max = 30, message = "모집 공고 제목은 30자 이하입니다.")
