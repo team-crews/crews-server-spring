@@ -8,9 +8,7 @@ import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
-import com.server.crews.auth.dto.response.AdminLoginResponse;
-import com.server.crews.auth.dto.response.ApplicantLoginResponse;
-import com.server.crews.auth.dto.response.TokenRefreshResponse;
+import com.server.crews.auth.dto.response.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,33 +32,33 @@ public class AuthController {
      * [동아리 관리자] 로그인 해 토큰을 발급 받는다. 모집 공고가 존재하지 않는다면 모집 공고를 새로 생성한다.
      */
     @PostMapping("/admin/login")
-    public ResponseEntity<AdminLoginResponse> loginForAdmin(@RequestBody AdminLoginRequest request) {
-        AdminLoginResponse loginResponse = authService.loginForAdmin(request);
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(Role.ADMIN, loginResponse.username());
+    public ResponseEntity<TokenResponse> loginForAdmin(@RequestBody AdminLoginRequest request) {
+        TokenResponse tokenResponse = authService.loginForAdmin(request);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(Role.ADMIN, tokenResponse.username());
         ResponseCookie cookie = refreshTokenCookieGenerator.generateWithDefaultValidity(refreshToken.getToken());
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(loginResponse);
+                .body(tokenResponse);
     }
 
     /**
      * [지원자] 로그인 해 토큰을 발급 받는다.
      */
     @PostMapping("/applicant/login")
-    public ResponseEntity<ApplicantLoginResponse> loginForApplicant(@RequestBody ApplicantLoginRequest request) {
-        ApplicantLoginResponse loginResponse = authService.loginForApplicant(request);
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(Role.APPLICANT, loginResponse.username());
+    public ResponseEntity<TokenResponse> loginForApplicant(@RequestBody ApplicantLoginRequest request) {
+        TokenResponse tokenResponse = authService.loginForApplicant(request);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(Role.APPLICANT, tokenResponse.username());
         ResponseCookie cookie = refreshTokenCookieGenerator.generateWithDefaultValidity(refreshToken.getToken());
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(loginResponse);
+                .body(tokenResponse);
     }
 
     /**
      * access token을 재발급 받는다.
      */
     @PostMapping("/refresh")
-    public ResponseEntity<TokenRefreshResponse> renew(@CookieValue("refreshToken") String refreshToken) {
+    public ResponseEntity<TokenResponse> renew(@CookieValue("refreshToken") String refreshToken) {
         return ResponseEntity.ok(refreshTokenService.renew(refreshToken));
     }
 

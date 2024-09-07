@@ -10,8 +10,7 @@ import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
-import com.server.crews.auth.dto.response.AdminLoginResponse;
-import com.server.crews.auth.dto.response.ApplicantLoginResponse;
+import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.environ.service.ServiceTest;
@@ -42,13 +41,13 @@ class AuthServiceTest extends ServiceTest {
         AdminLoginRequest request = new AdminLoginRequest(clubName, password);
 
         // when
-        AdminLoginResponse adminLoginResponse = authService.loginForAdmin(request);
+        TokenResponse tokenResponse = authService.loginForAdmin(request);
 
         // then
-        Optional<Administrator> createdAdmin = administratorRepository.findByClubName(adminLoginResponse.username());
+        Optional<Administrator> createdAdmin = administratorRepository.findByClubName(tokenResponse.username());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdAdmin).isNotEmpty();
-            softAssertions.assertThat(adminLoginResponse.accessToken()).isNotNull();
+            softAssertions.assertThat(tokenResponse.accessToken()).isNotNull();
         });
     }
 
@@ -60,13 +59,13 @@ class AuthServiceTest extends ServiceTest {
         AdminLoginRequest request = new AdminLoginRequest(administrator.getClubName(), TEST_PASSWORD);
 
         // when
-        AdminLoginResponse adminLoginResponse = authService.loginForAdmin(request);
+        TokenResponse tokenResponse = authService.loginForAdmin(request);
 
         // then
-        Optional<Administrator> createdAdmin = administratorRepository.findByClubName(adminLoginResponse.username());
+        Optional<Administrator> createdAdmin = administratorRepository.findByClubName(tokenResponse.username());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdAdmin).isNotEmpty();
-            softAssertions.assertThat(adminLoginResponse.accessToken()).isNotNull();
+            softAssertions.assertThat(tokenResponse.accessToken()).isNotNull();
         });
     }
 
@@ -79,13 +78,13 @@ class AuthServiceTest extends ServiceTest {
         ApplicantLoginRequest request = new ApplicantLoginRequest(email, password);
 
         // when
-        ApplicantLoginResponse applicantLoginResponse = authService.loginForApplicant(request);
+        TokenResponse tokenResponse = authService.loginForApplicant(request);
 
         // then
-        Optional<Applicant> createdApplicant = applicantRepository.findByEmail(applicantLoginResponse.username());
+        Optional<Applicant> createdApplicant = applicantRepository.findByEmail(tokenResponse.username());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdApplicant).isNotEmpty();
-            softAssertions.assertThat(applicantLoginResponse.accessToken()).isNotNull();
+            softAssertions.assertThat(tokenResponse.accessToken()).isNotNull();
         });
     }
 
@@ -97,13 +96,13 @@ class AuthServiceTest extends ServiceTest {
         ApplicantLoginRequest request = new ApplicantLoginRequest(applicant.getEmail(), TEST_PASSWORD);
 
         // when
-        ApplicantLoginResponse applicantLoginResponse = authService.loginForApplicant(request);
+        TokenResponse tokenResponse = authService.loginForApplicant(request);
 
         // then
-        Optional<Applicant> createdApplicant = applicantRepository.findByEmail(applicantLoginResponse.username());
+        Optional<Applicant> createdApplicant = applicantRepository.findByEmail(tokenResponse.username());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdApplicant).isNotEmpty();
-            softAssertions.assertThat(applicantLoginResponse.accessToken()).isNotNull();
+            softAssertions.assertThat(tokenResponse.accessToken()).isNotNull();
         });
     }
 

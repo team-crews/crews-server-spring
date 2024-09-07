@@ -6,8 +6,7 @@ import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
-import com.server.crews.auth.dto.response.AdminLoginResponse;
-import com.server.crews.auth.dto.response.ApplicantLoginResponse;
+import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.global.exception.CrewsException;
@@ -26,7 +25,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public AdminLoginResponse loginForAdmin(AdminLoginRequest request) {
+    public TokenResponse loginForAdmin(AdminLoginRequest request) {
         String clubName = request.clubName();
         String password = request.password();
 
@@ -38,7 +37,7 @@ public class AuthService {
                 .orElseGet(() -> createAdmin(clubName, password));
 
         String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, clubName);
-        return new AdminLoginResponse(administrator.getClubName(), accessToken);
+        return new TokenResponse(administrator.getClubName(), accessToken);
     }
 
     private Administrator createAdmin(String clubName, String password) {
@@ -48,7 +47,7 @@ public class AuthService {
     }
 
     @Transactional
-    public ApplicantLoginResponse loginForApplicant(ApplicantLoginRequest request) {
+    public TokenResponse loginForApplicant(ApplicantLoginRequest request) {
         String email = request.email();
         String password = request.password();
 
@@ -60,7 +59,7 @@ public class AuthService {
                 .orElseGet(() -> createApplicant(email, password));
 
         String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, email);
-        return new ApplicantLoginResponse(applicant.getEmail(), accessToken);
+        return new TokenResponse(applicant.getEmail(), accessToken);
     }
 
     private Applicant createApplicant(String email, String password) {

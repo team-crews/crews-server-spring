@@ -48,7 +48,8 @@ class SelectiveQuestionRepositoryTest extends RepositoryTest {
         Recruitment recruitment = createDefaultRecruitment(publisher);
         List<Section> sections = recruitment.getSections();
 
-        SelectiveQuestion selectiveQuestion = new SelectiveQuestion(null, CHOICES(), STRENGTH_QUESTION, true, 1, 11, 11);
+        SelectiveQuestion selectiveQuestion = new SelectiveQuestion(null, CHOICES(), STRENGTH_QUESTION, true, 1, 11,
+                11);
         selectiveQuestion.updateSection(sections.get(0));
 
         // when & then

@@ -9,8 +9,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
-import com.server.crews.auth.dto.response.AdminLoginResponse;
-import com.server.crews.auth.dto.response.ApplicantLoginResponse;
+import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
@@ -41,11 +40,11 @@ public class AuthApiTest extends ApiTest {
                 .extract();
 
         // then
-        AdminLoginResponse adminLoginResponse = response.as(AdminLoginResponse.class);
+        TokenResponse tokenResponse = response.as(TokenResponse.class);
         Map<String, String> cookies = response.cookies();
         assertSoftly(softAssertions -> {
             checkStatusCode200(response, softAssertions);
-            softAssertions.assertThat(adminLoginResponse.accessToken()).isNotEmpty();
+            softAssertions.assertThat(tokenResponse.accessToken()).isNotEmpty();
             softAssertions.assertThat(cookies.get("refreshToken")).isNotNull();
         });
     }
@@ -66,11 +65,11 @@ public class AuthApiTest extends ApiTest {
                 .extract();
 
         // then
-        ApplicantLoginResponse applicantLoginResponse = response.as(ApplicantLoginResponse.class);
+        TokenResponse applicantTokenResponse = response.as(TokenResponse.class);
         Map<String, String> cookies = response.cookies();
         assertSoftly(softAssertions -> {
             checkStatusCode200(response, softAssertions);
-            softAssertions.assertThat(applicantLoginResponse.accessToken()).isNotEmpty();
+            softAssertions.assertThat(applicantTokenResponse.accessToken()).isNotEmpty();
             softAssertions.assertThat(cookies.get("refreshToken")).isNotNull();
         });
     }
@@ -99,16 +98,16 @@ public class AuthApiTest extends ApiTest {
     @DisplayName("[지원자] 지원자 권한으로 지원자 목록을 조회한다.")
     void authenticateAdminWithApplicantToken() {
         // given
-        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
-        ApplicantLoginResponse applicantLoginResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
+        TokenResponse applicantTokenResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
                 .filter(AuthApiDocuments.AUTHORIZE_401_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION,
-                        AuthorizationExtractor.BEARER_TYPE + applicantLoginResponse.accessToken())
+                        AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
                 .when().get("/applications?recruitment-id=" + recruitmentDetailsResponse.id())
                 .then().log().all()
                 .extract();
@@ -142,10 +141,10 @@ public class AuthApiTest extends ApiTest {
                 .extract();
 
         // then
-        AdminLoginResponse adminLoginResponse = response.as(AdminLoginResponse.class);
+        TokenResponse tokenResponse = response.as(TokenResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode200(response);
-            softAssertions.assertThat(adminLoginResponse.accessToken()).isNotNull();
+            softAssertions.assertThat(tokenResponse.accessToken()).isNotNull();
         });
     }
 
@@ -153,14 +152,14 @@ public class AuthApiTest extends ApiTest {
     @DisplayName("로그아웃한다.")
     void logout() {
         // given
-        AdminLoginResponse adminLoginResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        TokenResponse tokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
                 .filter(AuthApiDocuments.LOGOUT_200_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION,
-                        AuthorizationExtractor.BEARER_TYPE + adminLoginResponse.accessToken())
+                        AuthorizationExtractor.BEARER_TYPE + tokenResponse.accessToken())
                 .when().post("/auth/logout")
                 .then().log().all()
                 .extract();

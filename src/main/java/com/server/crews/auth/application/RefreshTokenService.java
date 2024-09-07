@@ -4,7 +4,7 @@ import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.auth.domain.RefreshToken;
 import com.server.crews.auth.domain.Role;
-import com.server.crews.auth.dto.response.TokenRefreshResponse;
+import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.auth.repository.RefreshTokenRepository;
@@ -30,7 +30,7 @@ public class RefreshTokenService {
         return refreshTokenRepository.save(new RefreshToken(username, refreshToken));
     }
 
-    public TokenRefreshResponse renew(String refreshToken) {
+    public TokenResponse renew(String refreshToken) {
         jwtTokenProvider.validateRefreshToken(refreshToken);
         String username = jwtTokenProvider.getPayload(refreshToken);
         RefreshToken savedRefreshToken = refreshTokenRepository.findByUsername(username)
@@ -41,7 +41,7 @@ public class RefreshTokenService {
 
         Role role = jwtTokenProvider.getRole(refreshToken);
         String accessToken = jwtTokenProvider.createAccessToken(role, username);
-        return new TokenRefreshResponse(accessToken);
+        return new TokenResponse(username, accessToken);
     }
 
     public void delete(Long userId, Role role) {
