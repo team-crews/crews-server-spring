@@ -97,6 +97,28 @@ public class RecruitmentApiTest extends ApiTest {
     }
 
     @Test
+    @DisplayName("모집 공고 필드의 글자수를 검증한다.")
+    void saveWithLetterNumberValidation(){
+        // given
+        AdminLoginResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null,"DEFAULT_TITLE_DEFAULT_TITLE_31_",
+                DEFAULT_DESCRIPTION, List.of(), DEFAULT_DEADLINE.toString());
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.SAVE_RECRUITMENT_400_DOCUMENT_WRONG_LETTER_LENGTH())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminTokenResponse.accessToken())
+                .body(recruitmentSaveRequest)
+                .when().post("/recruitments")
+                .then().log().all()
+                .extract();
+
+        // then
+        checkStatusCode400(response);
+    }
+
+    @Test
     @DisplayName("유효하지 않은 마감일로 모집 공고를 저장한다.")
     void saveRecruitmentWithInvalidDeadline() {
         // given
@@ -111,7 +133,7 @@ public class RecruitmentApiTest extends ApiTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.SAVE_RECRUITMENT_400_DOCUMENT())
+                .filter(RecruitmentApiDocuments.SAVE_RECRUITMENT_400_DOCUMENT_INVALID_DEADLINE())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .body(recruitmentSaveRequest)

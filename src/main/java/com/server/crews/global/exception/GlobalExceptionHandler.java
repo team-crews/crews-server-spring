@@ -1,7 +1,10 @@
 package com.server.crews.global.exception;
 
 import com.server.crews.global.CustomLogger;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -35,9 +38,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(CrewsException.class)
-    public ResponseEntity<ErrorDto> crewsExceptionHandler(CrewsException e) {
+    public ResponseEntity<ErrorDto> handelCrewsException(CrewsException e) {
         customLogger.error(e);
         return ResponseEntity.status(e.getHttpStatus()).body(new ErrorDto(e.getMessage()));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorDto> handleConstraintViolationException(ConstraintViolationException e) {
+        customLogger.error(e);
+        String errorMessage = e.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.joining(", "));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorDto(errorMessage));
     }
 
     @ExceptionHandler(Exception.class)

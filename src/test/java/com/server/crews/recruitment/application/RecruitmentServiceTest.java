@@ -59,7 +59,7 @@ class RecruitmentServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("지원서 양식을 최초로 저장한다.")
-    void createRecruitment() {
+    void saveRecruitment() {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
 

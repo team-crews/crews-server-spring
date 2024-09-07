@@ -45,7 +45,11 @@ public class RecruitmentApiDocuments {
                 recruitmentDetailsResponseFields());
     }
 
-    public static RestDocumentationFilter SAVE_RECRUITMENT_400_DOCUMENT() {
+    public static RestDocumentationFilter SAVE_RECRUITMENT_400_DOCUMENT_WRONG_LETTER_LENGTH() {
+        return document(RECRUITMENT_API + "모집 공고 저장 글자수 검증");
+    }
+
+    public static RestDocumentationFilter SAVE_RECRUITMENT_400_DOCUMENT_INVALID_DEADLINE() {
         return document(RECRUITMENT_API + "잘못된 마감일의 모집 공고 저장",
                 requestFields(
                         fieldWithPath(".id").description("모집 공고 id"),
