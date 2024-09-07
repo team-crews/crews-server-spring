@@ -43,7 +43,7 @@ public class NarrativeQuestion {
     @Column(name = "necessity", nullable = false)
     private Boolean necessity;
 
-    @Column(name = "order", nullable = false)
+    @Column(name = "order_number", nullable = false)
     private Integer order;
 
     @NotNull(message = "글자 수 제한은 null일 수 없습니다.")

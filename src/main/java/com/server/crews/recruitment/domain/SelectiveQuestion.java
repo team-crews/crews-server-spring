@@ -51,7 +51,7 @@ public class SelectiveQuestion {
     @Column(name = "necessity", nullable = false)
     private Boolean necessity;
 
-    @Column(name = "order", nullable = false)
+    @Column(name = "order_number", nullable = false)
     private Integer order;
 
     @NotNull(message = "최소 선택 개수는 null일 수 없습니다.")
