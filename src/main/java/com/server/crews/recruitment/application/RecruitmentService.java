@@ -11,6 +11,7 @@ import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.global.CustomLogger;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.ErrorCode;
+import com.server.crews.global.exception.NotFoundException;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.RecruitmentProgress;
@@ -78,7 +79,7 @@ public class RecruitmentService {
     @Transactional
     public void startRecruiting(Long publisherId) {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("동아리 관리자 id", "모집 공고"));
         if (recruitment.isStarted()) {
             throw new CrewsException(ErrorCode.RECRUITMENT_ALREADY_STARTED);
         }
@@ -87,7 +88,7 @@ public class RecruitmentService {
 
     public RecruitmentStateInProgressResponse findRecruitmentStateInProgress(Long publisherId) {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("동아리 관리자 id", "모집 공고"));
         int applicationCount = applicationRepository.countAllByRecruitment(recruitment);
         return new RecruitmentStateInProgressResponse(applicationCount, recruitment.getDeadline(),
                 recruitment.getCode());
@@ -100,7 +101,7 @@ public class RecruitmentService {
 
     public RecruitmentDetailsResponse findRecruitmentDetailsByCode(String code) {
         Recruitment recruitment = recruitmentRepository.findWithSectionsByCode(code)
-                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("모집 공고 코드", "모집 공고"));
         if (!recruitment.isStarted()) {
             throw new CrewsException(ErrorCode.RECRUITMENT_NOT_STARTED);
         }
@@ -134,7 +135,7 @@ public class RecruitmentService {
     @Transactional
     public void updateDeadline(Long publisherId, DeadlineUpdateRequest request) {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("동아리 관리자 id", "모집 공고"));
 
         LocalDateTime modifiedDeadline = LocalDateTime.parse(request.deadline());
         if (!recruitment.hasOnOrAfterDeadline(modifiedDeadline) || !recruitment.isInProgress()) {
@@ -160,9 +161,9 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public void announceRecruitmentOutcome(Long adminId) {
-        Recruitment recruitment = recruitmentRepository.findWithPublisherByPublisher(adminId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.RECRUITMENT_NOT_FOUND));
+    public void announceRecruitmentOutcome(Long publisherId) {
+        Recruitment recruitment = recruitmentRepository.findWithPublisherByPublisher(publisherId)
+                .orElseThrow(() -> new NotFoundException("동아리 관리자 id", "모집 공고"));
         if (recruitment.isAnnounced()) {
             throw new CrewsException(ErrorCode.ALREADY_ANNOUNCED);
         }
