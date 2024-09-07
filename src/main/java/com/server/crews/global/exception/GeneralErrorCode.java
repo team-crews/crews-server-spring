@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum ErrorCode {
+public enum GeneralErrorCode {
     DUPLICATE_SECRET_CODE(HttpStatus.BAD_REQUEST, "중복된 코드입니다."),
     NO_PARAMETER(HttpStatus.BAD_REQUEST, "%s 파라미터가 없습니다."),
     INVALID_EMAIL_PATTERN(HttpStatus.BAD_REQUEST, "유효하지 않은 이메일 형식입니다."),

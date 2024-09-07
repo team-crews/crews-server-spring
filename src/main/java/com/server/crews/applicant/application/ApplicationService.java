@@ -17,7 +17,7 @@ import com.server.crews.applicant.repository.SelectiveAnswerRepository;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.global.exception.CrewsException;
-import com.server.crews.global.exception.ErrorCode;
+import com.server.crews.global.exception.GeneralErrorCode;
 import com.server.crews.global.exception.NotFoundException;
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
@@ -55,7 +55,7 @@ public class ApplicationService {
         Recruitment recruitment = recruitmentRepository.findByCode(request.recruitmentCode())
                 .orElseThrow(() -> new NotFoundException("모집 공고 코드", "모집 공고"));
         Applicant applicant = applicantRepository.findById(applicantId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CrewsException(GeneralErrorCode.USER_NOT_FOUND));
 
         validateNarrativeQuestions(request);
         validateSelectiveQuestions(request);
@@ -129,7 +129,7 @@ public class ApplicationService {
 
     private void checkPermission(Application application, Long publisherId) {
         if (!application.canBeAccessedBy(publisherId)) {
-            throw new CrewsException(ErrorCode.UNAUTHORIZED_USER);
+            throw new CrewsException(GeneralErrorCode.UNAUTHORIZED_USER);
         }
     }
 
@@ -164,7 +164,7 @@ public class ApplicationService {
 
     private void checkRecruitmentAnnouncedProgress(Recruitment recruitment) {
         if (recruitment.isAnnounced()) {
-            throw new CrewsException(ErrorCode.ALREADY_ANNOUNCED);
+            throw new CrewsException(GeneralErrorCode.ALREADY_ANNOUNCED);
         }
     }
 

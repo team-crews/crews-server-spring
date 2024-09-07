@@ -9,7 +9,7 @@ import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.auth.repository.RefreshTokenRepository;
 import com.server.crews.global.exception.CrewsException;
-import com.server.crews.global.exception.ErrorCode;
+import com.server.crews.global.exception.GeneralErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,9 +34,9 @@ public class RefreshTokenService {
         jwtTokenProvider.validateRefreshToken(refreshToken);
         String username = jwtTokenProvider.getPayload(refreshToken);
         RefreshToken savedRefreshToken = refreshTokenRepository.findByUsername(username)
-                .orElseThrow(() -> new CrewsException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
+                .orElseThrow(() -> new CrewsException(GeneralErrorCode.REFRESH_TOKEN_NOT_FOUND));
         if (!savedRefreshToken.isSameToken(refreshToken)) {
-            throw new CrewsException(ErrorCode.INVALID_REFRESH_TOKEN);
+            throw new CrewsException(GeneralErrorCode.INVALID_REFRESH_TOKEN);
         }
 
         Role role = jwtTokenProvider.getRole(refreshToken);
@@ -47,12 +47,12 @@ public class RefreshTokenService {
     public void delete(Long userId, Role role) {
         if (role == Role.ADMIN) {
             Administrator administrator = administratorRepository.findById(userId)
-                    .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
+                    .orElseThrow(() -> new CrewsException(GeneralErrorCode.USER_NOT_FOUND));
             refreshTokenRepository.deleteByUsername(administrator.getClubName());
             return;
         }
         Applicant applicant = applicantRepository.findById(userId)
-                .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CrewsException(GeneralErrorCode.USER_NOT_FOUND));
         refreshTokenRepository.deleteByUsername(applicant.getEmail());
     }
 }

@@ -1,7 +1,7 @@
 package com.server.crews.recruitment.domain;
 
 import com.server.crews.global.exception.CrewsException;
-import com.server.crews.global.exception.ErrorCode;
+import com.server.crews.global.exception.GeneralErrorCode;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
@@ -84,7 +84,7 @@ public class SelectiveQuestion {
             return;
         }
         if (minimumSelection > maximumSelection) {
-            throw new CrewsException(ErrorCode.INVALID_SELECTION_COUNT);
+            throw new CrewsException(GeneralErrorCode.INVALID_SELECTION_COUNT);
         }
     }
 

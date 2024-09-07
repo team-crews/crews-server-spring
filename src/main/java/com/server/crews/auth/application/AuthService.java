@@ -11,7 +11,7 @@ import com.server.crews.auth.dto.response.ApplicantLoginResponse;
 import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.global.exception.CrewsException;
-import com.server.crews.global.exception.ErrorCode;
+import com.server.crews.global.exception.GeneralErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -71,7 +71,7 @@ public class AuthService {
 
     private void validatePassword(String password, String encodedPassword) {
         if (!passwordEncoder.matches(password, encodedPassword)) {
-            throw new CrewsException(ErrorCode.WRONG_PASSWORD);
+            throw new CrewsException(GeneralErrorCode.WRONG_PASSWORD);
         }
     }
 
@@ -80,14 +80,14 @@ public class AuthService {
         validateAdminAuthorization(accessToken);
         String clubName = jwtTokenProvider.getPayload(accessToken);
         Administrator administrator = administratorRepository.findByClubName(clubName)
-                .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CrewsException(GeneralErrorCode.USER_NOT_FOUND));
         return new LoginUser(administrator.getId(), Role.ADMIN);
     }
 
     private void validateAdminAuthorization(String accessToken) {
         Role role = jwtTokenProvider.getRole(accessToken);
         if (role != Role.ADMIN) {
-            throw new CrewsException(ErrorCode.UNAUTHORIZED_USER);
+            throw new CrewsException(GeneralErrorCode.UNAUTHORIZED_USER);
         }
     }
 
@@ -96,14 +96,14 @@ public class AuthService {
         validateApplicantAuthorization(accessToken);
         String email = jwtTokenProvider.getPayload(accessToken);
         Applicant applicant = applicantRepository.findByEmail(email)
-                .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CrewsException(GeneralErrorCode.USER_NOT_FOUND));
         return new LoginUser(applicant.getId(), Role.APPLICANT);
     }
 
     private void validateApplicantAuthorization(String accessToken) {
         Role role = jwtTokenProvider.getRole(accessToken);
         if (role != Role.APPLICANT) {
-            throw new CrewsException(ErrorCode.UNAUTHORIZED_USER);
+            throw new CrewsException(GeneralErrorCode.UNAUTHORIZED_USER);
         }
     }
 
@@ -113,11 +113,11 @@ public class AuthService {
         String payload = jwtTokenProvider.getPayload(accessToken);
         if (role == Role.APPLICANT) {
             Applicant applicant = applicantRepository.findByEmail(payload)
-                    .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
+                    .orElseThrow(() -> new CrewsException(GeneralErrorCode.USER_NOT_FOUND));
             return new LoginUser(applicant.getId(), Role.APPLICANT);
         }
         Administrator administrator = administratorRepository.findByClubName(payload)
-                .orElseThrow(() -> new CrewsException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CrewsException(GeneralErrorCode.USER_NOT_FOUND));
         return new LoginUser(administrator.getId(), Role.ADMIN);
     }
 }

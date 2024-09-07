@@ -1,7 +1,7 @@
 package com.server.crews.auth.domain;
 
 import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
-import static com.server.crews.global.exception.ErrorCode.INVALID_EMAIL_PATTERN;
+import static com.server.crews.global.exception.GeneralErrorCode.INVALID_EMAIL_PATTERN;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

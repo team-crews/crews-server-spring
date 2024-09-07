@@ -20,7 +20,7 @@ import com.server.crews.auth.domain.Applicant;
 import com.server.crews.environ.service.ServiceTest;
 import com.server.crews.environ.service.TestRecruitment;
 import com.server.crews.global.exception.CrewsException;
-import com.server.crews.global.exception.ErrorCode;
+import com.server.crews.global.exception.GeneralErrorCode;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
@@ -87,7 +87,7 @@ class RecruitmentServiceTest extends ServiceTest {
         // when & then
         assertThatThrownBy(() -> recruitmentService.saveRecruitment(publisher.getId(), recruitmentSaveRequest))
                 .isInstanceOf(CrewsException.class)
-                .hasMessage(ErrorCode.INVALID_DEADLINE.getMessage());
+                .hasMessage(GeneralErrorCode.INVALID_DEADLINE.getMessage());
     }
 
     @Test
@@ -201,7 +201,7 @@ class RecruitmentServiceTest extends ServiceTest {
         // when & then
         assertThatThrownBy(() -> recruitmentService.updateDeadline(publisher.getId(), request))
                 .isInstanceOf(CrewsException.class)
-                .hasMessage(ErrorCode.INVALID_MODIFIED_DEADLINE.getMessage());
+                .hasMessage(GeneralErrorCode.INVALID_MODIFIED_DEADLINE.getMessage());
     }
 
     @Test
@@ -217,7 +217,7 @@ class RecruitmentServiceTest extends ServiceTest {
         // when & then
         assertThatThrownBy(() -> recruitmentService.updateDeadline(publisher.getId(), request))
                 .isInstanceOf(CrewsException.class)
-                .hasMessage(ErrorCode.INVALID_MODIFIED_DEADLINE.getMessage());
+                .hasMessage(GeneralErrorCode.INVALID_MODIFIED_DEADLINE.getMessage());
     }
 
     @Test
@@ -262,6 +262,6 @@ class RecruitmentServiceTest extends ServiceTest {
         // when & then
         assertThatThrownBy(() -> recruitmentService.announceRecruitmentOutcome(publisher.getId()))
                 .isInstanceOf(CrewsException.class)
-                .hasMessage(ErrorCode.ALREADY_ANNOUNCED.getMessage());
+                .hasMessage(GeneralErrorCode.ALREADY_ANNOUNCED.getMessage());
     }
 }

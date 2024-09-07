@@ -8,8 +8,8 @@ public class CrewsException extends RuntimeException {
     private final HttpStatus httpStatus;
     private final String message;
 
-    public CrewsException(ErrorCode errorCode) {
-        this(errorCode.getHttpStatus(), errorCode.getMessage());
+    public CrewsException(GeneralErrorCode generalErrorCode) {
+        this(generalErrorCode.getHttpStatus(), generalErrorCode.getMessage());
     }
 
     public CrewsException(HttpStatus httpStatus, String message) {

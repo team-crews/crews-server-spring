@@ -24,8 +24,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException e,
                                                                           HttpHeaders headers, HttpStatusCode status,
                                                                           WebRequest request) {
-        return ResponseEntity.status(ErrorCode.NO_PARAMETER.getHttpStatus())
-                .body(new ErrorDto(String.format(ErrorCode.NO_PARAMETER.getMessage(), e.getParameterName())));
+        return ResponseEntity.status(GeneralErrorCode.NO_PARAMETER.getHttpStatus())
+                .body(new ErrorDto(String.format(GeneralErrorCode.NO_PARAMETER.getMessage(), e.getParameterName())));
     }
 
     @Override
