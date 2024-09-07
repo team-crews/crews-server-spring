@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -33,10 +34,12 @@ public class Section {
     @JoinColumn(name = "recruitment_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Recruitment recruitment;
 
-    @Column(name = "name", nullable = false)
+    @Size(max = 50, message = "섹션 이름은 50자 이하입니다.")
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "description")
+    @Size(max = 250, message = "섹션 설명은 250자 이하입니다.")
+    @Column(name = "description", length = 250)
     private String description;
 
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
