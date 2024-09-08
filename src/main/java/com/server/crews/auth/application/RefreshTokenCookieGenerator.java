@@ -25,6 +25,7 @@ public class RefreshTokenCookieGenerator {
                 .secure(true)
                 .path(COOKIE_PATH)
                 .maxAge(validity)
+                .sameSite("None")
                 .build();
     }
 }
