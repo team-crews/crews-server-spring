@@ -17,6 +17,8 @@ public enum GeneralErrorCode {
     INVALID_MODIFIED_DEADLINE(HttpStatus.BAD_REQUEST, "수정된 모집 마감 기한은 기존 기한 이후이며 모집 진행 중에만 수정할 수 있습니다."),
     INVALID_SELECTION_COUNT(HttpStatus.BAD_REQUEST, "선택형 문항의 최대 선택 개수는 최소 선택 개수보다 크거나 같습니다."),
 
+    RECRUITMENT_CLOSED(HttpStatus.CONFLICT, "모집이 마감되었습니다."),
+
     NO_TOKEN(HttpStatus.UNAUTHORIZED, "토큰이 존재하지 않습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "토큰 형식이 잘못 되었습니다."),
     MALFORMED_JWT(HttpStatus.UNAUTHORIZED, "잘못된 JWT 서명입니다."),

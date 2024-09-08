@@ -259,6 +259,7 @@ public class RecruitmentApiTest extends ApiTest {
         TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String adminAccessToken = adminTokenResponse.accessToken();
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminAccessToken);
+        startTestRecruiting(adminAccessToken);
         TokenResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
         TokenResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 
@@ -451,6 +452,7 @@ public class RecruitmentApiTest extends ApiTest {
         TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String adminAccessToken = adminTokenResponse.accessToken();
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminAccessToken);
+        startTestRecruiting(adminAccessToken);
         TokenResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
         TokenResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 

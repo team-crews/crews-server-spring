@@ -32,6 +32,14 @@ public class ApplicationApiDocuments {
                 applicationDetailsResponseFields());
     }
 
+    public static RestDocumentationFilter SAVE_APPLICATION_400_DOCUMENT() {
+        return document(APPLICATION_API + "모집이 시작되지 않은 모집 공고로 지원서 저장");
+    }
+
+    public static RestDocumentationFilter SAVE_APPLICATION_CLOSED_RECRUITMENT_409_DOCUMENT() {
+        return document(APPLICATION_API + "모집이 종료된 모집 공고로 지원서 저장");
+    }
+
     public static RestDocumentationFilter SAVE_APPLICATION_404_DOCUMENT() {
         return document(APPLICATION_API + "존재하지 않는 질문으로 지원서 저장");
     }

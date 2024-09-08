@@ -67,6 +67,7 @@ class ApplicationServiceTest extends ServiceTest {
         Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher)
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
+                .start()
                 .recruitment();
         Applicant applicant = JONGMEE_APPLICANT().applicant();
 

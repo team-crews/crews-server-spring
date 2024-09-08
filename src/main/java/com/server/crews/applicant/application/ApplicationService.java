@@ -10,10 +10,10 @@ import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
-import com.server.crews.applicant.util.ApplicationMapper;
 import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
+import com.server.crews.applicant.util.ApplicationMapper;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.global.exception.CrewsException;
@@ -54,6 +54,12 @@ public class ApplicationService {
     public ApplicationDetailsResponse saveApplication(Long applicantId, ApplicationSaveRequest request) {
         Recruitment recruitment = recruitmentRepository.findByCode(request.recruitmentCode())
                 .orElseThrow(() -> new NotFoundException("모집 공고 코드", "모집 공고"));
+        if (!recruitment.isStarted()) {
+            throw new CrewsException(GeneralErrorCode.RECRUITMENT_NOT_STARTED);
+        }
+        if (!recruitment.isInProgress()) {
+            throw new CrewsException(GeneralErrorCode.RECRUITMENT_CLOSED);
+        }
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new CrewsException(GeneralErrorCode.USER_NOT_FOUND));
 

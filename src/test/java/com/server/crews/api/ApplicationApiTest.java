@@ -4,6 +4,7 @@ import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode204;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode404;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode409;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NAME;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_NARRATIVE_ANSWER;
@@ -41,6 +42,7 @@ public class ApplicationApiTest extends ApiTest {
         // given
         TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        startTestRecruiting(adminTokenResponse.accessToken());
         TokenResponse applicantTokenResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
         List<AnswerSaveRequest> firstAnswerSaveRequests = List.of(
                 new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 2L, DEFAULT_NARRATIVE_ANSWER, null),
@@ -86,11 +88,64 @@ public class ApplicationApiTest extends ApiTest {
     }
 
     @Test
+    @DisplayName("지원자가 모집이 시작되지 않은 지원서를 저장한다.")
+    void saveApplicationAboutNotStartedRecruitment() {
+        // given
+        TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        TokenResponse applicantTokenResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
+        ApplicationSaveRequest applicationUpdateRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
+                DEFAULT_MAJOR, DEFAULT_NAME, List.of(), recruitmentDetailsResponse.code());
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(ApplicationApiDocuments.SAVE_APPLICATION_400_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION,
+                        AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
+                .body(applicationUpdateRequest)
+                .when().post("/applications")
+                .then().log().all()
+                .extract();
+
+        // then
+        checkStatusCode400(response);
+    }
+
+    @Test
+    @DisplayName("지원자가 모집이 시작되지 않은 지원서를 저장한다.")
+    void saveApplicationAboutClosedRecruitment() {
+        // given
+        TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        closeTestRecruiting(recruitmentDetailsResponse.id());
+
+        TokenResponse applicantTokenResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
+        ApplicationSaveRequest applicationUpdateRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
+                DEFAULT_MAJOR, DEFAULT_NAME, List.of(), recruitmentDetailsResponse.code());
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(ApplicationApiDocuments.SAVE_APPLICATION_CLOSED_RECRUITMENT_409_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION,
+                        AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
+                .body(applicationUpdateRequest)
+                .when().post("/applications")
+                .then().log().all()
+                .extract();
+
+        // then
+        checkStatusCode409(response);
+    }
+
+    @Test
     @DisplayName("존재하지 않는 질문에 대해 답변을 저장한다.")
     void saveApplicationWithNotExistingQuestion() {
         // given
         TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        startTestRecruiting(adminTokenResponse.accessToken());
         TokenResponse applicantTokenResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
         List<AnswerSaveRequest> answerSaveRequests = List.of(
                 new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 10L, DEFAULT_NARRATIVE_ANSWER, null));
@@ -118,6 +173,7 @@ public class ApplicationApiTest extends ApiTest {
         // given
         TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        startTestRecruiting(adminTokenResponse.accessToken());
         TokenResponse applicantTokenResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
 
         ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
@@ -156,6 +212,7 @@ public class ApplicationApiTest extends ApiTest {
         // given
         TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        startTestRecruiting(adminTokenResponse.accessToken());
         TokenResponse applicantTokenResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
 
         ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
@@ -216,6 +273,7 @@ public class ApplicationApiTest extends ApiTest {
         // given
         TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        startTestRecruiting(adminTokenResponse.accessToken());
         TokenResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
         TokenResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 
@@ -247,6 +305,7 @@ public class ApplicationApiTest extends ApiTest {
         // given
         TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        startTestRecruiting(adminTokenResponse.accessToken());
         TokenResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
         TokenResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 
@@ -283,6 +342,7 @@ public class ApplicationApiTest extends ApiTest {
         // given
         TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        startTestRecruiting(adminTokenResponse.accessToken());
         TokenResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
         TokenResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 

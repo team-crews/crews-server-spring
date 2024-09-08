@@ -18,9 +18,11 @@ import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.environ.DatabaseCleaner;
 import com.server.crews.external.application.EmailService;
 import com.server.crews.global.config.DatabaseInitializer;
+import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
+import com.server.crews.recruitment.repository.RecruitmentRepository;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;
@@ -53,6 +55,9 @@ public abstract class ApiTest {
 
     @MockBean
     private DatabaseInitializer databaseInitializer;
+
+    @Autowired
+    private RecruitmentRepository recruitmentRepository;
 
     protected RequestSpecification spec;
 
@@ -99,6 +104,20 @@ public abstract class ApiTest {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
         return response.as(RecruitmentDetailsResponse.class);
+    }
+
+    protected void startTestRecruiting(String adminAccessToken) {
+        RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .when().patch("/recruitments/in-progress");
+    }
+
+    protected void closeTestRecruiting(Long recruitmentId) {
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId).orElseThrow(
+                () -> new IllegalArgumentException("recruitmentId가 " + recruitmentId + "인 테스트 모집 공고를 찾을 수 없습니다."));
+        recruitment.close();
+        recruitmentRepository.save(recruitment);
     }
 
     protected TokenResponse signUpApplicant(String email, String password) {
