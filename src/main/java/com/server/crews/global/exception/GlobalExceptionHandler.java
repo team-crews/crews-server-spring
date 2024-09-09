@@ -25,7 +25,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                           HttpHeaders headers, HttpStatusCode status,
                                                                           WebRequest request) {
         return ResponseEntity.status(GeneralErrorCode.NO_PARAMETER.getHttpStatus())
-                .body(new ErrorDto(String.format(GeneralErrorCode.NO_PARAMETER.getMessage(), e.getParameterName())));
+                .body(new ErrorDto(String.format(GeneralErrorCode.NO_PARAMETER.getMessage(), e.getParameterName()),
+                        null));
     }
 
     @Override
@@ -34,13 +35,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String errorMessage = Objects.requireNonNull(e.getBindingResult().getFieldError())
                 .getDefaultMessage();
         return ResponseEntity.badRequest()
-                .body(new ErrorDto(errorMessage));
+                .body(new ErrorDto(errorMessage, null));
     }
 
     @ExceptionHandler(CrewsException.class)
     public ResponseEntity<ErrorDto> handelCrewsException(CrewsException e) {
         customLogger.error(e);
-        return ResponseEntity.status(e.getHttpStatus()).body(new ErrorDto(e.getMessage()));
+        return ResponseEntity.status(e.getHttpStatus()).body(new ErrorDto(e.getMessage(), e.getCode()));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -49,7 +50,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String errorMessage = e.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(", "));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorDto(errorMessage));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorDto(errorMessage, 2000));
     }
 
     @ExceptionHandler(Exception.class)

@@ -1,4 +1,4 @@
 package com.server.crews.global.exception;
 
-public record ErrorDto(String message) {
+public record ErrorDto(String message, Integer code) {
 }

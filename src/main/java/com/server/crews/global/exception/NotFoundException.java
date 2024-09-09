@@ -11,6 +11,6 @@ public class NotFoundException extends CrewsException {
     }
 
     public NotFoundException(String message) {
-        super(HttpStatus.NOT_FOUND, message);
+        super(HttpStatus.NOT_FOUND, message, 3000);
     }
 }
