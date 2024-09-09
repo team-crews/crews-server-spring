@@ -18,6 +18,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+    private static final int CONSTRAINT_VIOLATION_CODE = 2000;
+    private static final int NOT_FOUND_CODE = 3000;
+
     private final CustomLogger customLogger = new CustomLogger(GlobalExceptionHandler.class);
 
     @Override
@@ -44,13 +47,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(e.getHttpStatus()).body(new ErrorDto(e.getMessage(), e.getCode()));
     }
 
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorDto> handelCrewsException(NotFoundException e) {
+        customLogger.error(e);
+        return ResponseEntity.status(e.getHttpStatus()).body(new ErrorDto(e.getMessage(), NOT_FOUND_CODE));
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorDto> handleConstraintViolationException(ConstraintViolationException e) {
         customLogger.error(e);
         String errorMessage = e.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(", "));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorDto(errorMessage, 2000));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorDto(errorMessage, CONSTRAINT_VIOLATION_CODE));
     }
 
     @ExceptionHandler(Exception.class)
