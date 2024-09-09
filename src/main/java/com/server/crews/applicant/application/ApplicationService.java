@@ -17,7 +17,7 @@ import com.server.crews.applicant.util.ApplicationMapper;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.global.exception.CrewsException;
-import com.server.crews.global.exception.GeneralErrorCode;
+import com.server.crews.global.exception.CrewsErrorCode;
 import com.server.crews.global.exception.NotFoundException;
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
@@ -55,13 +55,13 @@ public class ApplicationService {
         Recruitment recruitment = recruitmentRepository.findByCode(request.recruitmentCode())
                 .orElseThrow(() -> new NotFoundException("모집 공고 코드", "모집 공고"));
         if (!recruitment.isStarted()) {
-            throw new CrewsException(GeneralErrorCode.RECRUITMENT_NOT_STARTED);
+            throw new CrewsException(CrewsErrorCode.RECRUITMENT_NOT_STARTED);
         }
         if (!recruitment.isInProgress()) {
-            throw new CrewsException(GeneralErrorCode.RECRUITMENT_CLOSED);
+            throw new CrewsException(CrewsErrorCode.RECRUITMENT_CLOSED);
         }
         Applicant applicant = applicantRepository.findById(applicantId)
-                .orElseThrow(() -> new CrewsException(GeneralErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CrewsException(CrewsErrorCode.USER_NOT_FOUND));
 
         validateNarrativeQuestions(request);
         validateSelectiveQuestions(request);
@@ -135,7 +135,7 @@ public class ApplicationService {
 
     private void checkPermission(Application application, Long publisherId) {
         if (!application.canBeAccessedBy(publisherId)) {
-            throw new CrewsException(GeneralErrorCode.UNAUTHORIZED_USER);
+            throw new CrewsException(CrewsErrorCode.UNAUTHORIZED_USER);
         }
     }
 
@@ -170,7 +170,7 @@ public class ApplicationService {
 
     private void checkRecruitmentAnnouncedProgress(Recruitment recruitment) {
         if (recruitment.isAnnounced()) {
-            throw new CrewsException(GeneralErrorCode.ALREADY_ANNOUNCED);
+            throw new CrewsException(CrewsErrorCode.ALREADY_ANNOUNCED);
         }
     }
 

@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum GeneralErrorCode {
+public enum CrewsErrorCode {
     INVALID_EMAIL_PATTERN(HttpStatus.BAD_REQUEST, "유효하지 않은 이메일 형식입니다.", 1003),
     INVALID_DEADLINE(HttpStatus.BAD_REQUEST, "모집 마감 기한은 현재 시각 이전이며 한 시간 단위입니다.", 1004),
     INVALID_MODIFIED_DEADLINE(HttpStatus.BAD_REQUEST, "수정된 모집 마감 기한은 기존 기한 이후이며 모집 진행 중에만 수정할 수 있습니다.", 1005),

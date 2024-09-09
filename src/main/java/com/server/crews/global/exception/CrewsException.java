@@ -5,11 +5,11 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public class CrewsException extends RuntimeException {
-    private final GeneralErrorCode errorCode;
+    private final CrewsErrorCode errorCode;
 
-    public CrewsException(GeneralErrorCode generalErrorCode) {
-        super(generalErrorCode.getMessage());
-        this.errorCode = generalErrorCode;
+    public CrewsException(CrewsErrorCode crewsErrorCode) {
+        super(crewsErrorCode.getMessage());
+        this.errorCode = crewsErrorCode;
     }
 
     public HttpStatus getHttpStatus() {
