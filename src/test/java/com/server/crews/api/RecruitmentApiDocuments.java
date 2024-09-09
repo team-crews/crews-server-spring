@@ -72,7 +72,7 @@ public class RecruitmentApiDocuments {
                 "모집을 시작한다.");
     }
 
-    public static RestDocumentationFilter START_RECRUITMENT_400_DOCUMENT() {
+    public static RestDocumentationFilter START_RECRUITMENT_409_DOCUMENT() {
         return document(RECRUITMENT_API + "유효하지 않은 모집 시작");
     }
 
@@ -103,7 +103,7 @@ public class RecruitmentApiDocuments {
                 recruitmentDetailsResponseFields());
     }
 
-    public static RestDocumentationFilter GET_RECRUITMENT_BY_CODE_400_DOCUMENT() {
+    public static RestDocumentationFilter GET_RECRUITMENT_BY_CODE_409_DOCUMENT() {
         return document(RECRUITMENT_API + "준비 중인 모집 공고를 코드로 조회");
     }
 

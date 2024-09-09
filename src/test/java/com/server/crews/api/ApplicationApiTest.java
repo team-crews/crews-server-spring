@@ -2,7 +2,6 @@ package com.server.crews.api;
 
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode204;
-import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode404;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode409;
 import static com.server.crews.fixture.ApplicationFixture.DEFAULT_MAJOR;
@@ -99,7 +98,7 @@ public class ApplicationApiTest extends ApiTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(ApplicationApiDocuments.SAVE_APPLICATION_400_DOCUMENT())
+                .filter(ApplicationApiDocuments.SAVE_APPLICATION_NOT_STARTED_409_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION,
                         AuthorizationExtractor.BEARER_TYPE + applicantTokenResponse.accessToken())
@@ -109,7 +108,7 @@ public class ApplicationApiTest extends ApiTest {
                 .extract();
 
         // then
-        checkStatusCode400(response);
+        checkStatusCode409(response);
     }
 
     @Test
@@ -323,7 +322,7 @@ public class ApplicationApiTest extends ApiTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(ApplicationApiDocuments.EVALUATE_APPLICATIONS_400_DOCUMENT())
+                .filter(ApplicationApiDocuments.EVALUATE_APPLICATIONS_409_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(evaluationRequest)
                 .header(HttpHeaders.AUTHORIZATION,
@@ -333,7 +332,7 @@ public class ApplicationApiTest extends ApiTest {
                 .extract();
 
         // then
-        checkStatusCode400(response);
+        checkStatusCode409(response);
     }
 
     @Test

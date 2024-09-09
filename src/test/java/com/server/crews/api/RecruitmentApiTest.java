@@ -3,6 +3,7 @@ package com.server.crews.api;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode200;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode204;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
+import static com.server.crews.api.StatusCodeChecker.checkStatusCode409;
 import static com.server.crews.fixture.QuestionFixture.INTRODUCTION_QUESTION;
 import static com.server.crews.fixture.QuestionFixture.STRENGTH_QUESTION;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
@@ -241,7 +242,7 @@ public class RecruitmentApiTest extends ApiTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.START_RECRUITMENT_400_DOCUMENT())
+                .filter(RecruitmentApiDocuments.START_RECRUITMENT_409_DOCUMENT())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
                 .when().patch("/recruitments/in-progress")
@@ -249,7 +250,7 @@ public class RecruitmentApiTest extends ApiTest {
                 .extract();
 
         // then
-        checkStatusCode400(response);
+        checkStatusCode409(response);
     }
 
     @Test
@@ -378,7 +379,7 @@ public class RecruitmentApiTest extends ApiTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
-                .filter(RecruitmentApiDocuments.GET_RECRUITMENT_BY_CODE_400_DOCUMENT())
+                .filter(RecruitmentApiDocuments.GET_RECRUITMENT_BY_CODE_409_DOCUMENT())
                 .queryParam("code", savedRecruitmentDetailsResponse.code())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
@@ -387,7 +388,7 @@ public class RecruitmentApiTest extends ApiTest {
                 .extract();
 
         // then
-        checkStatusCode400(response);
+        checkStatusCode409(response);
     }
 
     @Test
