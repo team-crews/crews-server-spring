@@ -27,9 +27,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException e,
                                                                           HttpHeaders headers, HttpStatusCode status,
                                                                           WebRequest request) {
-        return ResponseEntity.status(GeneralErrorCode.NO_PARAMETER.getHttpStatus())
-                .body(new ErrorDto(String.format(GeneralErrorCode.NO_PARAMETER.getMessage(), e.getParameterName()),
-                        null));
+        String errorMessage = String.format("%s 파라미터가 없습니다.", e.getParameterName());
+        return ResponseEntity.badRequest().body(new ErrorDto(errorMessage, null));
     }
 
     @Override
@@ -37,18 +36,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                HttpStatusCode status, WebRequest request) {
         String errorMessage = Objects.requireNonNull(e.getBindingResult().getFieldError())
                 .getDefaultMessage();
-        return ResponseEntity.badRequest()
-                .body(new ErrorDto(errorMessage, null));
+        return ResponseEntity.badRequest().body(new ErrorDto(errorMessage, null));
     }
 
     @ExceptionHandler(CrewsException.class)
-    public ResponseEntity<ErrorDto> handelCrewsException(CrewsException e) {
+    public ResponseEntity<ErrorDto> handelNotFoundException(CrewsException e) {
         customLogger.error(e);
         return ResponseEntity.status(e.getHttpStatus()).body(new ErrorDto(e.getMessage(), e.getCode()));
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorDto> handelCrewsException(NotFoundException e) {
+    public ResponseEntity<ErrorDto> handelNotFoundException(NotFoundException e) {
         customLogger.error(e);
         return ResponseEntity.status(e.getHttpStatus()).body(new ErrorDto(e.getMessage(), NOT_FOUND_CODE));
     }
