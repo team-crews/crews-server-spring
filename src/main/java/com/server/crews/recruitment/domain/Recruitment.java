@@ -91,6 +91,10 @@ public class Recruitment {
         this.deadline = deadline;
     }
 
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     public void addSections(List<Section> sections) {
         sections.forEach(section -> section.updateRecruitment(this));
         this.sections.addAll(sections);

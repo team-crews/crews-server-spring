@@ -28,14 +28,14 @@ public class RecruitmentMapper {
     }
 
     public static Recruitment recruitmentSaveRequestToRecruitment(RecruitmentSaveRequest recruitmentSaveRequest,
-                                                                  String code, Administrator publisher) {
+                                                                  Administrator publisher) {
         List<Section> sections = recruitmentSaveRequest.sections().stream()
                 .map(SectionMapper::sectionSaveRequestToSection)
                 .toList();
         LocalDateTime deadlineDateTime = LocalDateTime.parse(recruitmentSaveRequest.deadline());
         return new Recruitment(
                 recruitmentSaveRequest.id(),
-                code,
+                recruitmentSaveRequest.code(),
                 recruitmentSaveRequest.title(),
                 recruitmentSaveRequest.description(),
                 deadlineDateTime,
