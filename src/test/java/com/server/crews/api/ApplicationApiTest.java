@@ -22,7 +22,7 @@ import com.server.crews.applicant.dto.response.ApplicationsResponse;
 import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.global.exception.CrewsErrorCode;
-import com.server.crews.global.exception.ErrorDto;
+import com.server.crews.global.exception.ErrorResponse;
 import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
@@ -110,7 +110,7 @@ public class ApplicationApiTest extends ApiTest {
                 .extract();
 
         // then
-        ErrorDto errorResponse = response.as(ErrorDto.class);
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode409(response, softAssertions);
             softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.RECRUITMENT_NOT_STARTED.getCode());
@@ -141,7 +141,7 @@ public class ApplicationApiTest extends ApiTest {
                 .extract();
 
         // then
-        ErrorDto errorResponse = response.as(ErrorDto.class);
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode409(response, softAssertions);
             softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.RECRUITMENT_CLOSED.getCode());
@@ -342,7 +342,7 @@ public class ApplicationApiTest extends ApiTest {
                 .extract();
 
         // then
-        ErrorDto errorResponse = response.as(ErrorDto.class);
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode409(response, softAssertions);
             softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.ALREADY_ANNOUNCED.getCode());

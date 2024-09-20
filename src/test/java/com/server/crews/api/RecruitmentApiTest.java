@@ -21,7 +21,7 @@ import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.global.exception.CrewsErrorCode;
-import com.server.crews.global.exception.ErrorDto;
+import com.server.crews.global.exception.ErrorResponse;
 import com.server.crews.global.exception.GlobalExceptionHandler;
 import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
@@ -121,7 +121,7 @@ public class RecruitmentApiTest extends ApiTest {
                 .extract();
 
         // then
-        ErrorDto errorResponse = response.as(ErrorDto.class);
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode400(response, softAssertions);
             softAssertions.assertThat(errorResponse.code()).isEqualTo(GlobalExceptionHandler.CONSTRAINT_VIOLATION_CODE);
@@ -153,7 +153,7 @@ public class RecruitmentApiTest extends ApiTest {
                 .extract();
 
         // then
-        ErrorDto errorResponse = response.as(ErrorDto.class);
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode400(response, softAssertions);
             softAssertions.assertThat(errorResponse.code()).isEqualTo(GlobalExceptionHandler.CONSTRAINT_VIOLATION_CODE);
@@ -185,7 +185,7 @@ public class RecruitmentApiTest extends ApiTest {
                 .extract();
 
         // then
-        ErrorDto errorResponse = response.as(ErrorDto.class);
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode400(response, softAssertions);
             softAssertions.assertThat(errorResponse.code()).isEqualTo(GlobalExceptionHandler.CONSTRAINT_VIOLATION_CODE);
@@ -216,7 +216,7 @@ public class RecruitmentApiTest extends ApiTest {
                 .extract();
 
         // then
-        ErrorDto errorResponse = response.as(ErrorDto.class);
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode400(response, softAssertions);
             softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.INVALID_DEADLINE.getCode());
@@ -269,7 +269,7 @@ public class RecruitmentApiTest extends ApiTest {
                 .extract();
 
         // then
-        ErrorDto errorResponse = response.as(ErrorDto.class);
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode409(response, softAssertions);
             softAssertions.assertThat(errorResponse.code())
@@ -412,7 +412,7 @@ public class RecruitmentApiTest extends ApiTest {
                 .extract();
 
         // then
-        ErrorDto errorResponse = response.as(ErrorDto.class);
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode409(response, softAssertions);
             softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.RECRUITMENT_NOT_STARTED.getCode());
@@ -476,7 +476,7 @@ public class RecruitmentApiTest extends ApiTest {
                 .extract();
 
         // then
-        ErrorDto errorResponse = response.as(ErrorDto.class);
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode400(response, softAssertions);
             softAssertions.assertThat(errorResponse.code())
@@ -567,7 +567,7 @@ public class RecruitmentApiTest extends ApiTest {
                 .extract();
 
         // then
-        ErrorDto errorReponse = response.as(ErrorDto.class);
+        ErrorResponse errorReponse = response.as(ErrorResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode409(response, softAssertions);
             softAssertions.assertThat(errorReponse.code()).isEqualTo(CrewsErrorCode.ALREADY_ANNOUNCED.getCode());

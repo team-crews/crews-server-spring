@@ -28,7 +28,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                           HttpHeaders headers, HttpStatusCode status,
                                                                           WebRequest request) {
         String errorMessage = String.format("%s 파라미터가 없습니다.", e.getParameterName());
-        return ResponseEntity.badRequest().body(new ErrorDto(errorMessage, null));
+        return ResponseEntity.badRequest().body(new ErrorResponse(errorMessage, null));
     }
 
     @Override
@@ -36,29 +36,29 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                HttpStatusCode status, WebRequest request) {
         String errorMessage = Objects.requireNonNull(e.getBindingResult().getFieldError())
                 .getDefaultMessage();
-        return ResponseEntity.badRequest().body(new ErrorDto(errorMessage, null));
+        return ResponseEntity.badRequest().body(new ErrorResponse(errorMessage, null));
     }
 
     @ExceptionHandler(CrewsException.class)
-    public ResponseEntity<ErrorDto> handelNotFoundException(CrewsException e) {
+    public ResponseEntity<ErrorResponse> handelNotFoundException(CrewsException e) {
         customLogger.error(e);
-        return ResponseEntity.status(e.getHttpStatus()).body(new ErrorDto(e.getMessage(), e.getCode()));
+        return ResponseEntity.status(e.getHttpStatus()).body(new ErrorResponse(e.getMessage(), e.getCode()));
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorDto> handelNotFoundException(NotFoundException e) {
+    public ResponseEntity<ErrorResponse> handelNotFoundException(NotFoundException e) {
         customLogger.error(e);
-        return ResponseEntity.status(e.getHttpStatus()).body(new ErrorDto(e.getMessage(), NOT_FOUND_CODE));
+        return ResponseEntity.status(e.getHttpStatus()).body(new ErrorResponse(e.getMessage(), NOT_FOUND_CODE));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorDto> handleConstraintViolationException(ConstraintViolationException e) {
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {
         customLogger.error(e);
         String errorMessage = e.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(", "));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorDto(errorMessage, CONSTRAINT_VIOLATION_CODE));
+                .body(new ErrorResponse(errorMessage, CONSTRAINT_VIOLATION_CODE));
     }
 
     @ExceptionHandler(Exception.class)

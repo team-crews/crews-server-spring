@@ -14,7 +14,7 @@ import com.server.crews.auth.dto.request.ApplicantLoginRequest;
 import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.global.exception.CrewsErrorCode;
-import com.server.crews.global.exception.ErrorDto;
+import com.server.crews.global.exception.ErrorResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
 import io.restassured.http.Cookie;
@@ -98,7 +98,7 @@ public class AuthApiTest extends ApiTest {
                 .extract();
 
         // then
-        ErrorDto errorResponse = response.as(ErrorDto.class);
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode401(response, softAssertions);
             softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.WRONG_PASSWORD.getCode());
@@ -124,7 +124,7 @@ public class AuthApiTest extends ApiTest {
                 .extract();
 
         // then
-        ErrorDto errorResponse = response.as(ErrorDto.class);
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode401(response, softAssertions);
             softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.UNAUTHORIZED_USER.getCode());
@@ -206,7 +206,7 @@ public class AuthApiTest extends ApiTest {
                 .extract();
 
         // then
-        ErrorDto errorResponse = response.as(ErrorDto.class);
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertSoftly(softAssertions -> {
             checkStatusCode401(response, softAssertions);
             softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.USER_NOT_FOUND.getCode());
