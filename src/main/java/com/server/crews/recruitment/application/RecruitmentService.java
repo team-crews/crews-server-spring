@@ -10,7 +10,7 @@ import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.global.CustomLogger;
 import com.server.crews.global.exception.CrewsException;
-import com.server.crews.global.exception.GeneralErrorCode;
+import com.server.crews.global.exception.CrewsErrorCode;
 import com.server.crews.global.exception.NotFoundException;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
@@ -58,7 +58,7 @@ public class RecruitmentService {
     @Transactional
     public RecruitmentDetailsResponse saveRecruitment(Long publisherId, RecruitmentSaveRequest request) {
         Administrator publisher = administratorRepository.findById(publisherId)
-                .orElseThrow(() -> new CrewsException(GeneralErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CrewsException(CrewsErrorCode.USER_NOT_FOUND));
         String code = UUID.randomUUID().toString();
         Recruitment recruitment = RecruitmentMapper.recruitmentSaveRequestToRecruitment(request, code, publisher);
         validateDeadline(recruitment.getDeadline());
@@ -72,10 +72,10 @@ public class RecruitmentService {
     private void validateDeadline(LocalDateTime deadline) {
         LocalDateTime now = LocalDateTime.now(Clock.system(ZoneId.of("Asia/Seoul")));
         if (deadline.isBefore(now)) {
-            throw new CrewsException(GeneralErrorCode.INVALID_DEADLINE);
+            throw new CrewsException(CrewsErrorCode.INVALID_DEADLINE);
         }
         if (deadline.getMinute() != 0 || deadline.getSecond() != 0 || deadline.getNano() != 0) {
-            throw new CrewsException(GeneralErrorCode.INVALID_DEADLINE);
+            throw new CrewsException(CrewsErrorCode.INVALID_DEADLINE);
         }
     }
 
@@ -84,7 +84,7 @@ public class RecruitmentService {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
                 .orElseThrow(() -> new NotFoundException("동아리 관리자 id", "모집 공고"));
         if (recruitment.isStarted()) {
-            throw new CrewsException(GeneralErrorCode.RECRUITMENT_ALREADY_STARTED);
+            throw new CrewsException(CrewsErrorCode.RECRUITMENT_ALREADY_STARTED);
         }
         recruitment.start();
     }
@@ -106,7 +106,7 @@ public class RecruitmentService {
         Recruitment recruitment = recruitmentRepository.findWithSectionsByCode(code)
                 .orElseThrow(() -> new NotFoundException("모집 공고 코드", "모집 공고"));
         if (!recruitment.isStarted()) {
-            throw new CrewsException(GeneralErrorCode.RECRUITMENT_NOT_STARTED);
+            throw new CrewsException(CrewsErrorCode.RECRUITMENT_NOT_STARTED);
         }
         return toRecruitmentDetailsWithQuestions(recruitment);
     }
@@ -144,7 +144,7 @@ public class RecruitmentService {
 
         LocalDateTime modifiedDeadline = LocalDateTime.parse(request.deadline());
         if (!recruitment.hasOnOrAfterDeadline(modifiedDeadline) || !recruitment.isInProgress()) {
-            throw new CrewsException(GeneralErrorCode.INVALID_MODIFIED_DEADLINE);
+            throw new CrewsException(CrewsErrorCode.INVALID_MODIFIED_DEADLINE);
         }
         recruitment.updateDeadline(modifiedDeadline);
     }
@@ -170,7 +170,7 @@ public class RecruitmentService {
         Recruitment recruitment = recruitmentRepository.findWithPublisherByPublisher(publisherId)
                 .orElseThrow(() -> new NotFoundException("동아리 관리자 id", "모집 공고"));
         if (recruitment.isAnnounced()) {
-            throw new CrewsException(GeneralErrorCode.ALREADY_ANNOUNCED);
+            throw new CrewsException(CrewsErrorCode.ALREADY_ANNOUNCED);
         }
         List<Application> applications = applicationRepository.findAllByRecruitmentWithApplicant(recruitment);
         applications.stream().filter(Application::isNotDetermined)

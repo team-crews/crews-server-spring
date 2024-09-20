@@ -10,14 +10,14 @@ import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
-import com.server.crews.applicant.util.ApplicationMapper;
 import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
+import com.server.crews.applicant.util.ApplicationMapper;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.auth.repository.ApplicantRepository;
+import com.server.crews.global.exception.CrewsErrorCode;
 import com.server.crews.global.exception.CrewsException;
-import com.server.crews.global.exception.GeneralErrorCode;
 import com.server.crews.global.exception.NotFoundException;
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
@@ -54,8 +54,14 @@ public class ApplicationService {
     public ApplicationDetailsResponse saveApplication(Long applicantId, ApplicationSaveRequest request) {
         Recruitment recruitment = recruitmentRepository.findByCode(request.recruitmentCode())
                 .orElseThrow(() -> new NotFoundException("모집 공고 코드", "모집 공고"));
+        if (!recruitment.isStarted()) {
+            throw new CrewsException(CrewsErrorCode.RECRUITMENT_NOT_STARTED);
+        }
+        if (!recruitment.isInProgress()) {
+            throw new CrewsException(CrewsErrorCode.RECRUITMENT_CLOSED);
+        }
         Applicant applicant = applicantRepository.findById(applicantId)
-                .orElseThrow(() -> new CrewsException(GeneralErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CrewsException(CrewsErrorCode.USER_NOT_FOUND));
 
         validateNarrativeQuestions(request);
         validateSelectiveQuestions(request);
@@ -119,18 +125,11 @@ public class ApplicationService {
     public ApplicationDetailsResponse findApplicationDetails(Long applicationId, Long publisherId) {
         Application application = applicationRepository.findByIdWithRecruitmentAndPublisher(applicationId)
                 .orElseThrow(() -> new NotFoundException("지원서 id", "지원서"));
-        checkPermission(application, publisherId);
         List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
         List<SelectiveAnswer> selectiveAnswers = selectiveAnswerRepository.findAllByApplication(application);
         application.replaceNarrativeAnswers(narrativeAnswers);
         application.replaceSelectiveAnswers(selectiveAnswers);
         return ApplicationMapper.applicationToApplicationDetailsResponse(application);
-    }
-
-    private void checkPermission(Application application, Long publisherId) {
-        if (!application.canBeAccessedBy(publisherId)) {
-            throw new CrewsException(GeneralErrorCode.UNAUTHORIZED_USER);
-        }
     }
 
     public Optional<ApplicationDetailsResponse> findMyApplicationDetails(Long applicantId, String code) {
@@ -164,7 +163,7 @@ public class ApplicationService {
 
     private void checkRecruitmentAnnouncedProgress(Recruitment recruitment) {
         if (recruitment.isAnnounced()) {
-            throw new CrewsException(GeneralErrorCode.ALREADY_ANNOUNCED);
+            throw new CrewsException(CrewsErrorCode.ALREADY_ANNOUNCED);
         }
     }
 

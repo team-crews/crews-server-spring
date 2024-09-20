@@ -63,4 +63,8 @@ public class AuthApiDocuments {
     public static RestDocumentationFilter AUTHORIZE_401_DOCUMENT() {
         return document(AUTH_API + "인가 실패 예시");
     }
+
+    public static RestDocumentationFilter VALIDATE_TOKEN_USER_NOT_FOUND_401_DOCUMENT() {
+        return document(AUTH_API + "존재하지 않는 사용자에 대한 액세스 토큰 검증");
+    }
 }

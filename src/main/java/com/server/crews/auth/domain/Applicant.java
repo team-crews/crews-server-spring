@@ -1,7 +1,7 @@
 package com.server.crews.auth.domain;
 
 import com.server.crews.global.exception.CrewsException;
-import com.server.crews.global.exception.GeneralErrorCode;
+import com.server.crews.global.exception.CrewsErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -40,7 +40,7 @@ public class Applicant {
 
     private void validateEmail(String email) {
         if (!Pattern.matches(EMAIL_PATTERN, email)) {
-            throw new CrewsException(GeneralErrorCode.INVALID_EMAIL_PATTERN);
+            throw new CrewsException(CrewsErrorCode.INVALID_EMAIL_PATTERN);
         }
     }
 }

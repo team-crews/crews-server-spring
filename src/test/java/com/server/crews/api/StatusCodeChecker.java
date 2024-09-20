@@ -21,19 +21,19 @@ public class StatusCodeChecker {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    public static void checkStatusCode400(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    public static void checkStatusCode400(ExtractableResponse<Response> response, SoftAssertions softAssertions) {
+        softAssertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    public static void checkStatusCode401(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    public static void checkStatusCode409(ExtractableResponse<Response> response, SoftAssertions softAssertions) {
+        softAssertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    }
+
+    public static void checkStatusCode401(ExtractableResponse<Response> response, SoftAssertions softAssertions) {
+        softAssertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
     public static void checkStatusCode404(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-    }
-
-    public static void checkStatusCode500(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }

@@ -72,7 +72,7 @@ public class RecruitmentApiDocuments {
                 "모집을 시작한다.");
     }
 
-    public static RestDocumentationFilter START_RECRUITMENT_400_DOCUMENT() {
+    public static RestDocumentationFilter START_RECRUITMENT_409_DOCUMENT() {
         return document(RECRUITMENT_API + "유효하지 않은 모집 시작");
     }
 
@@ -103,7 +103,7 @@ public class RecruitmentApiDocuments {
                 recruitmentDetailsResponseFields());
     }
 
-    public static RestDocumentationFilter GET_RECRUITMENT_BY_CODE_400_DOCUMENT() {
+    public static RestDocumentationFilter GET_RECRUITMENT_BY_CODE_409_DOCUMENT() {
         return document(RECRUITMENT_API + "준비 중인 모집 공고를 코드로 조회");
     }
 
@@ -121,9 +121,17 @@ public class RecruitmentApiDocuments {
                         fieldWithPath(".deadline").description("변경된 마감일")));
     }
 
+    public static RestDocumentationFilter UPDATE_RECRUITMENT_DEADLINE_400_DOCUMENT() {
+        return document(RECRUITMENT_API + "잘못된 모집 마감일 변경");
+    }
+
     public static RestDocumentationFilter SEND_OUTCOME_EMAIL_200_REQUEST() {
         return document(RECRUITMENT_API + "지원 결과 메일 전송",
                 "지원 결과 메일을 전송한다.");
+    }
+
+    public static RestDocumentationFilter SEND_OUTCOME_EMAIL_400_REQUEST() {
+        return document(RECRUITMENT_API + "지원 결과 메일 재전송");
     }
 
     private static ResponseFieldsSnippet recruitmentDetailsResponseFields() {

@@ -32,6 +32,14 @@ public class ApplicationApiDocuments {
                 applicationDetailsResponseFields());
     }
 
+    public static RestDocumentationFilter SAVE_APPLICATION_NOT_STARTED_409_DOCUMENT() {
+        return document(APPLICATION_API + "모집이 시작되지 않은 모집 공고로 지원서 저장");
+    }
+
+    public static RestDocumentationFilter SAVE_APPLICATION_CLOSED_RECRUITMENT_409_DOCUMENT() {
+        return document(APPLICATION_API + "모집이 종료된 모집 공고로 지원서 저장");
+    }
+
     public static RestDocumentationFilter SAVE_APPLICATION_404_DOCUMENT() {
         return document(APPLICATION_API + "존재하지 않는 질문으로 지원서 저장");
     }
@@ -73,7 +81,7 @@ public class ApplicationApiDocuments {
                         fieldWithPath(".passApplicationIds").description("합격 지원서 id 목록")));
     }
 
-    public static RestDocumentationFilter EVALUATE_APPLICATIONS_400_DOCUMENT() {
+    public static RestDocumentationFilter EVALUATE_APPLICATIONS_409_DOCUMENT() {
         return document(APPLICATION_API + "평가 및 결과 발표 완료된 모집 공고의 지원서 평가");
     }
 

@@ -7,10 +7,14 @@ import static com.server.crews.fixture.UserFixture.TEST_EMAIL;
 import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import com.server.crews.auth.application.JwtTokenProvider;
+import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
 import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
+import com.server.crews.global.exception.CrewsErrorCode;
+import com.server.crews.global.exception.ErrorResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
 import io.restassured.http.Cookie;
@@ -19,10 +23,13 @@ import io.restassured.response.Response;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 public class AuthApiTest extends ApiTest {
+    @Autowired
+    JwtTokenProvider jwtTokenProvider;
 
     @Test
     @DisplayName("[동아리 관리자] 동아리 관리자가 로그인 해 토큰을 발급 받는다.")
@@ -91,7 +98,11 @@ public class AuthApiTest extends ApiTest {
                 .extract();
 
         // then
-        checkStatusCode401(response);
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode401(response, softAssertions);
+            softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.WRONG_PASSWORD.getCode());
+        });
     }
 
     @Test
@@ -113,7 +124,11 @@ public class AuthApiTest extends ApiTest {
                 .extract();
 
         // then
-        checkStatusCode401(response);
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode401(response, softAssertions);
+            softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.UNAUTHORIZED_USER.getCode());
+        });
     }
 
     @Test
@@ -169,6 +184,32 @@ public class AuthApiTest extends ApiTest {
         assertSoftly(softAssertions -> {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(cookie.getMaxAge()).isEqualTo(0);
+        });
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 사용자에 대한 액세스 토큰을 검증한다.")
+    void validateNotExistingUserToken() {
+        // given
+        TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminTokenResponse.accessToken());
+        String applicantAccessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, "not existing email");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(AuthApiDocuments.VALIDATE_TOKEN_USER_NOT_FOUND_401_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + applicantAccessToken)
+                .queryParam("code", recruitmentDetailsResponse.code())
+                .when().get("/applications/mine")
+                .then().log().all()
+                .extract();
+
+        // then
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode401(response, softAssertions);
+            softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.USER_NOT_FOUND.getCode());
         });
     }
 }
