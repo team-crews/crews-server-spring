@@ -16,8 +16,8 @@ import com.server.crews.applicant.repository.SelectiveAnswerRepository;
 import com.server.crews.applicant.util.ApplicationMapper;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.auth.repository.ApplicantRepository;
-import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.CrewsErrorCode;
+import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.NotFoundException;
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
@@ -125,18 +125,11 @@ public class ApplicationService {
     public ApplicationDetailsResponse findApplicationDetails(Long applicationId, Long publisherId) {
         Application application = applicationRepository.findByIdWithRecruitmentAndPublisher(applicationId)
                 .orElseThrow(() -> new NotFoundException("지원서 id", "지원서"));
-        checkPermission(application, publisherId);
         List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
         List<SelectiveAnswer> selectiveAnswers = selectiveAnswerRepository.findAllByApplication(application);
         application.replaceNarrativeAnswers(narrativeAnswers);
         application.replaceSelectiveAnswers(selectiveAnswers);
         return ApplicationMapper.applicationToApplicationDetailsResponse(application);
-    }
-
-    private void checkPermission(Application application, Long publisherId) {
-        if (!application.canBeAccessedBy(publisherId)) {
-            throw new CrewsException(CrewsErrorCode.UNAUTHORIZED_USER);
-        }
     }
 
     public Optional<ApplicationDetailsResponse> findMyApplicationDetails(Long applicantId, String code) {

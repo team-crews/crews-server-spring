@@ -20,6 +20,9 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
+import com.server.crews.global.exception.CrewsErrorCode;
+import com.server.crews.global.exception.ErrorDto;
+import com.server.crews.global.exception.GlobalExceptionHandler;
 import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
 import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
@@ -118,7 +121,11 @@ public class RecruitmentApiTest extends ApiTest {
                 .extract();
 
         // then
-        checkStatusCode400(response);
+        ErrorDto errorResponse = response.as(ErrorDto.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode400(response, softAssertions);
+            softAssertions.assertThat(errorResponse.code()).isEqualTo(GlobalExceptionHandler.CONSTRAINT_VIOLATION_CODE);
+        });
     }
 
     @Test
@@ -146,7 +153,11 @@ public class RecruitmentApiTest extends ApiTest {
                 .extract();
 
         // then
-        checkStatusCode400(response);
+        ErrorDto errorResponse = response.as(ErrorDto.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode400(response, softAssertions);
+            softAssertions.assertThat(errorResponse.code()).isEqualTo(GlobalExceptionHandler.CONSTRAINT_VIOLATION_CODE);
+        });
     }
 
     @Test
@@ -174,7 +185,11 @@ public class RecruitmentApiTest extends ApiTest {
                 .extract();
 
         // then
-        checkStatusCode400(response);
+        ErrorDto errorResponse = response.as(ErrorDto.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode400(response, softAssertions);
+            softAssertions.assertThat(errorResponse.code()).isEqualTo(GlobalExceptionHandler.CONSTRAINT_VIOLATION_CODE);
+        });
     }
 
     @Test
@@ -188,7 +203,7 @@ public class RecruitmentApiTest extends ApiTest {
         String time = LocalTime.of(1, 10).toString();
         String invalidDeadline = date + "T" + time;
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE,
-                DEFAULT_DESCRIPTION, null, invalidDeadline);
+                DEFAULT_DESCRIPTION, List.of(), invalidDeadline);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -201,7 +216,11 @@ public class RecruitmentApiTest extends ApiTest {
                 .extract();
 
         // then
-        checkStatusCode400(response);
+        ErrorDto errorResponse = response.as(ErrorDto.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode400(response, softAssertions);
+            softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.INVALID_DEADLINE.getCode());
+        });
     }
 
     @Test
@@ -250,7 +269,12 @@ public class RecruitmentApiTest extends ApiTest {
                 .extract();
 
         // then
-        checkStatusCode409(response);
+        ErrorDto errorResponse = response.as(ErrorDto.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode409(response, softAssertions);
+            softAssertions.assertThat(errorResponse.code())
+                    .isEqualTo(CrewsErrorCode.RECRUITMENT_ALREADY_STARTED.getCode());
+        });
     }
 
     @Test
@@ -388,7 +412,11 @@ public class RecruitmentApiTest extends ApiTest {
                 .extract();
 
         // then
-        checkStatusCode409(response);
+        ErrorDto errorResponse = response.as(ErrorDto.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode409(response, softAssertions);
+            softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.RECRUITMENT_NOT_STARTED.getCode());
+        });
     }
 
     @Test
@@ -419,6 +447,41 @@ public class RecruitmentApiTest extends ApiTest {
 
         // then
         checkStatusCode200(response);
+    }
+
+    @Test
+    @DisplayName("변경할 모집 마감기한은 기존 기한 이후이며 모집 진행 중에만 변경할 수 있다.")
+    void updateInvalidDeadline() {
+        // given
+        TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        String adminAccessToken = adminTokenResponse.accessToken();
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminAccessToken);
+
+        RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .when().patch("/recruitments/in-progress");
+
+        DeadlineUpdateRequest deadlineUpdateRequest = new DeadlineUpdateRequest(
+                recruitmentDetailsResponse.deadline().minusDays(1).toString());
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.UPDATE_RECRUITMENT_DEADLINE_400_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .body(deadlineUpdateRequest)
+                .when().patch("/recruitments/deadline")
+                .then().log().all()
+                .extract();
+
+        // then
+        ErrorDto errorResponse = response.as(ErrorDto.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode400(response, softAssertions);
+            softAssertions.assertThat(errorResponse.code())
+                    .isEqualTo(CrewsErrorCode.INVALID_MODIFIED_DEADLINE.getCode());
+        });
     }
 
     @Test
@@ -472,5 +535,42 @@ public class RecruitmentApiTest extends ApiTest {
 
         // then
         checkStatusCode200(response);
+    }
+
+    @Test
+    @DisplayName("지원 결과 메일은 재전송할 수 없다.")
+    void sendDuplicatedOutcomeEmail() {
+        // given
+        TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        String adminAccessToken = adminTokenResponse.accessToken();
+        RecruitmentDetailsResponse recruitmentDetailsResponse = createRecruitment(adminAccessToken);
+        startTestRecruiting(adminAccessToken);
+        TokenResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
+        TokenResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
+
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
+        createTestApplication(applicantATokenResponse.accessToken(), applicationSaveRequest);
+        createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
+
+        RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .when().post("/recruitments/announcement");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.SEND_OUTCOME_EMAIL_400_REQUEST())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .when().post("/recruitments/announcement")
+                .then().log().all()
+                .extract();
+
+        // then
+        ErrorDto errorReponse = response.as(ErrorDto.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode409(response, softAssertions);
+            softAssertions.assertThat(errorReponse.code()).isEqualTo(CrewsErrorCode.ALREADY_ANNOUNCED.getCode());
+        });
     }
 }

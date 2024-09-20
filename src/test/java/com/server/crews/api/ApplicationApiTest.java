@@ -21,6 +21,8 @@ import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
 import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
+import com.server.crews.global.exception.CrewsErrorCode;
+import com.server.crews.global.exception.ErrorDto;
 import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
@@ -108,11 +110,15 @@ public class ApplicationApiTest extends ApiTest {
                 .extract();
 
         // then
-        checkStatusCode409(response);
+        ErrorDto errorResponse = response.as(ErrorDto.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode409(response, softAssertions);
+            softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.RECRUITMENT_NOT_STARTED.getCode());
+        });
     }
 
     @Test
-    @DisplayName("지원자가 모집이 시작되지 않은 지원서를 저장한다.")
+    @DisplayName("지원자가 모집이 종료된 공고의 지원서를 저장한다.")
     void saveApplicationAboutClosedRecruitment() {
         // given
         TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
@@ -135,7 +141,11 @@ public class ApplicationApiTest extends ApiTest {
                 .extract();
 
         // then
-        checkStatusCode409(response);
+        ErrorDto errorResponse = response.as(ErrorDto.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode409(response, softAssertions);
+            softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.RECRUITMENT_CLOSED.getCode());
+        });
     }
 
     @Test
@@ -332,7 +342,11 @@ public class ApplicationApiTest extends ApiTest {
                 .extract();
 
         // then
-        checkStatusCode409(response);
+        ErrorDto errorResponse = response.as(ErrorDto.class);
+        assertSoftly(softAssertions -> {
+            checkStatusCode409(response, softAssertions);
+            softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.ALREADY_ANNOUNCED.getCode());
+        });
     }
 
     @Test

@@ -18,8 +18,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-    private static final int CONSTRAINT_VIOLATION_CODE = 2000;
-    private static final int NOT_FOUND_CODE = 3000;
+    public static final int CONSTRAINT_VIOLATION_CODE = 2000;
+    public static final int NOT_FOUND_CODE = 3000;
 
     private final CustomLogger customLogger = new CustomLogger(GlobalExceptionHandler.class);
 
