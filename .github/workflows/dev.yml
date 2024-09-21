@@ -2,7 +2,7 @@ name: crews backend cd
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "dev" ]
 
 permissions:
   contents: read
@@ -51,32 +51,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_PROD_SERVER_IMAGE_NAME }}
+          tags: ${{ secrets.DOCKER_SERVER_IMAGE_NAME }}
           platforms: |
             linux/amd64
             linux/arm64
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ubuntu
-          key: ${{ secrets.KEY }}
-          script: |
-            cd /home/ubuntu
-            
-            sudo chmod 666 /var/run/docker.sock
-            docker rm -f $(docker ps -qa)
-            docker pull ${{ secrets.DOCKER_PROD_SERVER_IMAGE_NAME }}
-            docker run -d -p 8080:8080 --name crews-server \
-              -e JAVA_OPTS="-XX:InitialRAMPercentage=70.0 -XX:MaxRAMPercentage=70.0" \
-              -e SPRING_PROFILES_ACTIVE=prod \
-              ${{ secrets.DOCKER_PROD_SERVER_IMAGE_NAME }}
-
-            docker image prune -f
-            docker volume prune -f
