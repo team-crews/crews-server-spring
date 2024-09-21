@@ -2,7 +2,7 @@ name: release tag
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "dev" ]
 
 jobs:
   build:
@@ -18,7 +18,7 @@ jobs:
       - name: Create Release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
         with:
           tag_name: ${{ steps.extract_version_name.outputs.version }}
           release_name: ${{ steps.extract_version_name.outputs.version }}
