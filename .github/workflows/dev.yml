@@ -1,4 +1,4 @@
-name: crews backend cd
+name: crews backend development version distribute
 
 on:
   push:

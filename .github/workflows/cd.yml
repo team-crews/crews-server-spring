@@ -1,4 +1,4 @@
-name: crews backend cd
+name: crews backend deploy
 
 on:
   push:
