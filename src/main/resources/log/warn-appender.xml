@@ -1,0 +1,32 @@
+<appender name="WARN" class="ca.pjer.logback.AwsLogsAppender">
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>WARN</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+    </filter>
+    <logGroupName>/crews-server/warn</logGroupName>
+    <logStreamUuidPrefix>crews-server-warn-</logStreamUuidPrefix>
+    <logRegion>ap-northeast-2</logRegion>
+    <maxBatchLogEvents>50</maxBatchLogEvents>
+    <maxFlushTimeMillis>30000</maxFlushTimeMillis>
+    <maxBlockTimeMillis>5000</maxBlockTimeMillis>
+    <retentionTimeDays>7</retentionTimeDays>
+    <accessKeyId>${AWS_ACCESS_KEY}</accessKeyId>
+    <secretAccessKey>${AWS_SECRET_KEY}</secretAccessKey>
+    <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+        <providers>
+            <mdc/>
+            <pattern>
+                <pattern>
+                    {
+                    "timestamp": "%date{yyyy-MM-dd HH:mm:ss.SSSSSS}",
+                    "message": "%yellow(%message)"
+                    }
+                </pattern>
+            </pattern>
+        </providers>
+        <jsonGeneratorDecorator class="net.logstash.logback.decorate.CompositeJsonGeneratorDecorator">
+            <decorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+        </jsonGeneratorDecorator>
+    </encoder>
+</appender>
