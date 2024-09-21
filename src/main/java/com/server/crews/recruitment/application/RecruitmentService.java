@@ -9,8 +9,8 @@ import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.global.CustomLogger;
-import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.CrewsErrorCode;
+import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.NotFoundException;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
@@ -59,14 +59,21 @@ public class RecruitmentService {
     public RecruitmentDetailsResponse saveRecruitment(Long publisherId, RecruitmentSaveRequest request) {
         Administrator publisher = administratorRepository.findById(publisherId)
                 .orElseThrow(() -> new CrewsException(CrewsErrorCode.USER_NOT_FOUND));
-        String code = UUID.randomUUID().toString();
-        Recruitment recruitment = RecruitmentMapper.recruitmentSaveRequestToRecruitment(request, code, publisher);
+        Recruitment recruitment = RecruitmentMapper.recruitmentSaveRequestToRecruitment(request, publisher);
+        setCode(recruitment);
         validateDeadline(recruitment.getDeadline());
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
         RecruitmentDetailsResponse recruitmentDetailsResponse = RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(
                 savedRecruitment);
         QuestionSorter.sort(recruitmentDetailsResponse);
         return recruitmentDetailsResponse;
+    }
+
+    private void setCode(Recruitment recruitment) {
+        if (recruitment.getCode() == null) {
+            String code = UUID.randomUUID().toString();
+            recruitment.setCode(code);
+        }
     }
 
     private void validateDeadline(LocalDateTime deadline) {

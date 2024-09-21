@@ -47,7 +47,7 @@ class RecruitmentControllerTest extends ControllerTest {
     @DisplayName("모집 공고를 필수 항목(제목, 마감일)만 포함하여 저장한다.")
     void saveRecruitment() throws Exception {
         // given
-        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE, null,
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE, null,
                 List.of(), LocalDateTime.now().toString());
 
         // when & then
@@ -123,7 +123,8 @@ class RecruitmentControllerTest extends ControllerTest {
         // given
         String invalidSectionName = "";
         SectionSaveRequest invalidSectionSaveRequest = new SectionSaveRequest(null, invalidSectionName, null, null);
-        RecruitmentSaveRequest invalidRecruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE, null,
+        RecruitmentSaveRequest invalidRecruitmentSaveRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
+                null,
                 List.of(invalidSectionSaveRequest), LocalDateTime.now().toString());
 
         // when & then
@@ -143,7 +144,8 @@ class RecruitmentControllerTest extends ControllerTest {
         // given
         SectionSaveRequest invalidSectionSaveRequest = new SectionSaveRequest(null, BACKEND_SECTION_NAME, null,
                 List.of(invalidQuestionSaveRequest));
-        RecruitmentSaveRequest invalidRecruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE, null,
+        RecruitmentSaveRequest invalidRecruitmentSaveRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
+                null,
                 List.of(invalidSectionSaveRequest), LocalDateTime.now().toString());
 
         // when & then

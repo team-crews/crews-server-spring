@@ -61,13 +61,14 @@ public class RecruitmentApiTest extends ApiTest {
         SectionSaveRequest sectionsCreateRequest = new SectionSaveRequest(null, FRONTEND_SECTION_NAME,
                 DEFAULT_DESCRIPTION,
                 List.of(selectiveQuestionCreateRequest));
-        RecruitmentSaveRequest recruitmentCreateRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE,
+        RecruitmentSaveRequest recruitmentCreateRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
                 DEFAULT_DESCRIPTION, List.of(sectionsCreateRequest), DEFAULT_DEADLINE.toString());
 
         RecruitmentDetailsResponse savedRecruitmentResponse = createRecruitment(adminTokenResponse.accessToken(),
                 recruitmentCreateRequest);
 
         Long recruitmentId = savedRecruitmentResponse.id();
+        String recruitmentCode = savedRecruitmentResponse.code();
         Long sectionId = savedRecruitmentResponse.sections().get(0).id();
         Long questionId = savedRecruitmentResponse.sections().get(0).questions().get(0).id();
         Long choiceId = savedRecruitmentResponse.sections().get(0).questions().get(0).choices().get(0).id();
@@ -79,7 +80,8 @@ public class RecruitmentApiTest extends ApiTest {
                 List.of(selectiveQuestionUpdateRequest));
         SectionSaveRequest newSectionCreateRequest = new SectionSaveRequest(null, "새로운 섹션 이름", DEFAULT_DESCRIPTION,
                 QUESTION_REQUESTS);
-        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(recruitmentId, "변경된 모집 공고 제목",
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(recruitmentId, recruitmentCode,
+                "변경된 모집 공고 제목",
                 DEFAULT_DESCRIPTION, List.of(sectionUpdateRequest, newSectionCreateRequest),
                 DEFAULT_DEADLINE.toString());
 
@@ -106,7 +108,7 @@ public class RecruitmentApiTest extends ApiTest {
     void saveWithLetterNumberValidation() {
         // given
         TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
-        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null,
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, null,
                 "DEFAULT_TITLE_DEFAULT_TITLE_31_", DEFAULT_DESCRIPTION, List.of(), DEFAULT_DEADLINE.toString());
 
         // when
@@ -138,7 +140,7 @@ public class RecruitmentApiTest extends ApiTest {
                 INTRODUCTION_QUESTION, true, 1, 1501, null, null, List.of());
         SectionSaveRequest sectionSaveRequest = new SectionSaveRequest(null, BACKEND_SECTION_NAME, DEFAULT_DESCRIPTION,
                 List.of(questionSaveRequest));
-        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE,
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
                 DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_DEADLINE.toString());
 
         // when
@@ -170,7 +172,7 @@ public class RecruitmentApiTest extends ApiTest {
                 STRENGTH_QUESTION, true, 1, null, 11, 11, List.of());
         SectionSaveRequest sectionSaveRequest = new SectionSaveRequest(null, BACKEND_SECTION_NAME, DEFAULT_DESCRIPTION,
                 List.of(questionSaveRequest));
-        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE,
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
                 DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_DEADLINE.toString());
 
         // when
@@ -202,7 +204,7 @@ public class RecruitmentApiTest extends ApiTest {
         String date = LocalDate.now().plusDays(10).toString();
         String time = LocalTime.of(1, 10).toString();
         String invalidDeadline = date + "T" + time;
-        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, DEFAULT_TITLE,
+        RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
                 DEFAULT_DESCRIPTION, List.of(), invalidDeadline);
 
         // when

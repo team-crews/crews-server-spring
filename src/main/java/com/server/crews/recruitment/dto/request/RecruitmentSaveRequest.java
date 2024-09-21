@@ -8,6 +8,7 @@ import java.util.List;
 
 public record RecruitmentSaveRequest(
         Long id,
+        String code,
         @NotBlank(message = "모집공고 제목은 공백일 수 없습니다.")
         String title,
         String description,
