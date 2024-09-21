@@ -18,6 +18,7 @@ public class RecruitmentApiDocuments {
                 "모집 공고를 저장한다.",
                 requestFields(
                         fieldWithPath(".id").description("모집 공고 id (최초 저장이 아닐 경우 필요함)").optional(),
+                        fieldWithPath(".code").description("모집 공고 코드 (최초 저장이 아닐 경우 필요함)").optional(),
                         fieldWithPath(".title").description("모집 공고 제목"),
                         fieldWithPath(".description").description("모집 공고 설명").optional(),
                         fieldWithPath(".deadline").description("모집 마감일"),
@@ -60,7 +61,8 @@ public class RecruitmentApiDocuments {
     public static RestDocumentationFilter SAVE_RECRUITMENT_400_DOCUMENT_INVALID_DEADLINE() {
         return document(RECRUITMENT_API + "잘못된 마감일의 모집 공고 저장",
                 requestFields(
-                        fieldWithPath(".id").description("모집 공고 id"),
+                        fieldWithPath(".id").description("모집 공고 id").optional(),
+                        fieldWithPath(".code").description("모집 공고 코드").optional(),
                         fieldWithPath(".title").description("모집 공고 제목"),
                         fieldWithPath(".description").description("모집 공고 설명"),
                         fieldWithPath(".sections").description("섹션 목록"),
