@@ -10,16 +10,17 @@ import com.server.crews.recruitment.dto.response.QuestionResponse;
 import com.server.crews.recruitment.dto.response.SectionResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SectionMapper {
 
     public static SectionResponse sectionToSectionResponse(Section section) {
         List<QuestionResponse> selectiveQuestionResponses = section.getSelectiveQuestions().stream()
                 .map(QuestionMapper::selectiveQuestionToQuestionResponse)
-                .toList();
+                .collect(Collectors.toList());
         List<QuestionResponse> narrativeQuestionResponses = section.getNarrativeQuestions().stream()
                 .map(QuestionMapper::narrativeQuestionToQuestionResponse)
-                .toList();
+                .collect(Collectors.toList());
         List<QuestionResponse> allQuestionResponses = new ArrayList<>(selectiveQuestionResponses);
         allQuestionResponses.addAll(narrativeQuestionResponses);
         return SectionResponse.builder()
