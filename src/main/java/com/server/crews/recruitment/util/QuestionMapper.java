@@ -9,6 +9,7 @@ import com.server.crews.recruitment.dto.request.QuestionType;
 import com.server.crews.recruitment.dto.response.ChoiceResponse;
 import com.server.crews.recruitment.dto.response.QuestionResponse;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class QuestionMapper {
 
@@ -40,7 +41,7 @@ public class QuestionMapper {
     private static List<ChoiceResponse> choiceResponses(List<Choice> choices) {
         return choices.stream()
                 .map(choice -> new ChoiceResponse(choice.getId(), choice.getContent()))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public static NarrativeQuestion questionSaveRequestToNarrativeQuestion(QuestionSaveRequest questionSaveRequest) {
