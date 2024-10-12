@@ -65,7 +65,9 @@ class RecruitmentControllerTest extends ControllerTest {
         // given
         String invalidRecruitmentSaveRequest = """
                         {
-                            "title": ""
+                            "title": "",
+                            "deadline": "2030-09-05T18:00:00",
+                            "sections": []
                         }
                 """;
 
@@ -75,7 +77,7 @@ class RecruitmentControllerTest extends ControllerTest {
                         .content(invalidRecruitmentSaveRequest))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.message").value("모집공고 제목은 공백일 수 없습니다."));
     }
 
     @Test
@@ -85,7 +87,7 @@ class RecruitmentControllerTest extends ControllerTest {
         String invalidRecruitmentSaveRequest = """
                         {
                             "title": "모집공고 제목입니다.",
-                            "deadline": ""
+                            "sections": []
                         }
                 """;
 
@@ -95,7 +97,7 @@ class RecruitmentControllerTest extends ControllerTest {
                         .content(invalidRecruitmentSaveRequest))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.message").value("모집 마감 기한은 null일 수 없습니다."));
     }
 
     @ParameterizedTest
@@ -188,7 +190,11 @@ class RecruitmentControllerTest extends ControllerTest {
                                     "name": "파트1",
                                     "questions": [
                                         {
-                                            "type": "invalid"
+                                            "type": "invalid",
+                                            "choices": [],
+                                            "necessity": true,
+                                            "order": 1,
+                                            "content": "content"
                                         }
                                     ]
                                 }
@@ -202,6 +208,6 @@ class RecruitmentControllerTest extends ControllerTest {
                         .content(invalidRecruitmentSaveRequest))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.message").value("유효하지 않은 질문 유형(QuestionType) 값입니다. NARRATIVE 혹은 SELECTIVE를 입력해주세요. (대소문자 무관)"));
     }
 }
