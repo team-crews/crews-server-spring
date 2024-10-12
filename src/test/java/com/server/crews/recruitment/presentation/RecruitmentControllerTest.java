@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
@@ -97,16 +98,18 @@ class RecruitmentControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.message").exists());
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"invalid", "2030-09-05 18:00:00"})
     @DisplayName("모집 공고의 마감일 형식을 검증한다.")
-    void validateRecruitmentDeadlineForm() throws Exception {
+    void validateRecruitmentDeadlineForm(String invalidDeadline) throws Exception {
         // given
-        String invalidRecruitmentSaveRequest = """
+        String invalidRecruitmentSaveRequest = String.format("""
                         {
                             "title": "모집공고 제목입니다.",
-                            "deadline": "invalid"
+                            "deadline": "%s",
+                            "sections": []
                         }
-                """;
+                """, invalidDeadline);
 
         // when & then
         mockMvc.perform(post("/recruitments")
@@ -114,7 +117,7 @@ class RecruitmentControllerTest extends ControllerTest {
                         .content(invalidRecruitmentSaveRequest))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.message").value("날짜가 ISO8601 형식에 맞지 않습니다."));
     }
 
     @Test

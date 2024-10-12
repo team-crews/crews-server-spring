@@ -3,6 +3,7 @@ package com.server.crews.recruitment.presentation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class DateTimeFormatValidator implements ConstraintValidator<DateTimeFormat, String> {
@@ -17,7 +18,7 @@ public class DateTimeFormatValidator implements ConstraintValidator<DateTimeForm
             return true;
         }
         try {
-            LocalDateTime.parse(value);
+            LocalDateTime.parse(value, DateTimeFormatter.ISO_DATE_TIME);
             return true;
         } catch (DateTimeParseException e) {
             return false;
