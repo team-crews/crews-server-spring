@@ -17,6 +17,7 @@ import java.util.List;
 
 public class RecruitmentFixture {
     public static final LocalDateTime DEFAULT_DEADLINE = LocalDateTime.of(2030, 9, 5, 18, 0);
+    public static final String DEFAULT_RAW_DEADLINE = "2030-09-05T18:00:00.000Z";
     public static final String DEFAULT_CODE = "SECRET_CODE";
     public static final String DEFAULT_TITLE = "TITLE";
     public static final String DEFAULT_DESCRIPTION = "DESCRIPTION";
@@ -34,7 +35,7 @@ public class RecruitmentFixture {
     public static final List<SectionSaveRequest> SECTION_REQUESTS = List.of(BACKEND_SECTION_REQUEST,
             FRONTEND_SECTION_REQUEST);
     public static final RecruitmentSaveRequest RECRUITMENT_SAVE_REQUEST = new RecruitmentSaveRequest(null, null,
-            DEFAULT_TITLE, DEFAULT_DESCRIPTION, SECTION_REQUESTS, DEFAULT_DEADLINE.toString());
+            DEFAULT_TITLE, DEFAULT_DESCRIPTION, SECTION_REQUESTS, DEFAULT_RAW_DEADLINE);
 
     public static Recruitment TEST_RECRUITMENT(Administrator publisher) {
         return new Recruitment(null, DEFAULT_CODE, DEFAULT_TITLE, DEFAULT_DESCRIPTION, DEFAULT_DEADLINE, publisher,

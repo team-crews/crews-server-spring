@@ -6,8 +6,8 @@ import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode409;
 import static com.server.crews.fixture.QuestionFixture.INTRODUCTION_QUESTION;
 import static com.server.crews.fixture.QuestionFixture.STRENGTH_QUESTION;
-import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_RAW_DEADLINE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_TITLE;
 import static com.server.crews.fixture.RecruitmentFixture.QUESTION_REQUESTS;
 import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
@@ -62,7 +62,7 @@ public class RecruitmentApiTest extends ApiTest {
                 DEFAULT_DESCRIPTION,
                 List.of(selectiveQuestionCreateRequest));
         RecruitmentSaveRequest recruitmentCreateRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
-                DEFAULT_DESCRIPTION, List.of(sectionsCreateRequest), DEFAULT_DEADLINE.toString());
+                DEFAULT_DESCRIPTION, List.of(sectionsCreateRequest), DEFAULT_RAW_DEADLINE);
 
         RecruitmentDetailsResponse savedRecruitmentResponse = createRecruitment(adminTokenResponse.accessToken(),
                 recruitmentCreateRequest);
@@ -81,9 +81,8 @@ public class RecruitmentApiTest extends ApiTest {
         SectionSaveRequest newSectionCreateRequest = new SectionSaveRequest(null, "새로운 섹션 이름", DEFAULT_DESCRIPTION,
                 QUESTION_REQUESTS);
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(recruitmentId, recruitmentCode,
-                "변경된 모집 공고 제목",
-                DEFAULT_DESCRIPTION, List.of(sectionUpdateRequest, newSectionCreateRequest),
-                DEFAULT_DEADLINE.toString());
+                "변경된 모집 공고 제목", DEFAULT_DESCRIPTION, List.of(sectionUpdateRequest, newSectionCreateRequest),
+                DEFAULT_RAW_DEADLINE);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -109,7 +108,7 @@ public class RecruitmentApiTest extends ApiTest {
         // given
         TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, null,
-                "DEFAULT_TITLE_DEFAULT_TITLE_31_", DEFAULT_DESCRIPTION, List.of(), DEFAULT_DEADLINE.toString());
+                "DEFAULT_TITLE_DEFAULT_TITLE_31_", DEFAULT_DESCRIPTION, List.of(), DEFAULT_RAW_DEADLINE);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -141,7 +140,7 @@ public class RecruitmentApiTest extends ApiTest {
         SectionSaveRequest sectionSaveRequest = new SectionSaveRequest(null, BACKEND_SECTION_NAME, DEFAULT_DESCRIPTION,
                 List.of(questionSaveRequest));
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
-                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_DEADLINE.toString());
+                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_RAW_DEADLINE);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -173,7 +172,7 @@ public class RecruitmentApiTest extends ApiTest {
         SectionSaveRequest sectionSaveRequest = new SectionSaveRequest(null, BACKEND_SECTION_NAME, DEFAULT_DESCRIPTION,
                 List.of(questionSaveRequest));
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
-                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_DEADLINE.toString());
+                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_RAW_DEADLINE);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
