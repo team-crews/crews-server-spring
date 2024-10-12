@@ -148,8 +148,7 @@ public class RecruitmentService {
     public void updateDeadline(Long publisherId, DeadlineUpdateRequest request) {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
                 .orElseThrow(() -> new NotFoundException("동아리 관리자 id", "모집 공고"));
-
-        LocalDateTime modifiedDeadline = LocalDateTime.parse(request.deadline());
+        LocalDateTime modifiedDeadline = request.deadline();
         if (!recruitment.hasOnOrAfterDeadline(modifiedDeadline) || !recruitment.isInProgress()) {
             throw new CrewsException(CrewsErrorCode.INVALID_MODIFIED_DEADLINE);
         }

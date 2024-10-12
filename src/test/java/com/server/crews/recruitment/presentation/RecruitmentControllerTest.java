@@ -49,7 +49,7 @@ class RecruitmentControllerTest extends ControllerTest {
     void saveRecruitment() throws Exception {
         // given
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE, null,
-                List.of(), LocalDateTime.now().toString());
+                List.of(), LocalDateTime.now());
 
         // when & then
         mockMvc.perform(post("/recruitments")
@@ -66,7 +66,7 @@ class RecruitmentControllerTest extends ControllerTest {
         String invalidRecruitmentSaveRequest = """
                         {
                             "title": "",
-                            "deadline": "2030-09-05T18:00:00",
+                            "deadline": "2030-09-05T18:00:00.000Z",
                             "sections": []
                         }
                 """;
@@ -119,7 +119,7 @@ class RecruitmentControllerTest extends ControllerTest {
                         .content(invalidRecruitmentSaveRequest))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("날짜가 ISO8601 형식에 맞지 않습니다."));
+                .andExpect(jsonPath("$.message").value("날짜가 ISO8601 형식(yyyy-MM-dd'T'HH:mm:ss.SSS'Z')에 맞지 않습니다."));
     }
 
     @Test
@@ -129,8 +129,7 @@ class RecruitmentControllerTest extends ControllerTest {
         String invalidSectionName = "";
         SectionSaveRequest invalidSectionSaveRequest = new SectionSaveRequest(null, invalidSectionName, null, null);
         RecruitmentSaveRequest invalidRecruitmentSaveRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
-                null,
-                List.of(invalidSectionSaveRequest), LocalDateTime.now().toString());
+                null, List.of(invalidSectionSaveRequest), LocalDateTime.now());
 
         // when & then
         mockMvc.perform(post("/recruitments")
@@ -150,8 +149,7 @@ class RecruitmentControllerTest extends ControllerTest {
         SectionSaveRequest invalidSectionSaveRequest = new SectionSaveRequest(null, BACKEND_SECTION_NAME, null,
                 List.of(invalidQuestionSaveRequest));
         RecruitmentSaveRequest invalidRecruitmentSaveRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
-                null,
-                List.of(invalidSectionSaveRequest), LocalDateTime.now().toString());
+                null, List.of(invalidSectionSaveRequest), LocalDateTime.now());
 
         // when & then
         mockMvc.perform(post("/recruitments")
@@ -184,7 +182,7 @@ class RecruitmentControllerTest extends ControllerTest {
         String invalidRecruitmentSaveRequest = """
                         {
                             "title": "모집 공고 제목",
-                            "deadline": "2030-09-12T00:00:00",
+                            "deadline": "2030-09-12T00:00:00.000Z",
                             "sections": [
                                 {
                                     "name": "파트1",

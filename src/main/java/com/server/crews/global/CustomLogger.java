@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 public class CustomLogger {
+    private static final String PACKAGE_NAME = "com.server.crews";
     private final Logger logger;
 
     public CustomLogger(Class<?> clazz) {
@@ -16,8 +17,19 @@ public class CustomLogger {
         MDC.put("className", e.getStackTrace()[0].getClassName());
         MDC.put("exceptionName", e.getClass().getSimpleName());
         MDC.put("exceptionMessage", e.getMessage());
+        MDC.put("stackTrace", extractStackTrace(e));
         logger.error("An error occurred");
         MDC.clear();
+    }
+
+    private String extractStackTrace(Exception e) {
+        StringBuilder stackTraceBuilder = new StringBuilder();
+        for (StackTraceElement element : e.getStackTrace()) {
+            if (element.getClassName().startsWith(PACKAGE_NAME)) {
+                stackTraceBuilder.append(element).append("\n");
+            }
+        }
+        return stackTraceBuilder.toString();
     }
 
     public void info(String var1, Object... var2) {

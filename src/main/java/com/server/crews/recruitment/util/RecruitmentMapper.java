@@ -6,7 +6,6 @@ import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.SectionResponse;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class RecruitmentMapper {
@@ -32,13 +31,12 @@ public class RecruitmentMapper {
         List<Section> sections = recruitmentSaveRequest.sections().stream()
                 .map(SectionMapper::sectionSaveRequestToSection)
                 .toList();
-        LocalDateTime deadlineDateTime = LocalDateTime.parse(recruitmentSaveRequest.deadline());
         return new Recruitment(
                 recruitmentSaveRequest.id(),
                 recruitmentSaveRequest.code(),
                 recruitmentSaveRequest.title(),
                 recruitmentSaveRequest.description(),
-                deadlineDateTime,
+                recruitmentSaveRequest.deadline(),
                 publisher,
                 sections);
     }

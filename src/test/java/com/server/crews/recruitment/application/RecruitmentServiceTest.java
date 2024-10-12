@@ -81,8 +81,7 @@ class RecruitmentServiceTest extends ServiceTest {
         LocalDate date = LocalDate.now(Clock.system(ZoneId.of("Asia/Seoul"))).minusDays(1);
         LocalDateTime invalidDeadline = LocalDateTime.of(date, time);
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
-                DEFAULT_DESCRIPTION, SECTION_REQUESTS,
-                invalidDeadline.toString());
+                DEFAULT_DESCRIPTION, SECTION_REQUESTS, invalidDeadline);
 
         // when & then
         assertThatThrownBy(() -> recruitmentService.saveRecruitment(publisher.getId(), recruitmentSaveRequest))
@@ -103,7 +102,7 @@ class RecruitmentServiceTest extends ServiceTest {
                 DEFAULT_DESCRIPTION,
                 List.of(selectiveQuestionCreateRequest));
         RecruitmentSaveRequest recruitmentCreateRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
-                DEFAULT_DESCRIPTION, List.of(sectionsCreateRequest), DEFAULT_DEADLINE.toString());
+                DEFAULT_DESCRIPTION, List.of(sectionsCreateRequest), DEFAULT_DEADLINE);
 
         RecruitmentDetailsResponse savedRecruitmentResponse = recruitmentService.saveRecruitment(publisher.getId(),
                 recruitmentCreateRequest);
@@ -119,7 +118,7 @@ class RecruitmentServiceTest extends ServiceTest {
         SectionSaveRequest sectionSaveRequest = new SectionSaveRequest(sectionId, "변경된 섹션 이름", DEFAULT_DESCRIPTION,
                 List.of(selectiveQuestionSaveRequest));
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(recruitmentId, null, "변경된 모집 공고 제목",
-                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_DEADLINE.toString());
+                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_DEADLINE);
 
         // when
         RecruitmentDetailsResponse response = recruitmentService.saveRecruitment(publisher.getId(),
@@ -196,7 +195,7 @@ class RecruitmentServiceTest extends ServiceTest {
         Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher).start().recruitment();
 
         LocalDateTime invalidDeadline = recruitment.getDeadline().minusDays(1);
-        DeadlineUpdateRequest request = new DeadlineUpdateRequest(invalidDeadline.toString());
+        DeadlineUpdateRequest request = new DeadlineUpdateRequest(invalidDeadline);
 
         // when & then
         assertThatThrownBy(() -> recruitmentService.updateDeadline(publisher.getId(), request))
@@ -212,7 +211,7 @@ class RecruitmentServiceTest extends ServiceTest {
         Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher).recruitment();
 
         LocalDateTime invalidDeadline = recruitment.getDeadline().plusDays(1);
-        DeadlineUpdateRequest request = new DeadlineUpdateRequest(invalidDeadline.toString());
+        DeadlineUpdateRequest request = new DeadlineUpdateRequest(invalidDeadline);
 
         // when & then
         assertThatThrownBy(() -> recruitmentService.updateDeadline(publisher.getId(), request))
