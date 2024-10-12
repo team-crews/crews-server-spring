@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = DateTimeFormatValidator.class)
 public @interface DateTimeFormat {
 
-    String message() default "날짜가 yyyy-MM-dd'T'HH:mm:ss 형식에 맞지 않습니다.";
+    String message() default "날짜가 ISO8601 형식에 맞지 않습니다.";
 
     Class<?>[] groups() default {};
 

@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
@@ -64,7 +65,9 @@ class RecruitmentControllerTest extends ControllerTest {
         // given
         String invalidRecruitmentSaveRequest = """
                         {
-                            "title": ""
+                            "title": "",
+                            "deadline": "2030-09-05T18:00:00",
+                            "sections": []
                         }
                 """;
 
@@ -74,7 +77,7 @@ class RecruitmentControllerTest extends ControllerTest {
                         .content(invalidRecruitmentSaveRequest))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.message").value("모집공고 제목은 공백일 수 없습니다."));
     }
 
     @Test
@@ -84,7 +87,7 @@ class RecruitmentControllerTest extends ControllerTest {
         String invalidRecruitmentSaveRequest = """
                         {
                             "title": "모집공고 제목입니다.",
-                            "deadline": ""
+                            "sections": []
                         }
                 """;
 
@@ -94,19 +97,21 @@ class RecruitmentControllerTest extends ControllerTest {
                         .content(invalidRecruitmentSaveRequest))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.message").value("모집 마감 기한은 null일 수 없습니다."));
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"invalid", "2030-09-05 18:00:00"})
     @DisplayName("모집 공고의 마감일 형식을 검증한다.")
-    void validateRecruitmentDeadlineForm() throws Exception {
+    void validateRecruitmentDeadlineForm(String invalidDeadline) throws Exception {
         // given
-        String invalidRecruitmentSaveRequest = """
+        String invalidRecruitmentSaveRequest = String.format("""
                         {
                             "title": "모집공고 제목입니다.",
-                            "deadline": "invalid"
+                            "deadline": "%s",
+                            "sections": []
                         }
-                """;
+                """, invalidDeadline);
 
         // when & then
         mockMvc.perform(post("/recruitments")
@@ -114,7 +119,7 @@ class RecruitmentControllerTest extends ControllerTest {
                         .content(invalidRecruitmentSaveRequest))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.message").value("날짜가 ISO8601 형식에 맞지 않습니다."));
     }
 
     @Test
@@ -185,7 +190,11 @@ class RecruitmentControllerTest extends ControllerTest {
                                     "name": "파트1",
                                     "questions": [
                                         {
-                                            "type": "invalid"
+                                            "type": "invalid",
+                                            "choices": [],
+                                            "necessity": true,
+                                            "order": 1,
+                                            "content": "content"
                                         }
                                     ]
                                 }
@@ -199,6 +208,6 @@ class RecruitmentControllerTest extends ControllerTest {
                         .content(invalidRecruitmentSaveRequest))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.message").value("유효하지 않은 질문 유형(QuestionType) 값입니다. NARRATIVE 혹은 SELECTIVE를 입력해주세요. (대소문자 무관)"));
     }
 }
