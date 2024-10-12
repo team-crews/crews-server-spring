@@ -6,8 +6,8 @@ import static com.server.crews.api.StatusCodeChecker.checkStatusCode400;
 import static com.server.crews.api.StatusCodeChecker.checkStatusCode409;
 import static com.server.crews.fixture.QuestionFixture.INTRODUCTION_QUESTION;
 import static com.server.crews.fixture.QuestionFixture.STRENGTH_QUESTION;
+import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DEADLINE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
-import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_RAW_DEADLINE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_TITLE;
 import static com.server.crews.fixture.RecruitmentFixture.QUESTION_REQUESTS;
 import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
@@ -38,8 +38,7 @@ import com.server.crews.recruitment.dto.response.SectionResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,7 +61,7 @@ public class RecruitmentApiTest extends ApiTest {
                 DEFAULT_DESCRIPTION,
                 List.of(selectiveQuestionCreateRequest));
         RecruitmentSaveRequest recruitmentCreateRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
-                DEFAULT_DESCRIPTION, List.of(sectionsCreateRequest), DEFAULT_RAW_DEADLINE);
+                DEFAULT_DESCRIPTION, List.of(sectionsCreateRequest), DEFAULT_DEADLINE);
 
         RecruitmentDetailsResponse savedRecruitmentResponse = createRecruitment(adminTokenResponse.accessToken(),
                 recruitmentCreateRequest);
@@ -82,7 +81,7 @@ public class RecruitmentApiTest extends ApiTest {
                 QUESTION_REQUESTS);
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(recruitmentId, recruitmentCode,
                 "변경된 모집 공고 제목", DEFAULT_DESCRIPTION, List.of(sectionUpdateRequest, newSectionCreateRequest),
-                DEFAULT_RAW_DEADLINE);
+                DEFAULT_DEADLINE);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -108,7 +107,7 @@ public class RecruitmentApiTest extends ApiTest {
         // given
         TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, null,
-                "DEFAULT_TITLE_DEFAULT_TITLE_31_", DEFAULT_DESCRIPTION, List.of(), DEFAULT_RAW_DEADLINE);
+                "DEFAULT_TITLE_DEFAULT_TITLE_31_", DEFAULT_DESCRIPTION, List.of(), DEFAULT_DEADLINE);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -140,7 +139,7 @@ public class RecruitmentApiTest extends ApiTest {
         SectionSaveRequest sectionSaveRequest = new SectionSaveRequest(null, BACKEND_SECTION_NAME, DEFAULT_DESCRIPTION,
                 List.of(questionSaveRequest));
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
-                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_RAW_DEADLINE);
+                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_DEADLINE);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -172,7 +171,7 @@ public class RecruitmentApiTest extends ApiTest {
         SectionSaveRequest sectionSaveRequest = new SectionSaveRequest(null, BACKEND_SECTION_NAME, DEFAULT_DESCRIPTION,
                 List.of(questionSaveRequest));
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
-                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_RAW_DEADLINE);
+                DEFAULT_DESCRIPTION, List.of(sectionSaveRequest), DEFAULT_DEADLINE);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -200,9 +199,7 @@ public class RecruitmentApiTest extends ApiTest {
         TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         String accessToken = adminTokenResponse.accessToken();
 
-        String date = LocalDate.now().plusDays(10).toString();
-        String time = LocalTime.of(1, 10).toString();
-        String invalidDeadline = date + "T" + time;
+        LocalDateTime invalidDeadline = LocalDateTime.of(2030, 9, 30, 1, 10);
         RecruitmentSaveRequest recruitmentSaveRequest = new RecruitmentSaveRequest(null, null, DEFAULT_TITLE,
                 DEFAULT_DESCRIPTION, List.of(), invalidDeadline);
 
@@ -434,7 +431,7 @@ public class RecruitmentApiTest extends ApiTest {
                 .when().patch("/recruitments/in-progress");
 
         DeadlineUpdateRequest deadlineUpdateRequest = new DeadlineUpdateRequest(
-                recruitmentDetailsResponse.deadline().plusDays(1).toString());
+                recruitmentDetailsResponse.deadline().plusDays(1));
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -464,7 +461,7 @@ public class RecruitmentApiTest extends ApiTest {
                 .when().patch("/recruitments/in-progress");
 
         DeadlineUpdateRequest deadlineUpdateRequest = new DeadlineUpdateRequest(
-                recruitmentDetailsResponse.deadline().minusDays(1).toString());
+                recruitmentDetailsResponse.deadline().minusDays(1));
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()

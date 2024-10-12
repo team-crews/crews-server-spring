@@ -1,5 +1,6 @@
 package com.server.crews.global.exception;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.server.crews.global.CustomLogger;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,6 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public static final int CONSTRAINT_VIOLATION_CODE = 2000;
     public static final int NOT_FOUND_CODE = 3000;
+    private static final String INVALID_DATE_TIME_FORMAT_MESSAGE = "날짜가 ISO8601 형식(yyyy-MM-dd'T'HH:mm:ss.SSS'Z')에 맞지 않습니다.";
 
     private final CustomLogger customLogger = new CustomLogger(GlobalExceptionHandler.class);
 
@@ -37,6 +40,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String errorMessage = Objects.requireNonNull(e.getBindingResult().getFieldError())
                 .getDefaultMessage();
         return ResponseEntity.badRequest().body(new ErrorResponse(errorMessage, null));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException e,
+                                                                  HttpHeaders headers, HttpStatusCode status,
+                                                                  WebRequest request) {
+        if (e.getCause() instanceof InvalidFormatException) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(INVALID_DATE_TIME_FORMAT_MESSAGE, null));
+        }
+        return super.handleHttpMessageNotReadable(e, headers, status, request);
     }
 
     @ExceptionHandler(CrewsException.class)
