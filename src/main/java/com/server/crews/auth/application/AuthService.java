@@ -9,8 +9,8 @@ import com.server.crews.auth.dto.request.ApplicantLoginRequest;
 import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.auth.repository.ApplicantRepository;
-import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.CrewsErrorCode;
+import com.server.crews.global.exception.CrewsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,47 +25,51 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
+    public TokenResponse registerForAdmin(AdminLoginRequest request) {
+        String clubName = request.clubName();
+        String password = request.password();
+
+        String encodedPassword = passwordEncoder.encode(password);
+        Administrator administrator = new Administrator(clubName, encodedPassword);
+        administratorRepository.save(administrator);
+        String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, clubName);
+        return new TokenResponse(administrator.getClubName(), accessToken);
+    }
+
     public TokenResponse loginForAdmin(AdminLoginRequest request) {
         String clubName = request.clubName();
         String password = request.password();
 
         Administrator administrator = administratorRepository.findByClubName(clubName)
-                .map(savedAdmin -> {
-                    validatePassword(password, savedAdmin.getPassword());
-                    return savedAdmin;
-                })
-                .orElseGet(() -> createAdmin(clubName, password));
+                .orElseThrow(() -> new CrewsException(CrewsErrorCode.USER_NOT_FOUND));
+        validatePassword(password, administrator.getPassword());
 
         String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, clubName);
         return new TokenResponse(administrator.getClubName(), accessToken);
     }
 
-    private Administrator createAdmin(String clubName, String password) {
+    @Transactional
+    public TokenResponse registerForApplicant(ApplicantLoginRequest request) {
+        String email = request.email();
+        String password = request.password();
+
         String encodedPassword = passwordEncoder.encode(password);
-        Administrator administrator = new Administrator(clubName, encodedPassword);
-        return administratorRepository.save(administrator);
+        Applicant applicant = new Applicant(email, encodedPassword);
+        applicantRepository.save(applicant);
+        String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, email);
+        return new TokenResponse(applicant.getEmail(), accessToken);
     }
 
-    @Transactional
     public TokenResponse loginForApplicant(ApplicantLoginRequest request) {
         String email = request.email();
         String password = request.password();
 
         Applicant applicant = applicantRepository.findByEmail(email)
-                .map(savedApplicant -> {
-                    validatePassword(password, savedApplicant.getPassword());
-                    return savedApplicant;
-                })
-                .orElseGet(() -> createApplicant(email, password));
+                .orElseThrow(() -> new CrewsException(CrewsErrorCode.USER_NOT_FOUND));
+        validatePassword(password, applicant.getPassword());
 
         String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, email);
         return new TokenResponse(applicant.getEmail(), accessToken);
-    }
-
-    private Applicant createApplicant(String email, String password) {
-        String encodedPassword = passwordEncoder.encode(password);
-        Applicant applicant = new Applicant(email, encodedPassword);
-        return applicantRepository.save(applicant);
     }
 
     private void validatePassword(String password, String encodedPassword) {

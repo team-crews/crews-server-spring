@@ -29,12 +29,38 @@ public class AuthController {
     private final RefreshTokenCookieGenerator refreshTokenCookieGenerator;
 
     /**
-     * [동아리 관리자] 로그인 해 토큰을 발급 받는다. 모집 공고가 존재하지 않는다면 모집 공고를 새로 생성한다.
+     * [동아리 관리자] 회원가입하고 토큰을 발급 받는다.
+     */
+    @PostMapping("/admin/register")
+    public ResponseEntity<TokenResponse> registerForAdmin(@RequestBody AdminLoginRequest request) {
+        TokenResponse tokenResponse = authService.registerForAdmin(request);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(Role.ADMIN, tokenResponse.username());
+        ResponseCookie cookie = refreshTokenCookieGenerator.generateWithDefaultValidity(refreshToken.getToken());
+        return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(tokenResponse);
+    }
+
+    /**
+     * [동아리 관리자] 로그인 해 토큰을 발급 받는다.
      */
     @PostMapping("/admin/login")
     public ResponseEntity<TokenResponse> loginForAdmin(@RequestBody AdminLoginRequest request) {
         TokenResponse tokenResponse = authService.loginForAdmin(request);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(Role.ADMIN, tokenResponse.username());
+        ResponseCookie cookie = refreshTokenCookieGenerator.generateWithDefaultValidity(refreshToken.getToken());
+        return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(tokenResponse);
+    }
+
+    /**
+     * [지원자] 회원가입하고 토큰을 발급 받는다.
+     */
+    @PostMapping("/applicant/register")
+    public ResponseEntity<TokenResponse> registerForApplicant(@RequestBody ApplicantLoginRequest request) {
+        TokenResponse tokenResponse = authService.registerForApplicant(request);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(Role.APPLICANT, tokenResponse.username());
         ResponseCookie cookie = refreshTokenCookieGenerator.generateWithDefaultValidity(refreshToken.getToken());
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
