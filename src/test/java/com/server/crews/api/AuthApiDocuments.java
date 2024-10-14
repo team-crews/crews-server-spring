@@ -40,8 +40,8 @@ public class AuthApiDocuments {
     }
 
     public static RestDocumentationFilter REGISTER_APPLICANT_200_DOCUMENT() {
-        return document(AUTH_API + "지원자 로그인",
-                "지원자(applicant)가 로그인한다.",
+        return document(AUTH_API + "지원자 회원가입",
+                "지원자(applicant)가 회원가입한다.",
                 requestFields(
                         fieldWithPath(".email").description("이메일"),
                         fieldWithPath(".password").description("비밀번호")),
