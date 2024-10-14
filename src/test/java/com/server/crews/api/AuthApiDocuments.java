@@ -13,6 +13,19 @@ import org.springframework.restdocs.restassured.RestDocumentationFilter;
 public class AuthApiDocuments {
     private static final String AUTH_API = "auth/";
 
+    public static RestDocumentationFilter REGISTER_ADMIN_200_DOCUMENT() {
+        return document(AUTH_API + "동아리 운영진 회원가입",
+                "동아리 운영진(admin)이 회원가입한다.",
+                requestFields(
+                        fieldWithPath(".clubName").description("동아리 이름"),
+                        fieldWithPath(".password").description("비밀번호")),
+                responseFields(
+                        fieldWithPath(".username").description("동아리 이름"),
+                        fieldWithPath(".accessToken").description("access token")),
+                responseHeaders(
+                        headerWithName("Set-Cookie").description("리프레시 토큰")));
+    }
+
     public static RestDocumentationFilter LOGIN_ADMIN_200_DOCUMENT() {
         return document(AUTH_API + "동아리 운영진 로그인",
                 "동아리 운영진(admin)이 로그인한다.",
@@ -21,6 +34,19 @@ public class AuthApiDocuments {
                         fieldWithPath(".password").description("비밀번호")),
                 responseFields(
                         fieldWithPath(".username").description("동아리 이름"),
+                        fieldWithPath(".accessToken").description("access token")),
+                responseHeaders(
+                        headerWithName("Set-Cookie").description("리프레시 토큰")));
+    }
+
+    public static RestDocumentationFilter REGISTER_APPLICANT_200_DOCUMENT() {
+        return document(AUTH_API + "지원자 회원가입",
+                "지원자(applicant)가 회원가입한다.",
+                requestFields(
+                        fieldWithPath(".email").description("이메일"),
+                        fieldWithPath(".password").description("비밀번호")),
+                responseFields(
+                        fieldWithPath(".username").description("지원자 email"),
                         fieldWithPath(".accessToken").description("access token")),
                 responseHeaders(
                         headerWithName("Set-Cookie").description("리프레시 토큰")));

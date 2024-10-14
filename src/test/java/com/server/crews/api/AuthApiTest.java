@@ -32,9 +32,35 @@ public class AuthApiTest extends ApiTest {
     JwtTokenProvider jwtTokenProvider;
 
     @Test
-    @DisplayName("[동아리 관리자] 동아리 관리자가 로그인 해 토큰을 발급 받는다.")
-    void loginNotSignedUpAdmin() {
+    @DisplayName("[동아리 관리자] 동아리 관리자가 회원가입하고 토큰을 발급 받는다.")
+    void registerAdmin() {
         // given
+        AdminLoginRequest adminLoginRequest = new AdminLoginRequest(TEST_CLUB_NAME, TEST_PASSWORD);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(AuthApiDocuments.REGISTER_ADMIN_200_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(adminLoginRequest)
+                .when().post("/auth/admin/register")
+                .then().log().all()
+                .extract();
+
+        // then
+        TokenResponse tokenResponse = response.as(TokenResponse.class);
+        Map<String, String> cookies = response.cookies();
+        assertSoftly(softAssertions -> {
+            checkStatusCode200(response, softAssertions);
+            softAssertions.assertThat(tokenResponse.accessToken()).isNotEmpty();
+            softAssertions.assertThat(cookies.get("refreshToken")).isNotNull();
+        });
+    }
+
+    @Test
+    @DisplayName("[동아리 관리자] 동아리 관리자가 로그인 해 토큰을 발급 받는다.")
+    void loginAdmin() {
+        // given
+        signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
         AdminLoginRequest adminLoginRequest = new AdminLoginRequest(TEST_CLUB_NAME, TEST_PASSWORD);
 
         // when
@@ -57,9 +83,36 @@ public class AuthApiTest extends ApiTest {
     }
 
     @Test
-    @DisplayName("[지원자] 지원자가 로그인 해 토큰을 발급 받는다.")
-    void loginNotSignedUpApplicant() {
+    @DisplayName("[지원자] 지원자가 회원가입하고 토큰을 발급 받는다.")
+    void registerApplicant() {
         // given
+        ApplicantLoginRequest applicantLoginRequest = new ApplicantLoginRequest(TEST_EMAIL, TEST_PASSWORD);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(AuthApiDocuments.REGISTER_APPLICANT_200_DOCUMENT())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(applicantLoginRequest)
+                .when().post("/auth/applicant/register")
+                .then().log().all()
+                .extract();
+
+        // then
+        TokenResponse applicantTokenResponse = response.as(TokenResponse.class);
+        Map<String, String> cookies = response.cookies();
+        assertSoftly(softAssertions -> {
+            checkStatusCode200(response, softAssertions);
+            softAssertions.assertThat(applicantTokenResponse.accessToken()).isNotEmpty();
+            softAssertions.assertThat(cookies.get("refreshToken")).isNotNull();
+        });
+    }
+
+
+    @Test
+    @DisplayName("[지원자] 지원자가 로그인 해 토큰을 발급 받는다.")
+    void loginApplicant() {
+        // given
+        signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
         ApplicantLoginRequest applicantLoginRequest = new ApplicantLoginRequest(TEST_EMAIL, TEST_PASSWORD);
 
         // when
@@ -140,7 +193,7 @@ public class AuthApiTest extends ApiTest {
         String refreshToken = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(adminLoginRequest)
-                .when().post("/auth/admin/login")
+                .when().post("/auth/admin/register")
                 .then()
                 .extract()
                 .cookie("refreshToken");

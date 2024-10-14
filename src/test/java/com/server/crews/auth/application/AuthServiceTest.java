@@ -33,7 +33,7 @@ class AuthServiceTest extends ServiceTest {
     private JwtTokenProvider jwtTokenProvider;
 
     @Test
-    @DisplayName("동아리 관리자가 로그인한다.")
+    @DisplayName("동아리 관리자가 회원가입하고 액세스 토큰을 발급받는다.")
     void loginNotSignedUpAdmin() {
         // given
         String clubName = "멋쟁이사자처럼";
@@ -41,7 +41,7 @@ class AuthServiceTest extends ServiceTest {
         AdminLoginRequest request = new AdminLoginRequest(clubName, password);
 
         // when
-        TokenResponse tokenResponse = authService.loginForAdmin(request);
+        TokenResponse tokenResponse = authService.registerForAdmin(request);
 
         // then
         Optional<Administrator> createdAdmin = administratorRepository.findByClubName(tokenResponse.username());
@@ -52,7 +52,7 @@ class AuthServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("가입된 관리자가 로그인 요청을 하면 액세스 토큰을 발급한다.")
+    @DisplayName("관리자가 로그인하고 액세스 토큰을 발급한다.")
     void loginAdmin() {
         // given
         Administrator administrator = LIKE_LION_ADMIN().administrator();
@@ -70,7 +70,7 @@ class AuthServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("가입되지 않은 지원자가 로그인 요청을 하면 계정을 생성하고 액세스 토큰을 발급한다.")
+    @DisplayName("지원자가 회원가입하고 액세스 토큰을 발급한다.")
     void loginNotSignedUpApplicant() {
         // given
         String email = "new@gamil.com";
@@ -78,7 +78,7 @@ class AuthServiceTest extends ServiceTest {
         ApplicantLoginRequest request = new ApplicantLoginRequest(email, password);
 
         // when
-        TokenResponse tokenResponse = authService.loginForApplicant(request);
+        TokenResponse tokenResponse = authService.registerForApplicant(request);
 
         // then
         Optional<Applicant> createdApplicant = applicantRepository.findByEmail(tokenResponse.username());

@@ -83,7 +83,7 @@ public abstract class ApiTest {
         ExtractableResponse<Response> response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(new AdminLoginRequest(clubName, password))
-                .when().post("/auth/admin/login")
+                .when().post("/auth/admin/register")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
@@ -124,7 +124,7 @@ public abstract class ApiTest {
         ExtractableResponse<Response> response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(new ApplicantLoginRequest(email, password))
-                .when().post("/auth/applicant/login")
+                .when().post("/auth/applicant/register")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
