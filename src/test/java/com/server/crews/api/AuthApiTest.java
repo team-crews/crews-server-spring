@@ -32,7 +32,7 @@ public class AuthApiTest extends ApiTest {
     JwtTokenProvider jwtTokenProvider;
 
     @Test
-    @DisplayName("[동아리 관리자] 동아리 관리자가 로그인 해 토큰을 발급 받는다.")
+    @DisplayName("[동아리 관리자] 동아리 관리자가 회원가입하고 토큰을 발급 받는다.")
     void registerAdmin() {
         // given
         AdminLoginRequest adminLoginRequest = new AdminLoginRequest(TEST_CLUB_NAME, TEST_PASSWORD);
