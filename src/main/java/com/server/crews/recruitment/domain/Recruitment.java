@@ -21,6 +21,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import lombok.AccessLevel;
@@ -97,6 +98,14 @@ public class Recruitment {
 
     public void addSections(List<Section> sections) {
         sections.forEach(section -> section.updateRecruitment(this));
+        sections.stream()
+                .map(section -> section.getSelectiveQuestions())
+                .flatMap(Collection::stream)
+                .forEach(selectiveQuestion -> selectiveQuestion.updateRecruitment(this));
+        sections.stream()
+                .map(section -> section.getNarrativeQuestions())
+                .flatMap(Collection::stream)
+                .forEach(narrativeQuestion -> narrativeQuestion.updateRecruitment(this));
         this.sections.addAll(sections);
     }
 

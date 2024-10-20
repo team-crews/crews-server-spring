@@ -37,19 +37,16 @@ public class TestRecruitment {
 
     public TestRecruitment addSection(String name, List<NarrativeQuestion> narrativeQuestions,
                                       List<SelectiveQuestion> selectiveQuestions) {
+        narrativeQuestions.forEach(narrativeQuestion -> narrativeQuestion.updateRecruitment(this.recruitment));
+        selectiveQuestions.forEach(selectiveQuestion -> selectiveQuestion.updateRecruitment(this.recruitment));
         Section section = new Section(null, name, DEFAULT_DESCRIPTION, narrativeQuestions, selectiveQuestions);
         section.updateRecruitment(this.recruitment);
         Section savedSection = environ.sectionRepository().save(section);
-        List<NarrativeQuestion> savedNarrativeQuestions = environ.narrativeQuestionRepository()
-                .saveAll(narrativeQuestions);
-        List<SelectiveQuestion> savedSelectiveQuestions = environ.selectiveQuestionRepository()
-                .saveAll(selectiveQuestions);
-        List<Choice> choices = choicesInSelectiveQuestions(selectiveQuestions);
-        List<Choice> savedChoices = environ.choiceRepository().saveAll(choices);
+
         this.sections.add(savedSection);
-        this.narrativeQuestions.addAll(savedNarrativeQuestions);
-        this.selectiveQuestions.addAll(savedSelectiveQuestions);
-        this.choices.addAll(savedChoices);
+        this.narrativeQuestions.addAll(savedSection.getNarrativeQuestions());
+        this.selectiveQuestions.addAll(savedSection.getSelectiveQuestions());
+        this.choices.addAll(choicesInSelectiveQuestions(selectiveQuestions));
         return this;
     }
 
