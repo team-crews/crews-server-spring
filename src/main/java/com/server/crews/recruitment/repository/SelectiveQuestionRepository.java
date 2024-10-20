@@ -17,4 +17,10 @@ public interface SelectiveQuestionRepository extends JpaRepository<SelectiveQues
             where s.section in :sections
             """)
     List<SelectiveQuestion> findAllWithChoicesInSections(@Param("sections") List<Section> sections);
+
+    @Query("""
+            select s from SelectiveQuestion s
+            where s.recruitment.id = :recruitmentId
+            """)
+    List<SelectiveQuestion> findAllByRecruitmentId(@Param("recruitmentId") Long recruitmentId);
 }

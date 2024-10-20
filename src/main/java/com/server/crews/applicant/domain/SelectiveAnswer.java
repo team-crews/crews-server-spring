@@ -47,4 +47,16 @@ public class SelectiveAnswer {
     public void updateApplication(Application application) {
         this.application = application;
     }
+
+    public void setOriginalId(Long id) {
+        this.id = id;
+    }
+
+    public Long getQuestionId() {
+        return this.selectiveQuestion.getId();
+    }
+
+    public Long getChoiceId() {
+        return this.choice.getId();
+    }
 }

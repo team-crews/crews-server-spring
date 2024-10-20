@@ -48,4 +48,12 @@ public class NarrativeAnswer {
     public void updateApplication(Application application) {
         this.application = application;
     }
+
+    public void setToOriginalId(Long id) {
+        this.id = id;
+    }
+
+    public Long getQuestionId() {
+        return this.narrativeQuestion.getId();
+    }
 }

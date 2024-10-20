@@ -1,5 +1,9 @@
 package com.server.crews.applicant.domain;
 
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toMap;
+
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.recruitment.domain.Recruitment;
 import jakarta.persistence.CascadeType;
@@ -16,8 +20,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -54,10 +60,10 @@ public class Application {
     private String name;
 
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<NarrativeAnswer> narrativeAnswers;
+    private Set<NarrativeAnswer> narrativeAnswers;
 
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SelectiveAnswer> selectiveAnswers;
+    private Set<SelectiveAnswer> selectiveAnswers;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "recruitment_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
@@ -84,12 +90,22 @@ public class Application {
 
     public void replaceNarrativeAnswers(List<NarrativeAnswer> narrativeAnswers) {
         narrativeAnswers.forEach(narrativeAnswer -> narrativeAnswer.updateApplication(this));
-        this.narrativeAnswers = new ArrayList<>(narrativeAnswers);
+        this.narrativeAnswers = new HashSet<>(narrativeAnswers);
     }
 
     public void replaceSelectiveAnswers(List<SelectiveAnswer> selectiveAnswers) {
         selectiveAnswers.forEach(selectiveAnswer -> selectiveAnswer.updateApplication(this));
-        this.selectiveAnswers = new ArrayList<>(selectiveAnswers);
+        this.selectiveAnswers = new HashSet<>(selectiveAnswers);
+    }
+
+    public Map<Long, NarrativeAnswer> getNarrativeAnswersByQuestionId() {
+        return this.narrativeAnswers.stream()
+                .collect(toMap(NarrativeAnswer::getQuestionId, identity()));
+    }
+
+    public Map<Long, List<SelectiveAnswer>> getSelectiveAnswersByQuestionId() {
+        return this.selectiveAnswers.stream()
+                .collect(groupingBy(SelectiveAnswer::getQuestionId));
     }
 
     public void pass() {

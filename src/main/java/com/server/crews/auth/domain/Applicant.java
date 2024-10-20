@@ -38,6 +38,10 @@ public class Applicant {
         this.password = password;
     }
 
+    public Applicant(Long id) {
+        this.id = id;
+    }
+
     private void validateEmail(String email) {
         if (!Pattern.matches(EMAIL_PATTERN, email)) {
             throw new CrewsException(CrewsErrorCode.INVALID_EMAIL_PATTERN);

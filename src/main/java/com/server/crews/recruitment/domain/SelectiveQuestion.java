@@ -73,6 +73,10 @@ public class SelectiveQuestion {
     @Column(name = "maximum_selection", nullable = false)
     private Integer maximumSelection;
 
+    public SelectiveQuestion(Long id) {
+        this(id, List.of(), null, null, null, null, null);
+    }
+
     public SelectiveQuestion(Long id, List<Choice> choices, String content, Boolean necessity, Integer order,
                              Integer minimumSelection, Integer maximumSelection) {
         validateSelectionCount(minimumSelection, maximumSelection);

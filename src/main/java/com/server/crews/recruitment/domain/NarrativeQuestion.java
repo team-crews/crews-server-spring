@@ -59,6 +59,10 @@ public class NarrativeQuestion {
     @Column(name = "word_limit", nullable = false)
     private Integer wordLimit;
 
+    public NarrativeQuestion(Long id) {
+        this(id, null, null, null, null, null, null);
+    }
+
     public NarrativeQuestion(Long id, String content, Boolean necessity, Integer order, Integer wordLimit) {
         this.id = id;
         this.content = content;

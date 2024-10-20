@@ -33,6 +33,10 @@ public class Choice {
     @Column(name = "content", nullable = false, length = 50)
     private String content;
 
+    public Choice(Long id) {
+        this(id, null);
+    }
+
     public Choice(Long id, String content) {
         this.id = id;
         this.content = content;

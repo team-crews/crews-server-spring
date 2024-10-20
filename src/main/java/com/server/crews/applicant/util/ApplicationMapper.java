@@ -3,7 +3,6 @@ package com.server.crews.applicant.util;
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;
 import com.server.crews.applicant.domain.SelectiveAnswer;
-import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.response.AnswerResponse;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
@@ -44,17 +43,28 @@ public class ApplicationMapper {
                 .build();
     }
 
-    public static Application applicationSaveRequestToApplication(ApplicationSaveRequest applicationSaveRequest,
-                                                                  Recruitment recruitment, Applicant applicant) {
-        List<AnswerSaveRequest> answerSaveRequests = applicationSaveRequest.answers();
-        List<NarrativeAnswer> narrativeAnswers = answerSaveRequests.stream()
+    public static List<NarrativeAnswer> narrativeAnswersInApplicationSaveRequest(
+            ApplicationSaveRequest applicationSaveRequest) {
+        return applicationSaveRequest.answers()
+                .stream()
                 .filter(answerSaveRequest -> QuestionType.NARRATIVE.hasSameName(answerSaveRequest.questionType()))
                 .map(AnswerMapper::answerSaveRequestToNarrativeAnswer)
                 .toList();
-        List<SelectiveAnswer> selectiveAnswers = answerSaveRequests.stream()
+    }
+
+    public static List<SelectiveAnswer> selectiveAnswersInApplicationSaveRequest(
+            ApplicationSaveRequest applicationSaveRequest) {
+        return applicationSaveRequest.answers()
+                .stream()
                 .filter(answerSaveRequest -> QuestionType.SELECTIVE.hasSameName(answerSaveRequest.questionType()))
                 .map(AnswerMapper::answerSaveRequestToSelectiveAnswer)
                 .toList();
+    }
+
+    public static Application applicationSaveRequestToApplication(ApplicationSaveRequest applicationSaveRequest,
+                                                                  Recruitment recruitment, Applicant applicant,
+                                                                  List<NarrativeAnswer> narrativeAnswers,
+                                                                  List<SelectiveAnswer> selectiveAnswers) {
         return new Application(
                 applicationSaveRequest.id(),
                 recruitment,
