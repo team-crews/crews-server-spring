@@ -11,7 +11,6 @@ import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
 import com.server.crews.applicant.util.ApplicationMapper;
-import com.server.crews.auth.domain.Applicant;
 import com.server.crews.global.exception.CrewsErrorCode;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.NotFoundException;
@@ -62,7 +61,7 @@ public class ApplicationService {
         List<SelectiveAnswer> updatedSelectiveAnswers = applicationForm.writeSelectiveAnswers(newSelectiveAnswers);
 
         Application application = ApplicationMapper.applicationSaveRequestToApplication(request, recruitment,
-                new Applicant(applicantId), updatedNarrativeAnswers, updatedSelectiveAnswers);
+                applicantId, updatedNarrativeAnswers, updatedSelectiveAnswers);
         Application savedApplication = applicationRepository.save(application);
         return ApplicationMapper.applicationToApplicationDetailsResponse(savedApplication);
     }

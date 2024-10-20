@@ -97,8 +97,8 @@ public abstract class RepositoryTest {
         return choices;
     }
 
-    protected Application createDefaultApplication(Applicant applicant, Recruitment recruitment) {
-        Application application = APPLICATION(applicant, recruitment, List.of(), List.of());
+    protected Application createDefaultApplication(Long applicantId, Recruitment recruitment) {
+        Application application = APPLICATION(applicantId, recruitment, List.of(), List.of());
         testRepository.save(application);
         return application;
     }

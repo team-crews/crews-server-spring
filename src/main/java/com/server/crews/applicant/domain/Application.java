@@ -71,7 +71,7 @@ public class Application {
 
     public Application(Long id,
                        Recruitment recruitment,
-                       Applicant applicant,
+                       Long applicantId,
                        String studentNumber,
                        String major,
                        String name,
@@ -79,7 +79,7 @@ public class Application {
                        List<SelectiveAnswer> selectiveAnswers) {
         this.id = id;
         this.recruitment = recruitment;
-        this.applicant = applicant;
+        this.applicant = new Applicant(applicantId);
         this.studentNumber = studentNumber;
         this.major = major;
         this.name = name;

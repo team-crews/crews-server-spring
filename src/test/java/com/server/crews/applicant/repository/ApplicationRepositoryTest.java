@@ -23,7 +23,7 @@ class ApplicationRepositoryTest extends RepositoryTest {
         Administrator admin = createDefaultAdmin();
         Recruitment recruitment = createDefaultRecruitment(admin);
         Applicant applicant = createDefaultApplicant("test@gmail.com");
-        Application application = createDefaultApplication(applicant, recruitment);
+        Application application = createDefaultApplication(applicant.getId(), recruitment);
 
         // when
         List<Application> applications = applicationRepository.findAllWithRecruitmentByPublisherId(admin.getId());
@@ -40,8 +40,8 @@ class ApplicationRepositoryTest extends RepositoryTest {
         Recruitment recruitment = createDefaultRecruitment(admin);
         Applicant firstApplicant = createDefaultApplicant("test1@gmail.com");
         Applicant secondApplicant = createDefaultApplicant("test2@gmail.com");
-        createDefaultApplication(firstApplicant, recruitment);
-        createDefaultApplication(secondApplicant, recruitment);
+        createDefaultApplication(firstApplicant.getId(), recruitment);
+        createDefaultApplication(secondApplicant.getId(), recruitment);
 
         // when
         int applicationCount = applicationRepository.countAllByRecruitment(recruitment);

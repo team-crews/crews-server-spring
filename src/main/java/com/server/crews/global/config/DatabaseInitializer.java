@@ -79,7 +79,7 @@ public class DatabaseInitializer implements ApplicationRunner {
                 "크루즈 프로젝트 서버 개발을 맡았습니다.");
         SelectiveAnswer skhBackendStackAnswer = new SelectiveAnswer(null, backendStackChoices.get(1),
                 backendStackQuestion);
-        Application skhApplication = new Application(null, recruitment, kh, "202011414", "컴퓨터공학", "송경호",
+        Application skhApplication = new Application(null, recruitment, kh.getId(), "202011414", "컴퓨터공학", "송경호",
                 List.of(skhIntroductionAnswer, skhBackendNarrativeAnswer),
                 List.of(skhPersonalityAnswer, skhBackendStackAnswer));
         applicationRepository.save(skhApplication);
@@ -89,7 +89,7 @@ public class DatabaseInitializer implements ApplicationRunner {
                 personalityQuestion);
         NarrativeAnswer lkhFrontendNarrativeAnswer = new NarrativeAnswer(null, frontendNarrativeQuestion,
                 "크루즈 프로젝트 프론트 개발을 맡았습니다.");
-        Application lkhApplication = new Application(null, recruitment, lkh, "202013232", "컴퓨터공학", "이규호",
+        Application lkhApplication = new Application(null, recruitment, lkh.getId(), "202013232", "컴퓨터공학", "이규호",
                 List.of(lkhIntroductionAnswer, lkhFrontendNarrativeAnswer), List.of(lkhPersonalityAnswer));
         applicationRepository.save(lkhApplication);
     }

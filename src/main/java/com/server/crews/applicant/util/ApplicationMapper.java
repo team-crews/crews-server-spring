@@ -62,13 +62,13 @@ public class ApplicationMapper {
     }
 
     public static Application applicationSaveRequestToApplication(ApplicationSaveRequest applicationSaveRequest,
-                                                                  Recruitment recruitment, Applicant applicant,
+                                                                  Recruitment recruitment, Long applicantId,
                                                                   List<NarrativeAnswer> narrativeAnswers,
                                                                   List<SelectiveAnswer> selectiveAnswers) {
         return new Application(
                 applicationSaveRequest.id(),
                 recruitment,
-                applicant,
+                applicantId,
                 applicationSaveRequest.studentNumber(),
                 applicationSaveRequest.major(),
                 applicationSaveRequest.name(),
