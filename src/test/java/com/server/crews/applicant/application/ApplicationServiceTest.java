@@ -9,7 +9,6 @@ import static com.server.crews.fixture.QuestionFixture.SELECTIVE_QUESTION;
 import static com.server.crews.fixture.SectionFixture.BACKEND_SECTION_NAME;
 import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.server.crews.applicant.domain.Application;
@@ -19,6 +18,7 @@ import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
+import com.server.crews.applicant.dto.request.SectionSaveRequest;
 import com.server.crews.applicant.dto.response.AnswerResponse;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.repository.ApplicationRepository;
@@ -28,7 +28,6 @@ import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.environ.service.ServiceTest;
 import com.server.crews.environ.service.TestRecruitment;
-import com.server.crews.global.exception.CrewsException;
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
@@ -60,7 +59,7 @@ class ApplicationServiceTest extends ServiceTest {
     @ParameterizedTest
     @MethodSource("provideAnswersAndCount")
     @DisplayName("답변을 작성한 지원서를 저장한다.")
-    void saveApplication(List<AnswerSaveRequest> answerSaveRequests, int expectedSavedNarrativeAnsCount,
+    void saveApplication(List<SectionSaveRequest> sectionSaveRequests, int expectedSavedNarrativeAnsCount,
                          int expectedSavedSelectiveAnsCount) {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
@@ -72,7 +71,7 @@ class ApplicationServiceTest extends ServiceTest {
         Applicant applicant = JONGMEE_APPLICANT().applicant();
 
         ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR,
-                DEFAULT_NAME, answerSaveRequests, recruitment.getCode());
+                DEFAULT_NAME, sectionSaveRequests, recruitment.getCode());
 
         // when
         ApplicationDetailsResponse applicationDetailsResponse = applicationService.saveApplication(applicant.getId(),
@@ -89,38 +88,16 @@ class ApplicationServiceTest extends ServiceTest {
     }
 
     private static Stream<Arguments> provideAnswersAndCount() {
+        AnswerSaveRequest narrativeAnswerSaveRequest = new AnswerSaveRequest(2l, QuestionType.NARRATIVE.name(),
+                null, DEFAULT_NARRATIVE_ANSWER);
+        AnswerSaveRequest selectiveAnswerSaveRequest = new AnswerSaveRequest(1l, QuestionType.SELECTIVE.name(),
+                List.of(1l, 2l), null);
         return Stream.of(
                 Arguments.of(List.of(
-                        new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 2L, DEFAULT_NARRATIVE_ANSWER, null),
-                        new AnswerSaveRequest(null, QuestionType.SELECTIVE.name(), 1L, null, 1L),
-                        new AnswerSaveRequest(null, QuestionType.SELECTIVE.name(), 1L, null, 2L)
-                ), 1, 2),
+                        new SectionSaveRequest(1l, List.of(narrativeAnswerSaveRequest)),
+                        new SectionSaveRequest(2l, List.of(selectiveAnswerSaveRequest))), 1, 2),
                 Arguments.of(List.of(
-                        new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 2L, DEFAULT_NARRATIVE_ANSWER, null)
-                ), 1, 0)
-        );
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 질문으로 지원서 작성 저장을 요청하면 예외가 발생한다.")
-    void validateQuestionIds() {
-        // given
-        Administrator publisher = LIKE_LION_ADMIN().administrator();
-        Recruitment recruitment = LIKE_LION_RECRUITMENT(publisher)
-                .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
-                .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
-                .recruitment();
-        Applicant applicant = JONGMEE_APPLICANT().applicant();
-        Application application = JONGMEE_APPLICATION(applicant, recruitment).application();
-
-        List<AnswerSaveRequest> invalidAnswerSaveRequests = List.of(
-                new AnswerSaveRequest(null, QuestionType.NARRATIVE.name(), 3L, DEFAULT_NARRATIVE_ANSWER, null));
-        ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR,
-                DEFAULT_NAME, invalidAnswerSaveRequests, recruitment.getCode());
-
-        // when & then
-        assertThatThrownBy(() -> applicationService.saveApplication(applicant.getId(), saveRequest))
-                .isInstanceOf(CrewsException.class);
+                        new SectionSaveRequest(1l, List.of(narrativeAnswerSaveRequest))), 1, 0));
     }
 
     @Test

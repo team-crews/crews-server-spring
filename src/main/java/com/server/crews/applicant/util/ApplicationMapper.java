@@ -4,13 +4,14 @@ import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;
 import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
+import com.server.crews.applicant.dto.request.SectionSaveRequest;
 import com.server.crews.applicant.dto.response.AnswerResponse;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
-import com.server.crews.auth.domain.Applicant;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.dto.request.QuestionType;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class ApplicationMapper {
@@ -43,24 +44,6 @@ public class ApplicationMapper {
                 .build();
     }
 
-    public static List<NarrativeAnswer> narrativeAnswersInApplicationSaveRequest(
-            ApplicationSaveRequest applicationSaveRequest) {
-        return applicationSaveRequest.answers()
-                .stream()
-                .filter(answerSaveRequest -> QuestionType.NARRATIVE.hasSameName(answerSaveRequest.questionType()))
-                .map(AnswerMapper::answerSaveRequestToNarrativeAnswer)
-                .toList();
-    }
-
-    public static List<SelectiveAnswer> selectiveAnswersInApplicationSaveRequest(
-            ApplicationSaveRequest applicationSaveRequest) {
-        return applicationSaveRequest.answers()
-                .stream()
-                .filter(answerSaveRequest -> QuestionType.SELECTIVE.hasSameName(answerSaveRequest.questionType()))
-                .map(AnswerMapper::answerSaveRequestToSelectiveAnswer)
-                .toList();
-    }
-
     public static Application applicationSaveRequestToApplication(ApplicationSaveRequest applicationSaveRequest,
                                                                   Recruitment recruitment, Long applicantId,
                                                                   List<NarrativeAnswer> narrativeAnswers,
@@ -74,5 +57,26 @@ public class ApplicationMapper {
                 applicationSaveRequest.name(),
                 narrativeAnswers,
                 selectiveAnswers);
+    }
+
+    public static List<NarrativeAnswer> narrativeAnswersInApplicationSaveRequest(
+            ApplicationSaveRequest applicationSaveRequest) {
+        return applicationSaveRequest.sections().stream()
+                .map(SectionSaveRequest::answers)
+                .flatMap(Collection::stream)
+                .filter(answerSaveRequest -> QuestionType.NARRATIVE.hasSameName(answerSaveRequest.questionType()))
+                .map(AnswerMapper::answerSaveRequestToNarrativeAnswer)
+                .toList();
+    }
+
+    public static List<SelectiveAnswer> selectiveAnswersInApplicationSaveRequest(
+            ApplicationSaveRequest applicationSaveRequest) {
+        return applicationSaveRequest.sections().stream()
+                .map(SectionSaveRequest::answers)
+                .flatMap(Collection::stream)
+                .filter(answerSaveRequest -> QuestionType.SELECTIVE.hasSameName(answerSaveRequest.questionType()))
+                .map(AnswerMapper::answerSaveRequestToSelectiveAnswer)
+                .flatMap(Collection::stream)
+                .toList();
     }
 }

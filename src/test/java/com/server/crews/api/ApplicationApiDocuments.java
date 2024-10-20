@@ -23,12 +23,13 @@ public class ApplicationApiDocuments {
                         fieldWithPath(".studentNumber").description("학번"),
                         fieldWithPath(".major").description("전공"),
                         fieldWithPath(".name").description("지원자 이름"),
-                        fieldWithPath(".answers").description("답변 목록"),
-                        fieldWithPath(".answers[].answerId").description("답변 id").optional(),
-                        fieldWithPath(".answers[].questionType").description("질문 타입(NARRATIVE, SELECTIVE 중 하나)"),
-                        fieldWithPath(".answers[].questionId").description("질문 id"),
-                        fieldWithPath(".answers[].content").description("서술형 답안 (NARRATIVE 질문의 경우)").optional(),
-                        fieldWithPath(".answers[].choiceId").description("선택지 id (SELECTIVE 질문의 경우)").optional()),
+                        fieldWithPath(".sections").description("섹션 목록"),
+                        fieldWithPath(".sections[].sectionId").description("섹션 id"),
+                        fieldWithPath(".sections[].answers[]").description("섹션의 답안 목록"),
+                        fieldWithPath(".sections[].answers[].questionType").description("질문 타입(NARRATIVE, SELECTIVE 중 하나)"),
+                        fieldWithPath(".sections[].answers[].questionId").description("질문 id"),
+                        fieldWithPath(".sections[].answers[].content").description("서술형 답안 (NARRATIVE 질문의 경우)").optional(),
+                        fieldWithPath(".sections[].answers[].choiceIds").description("선택지 id 목록 (SELECTIVE 질문의 경우)").optional()),
                 applicationDetailsResponseFields());
     }
 

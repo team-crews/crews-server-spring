@@ -39,6 +39,11 @@ public class NarrativeAnswer {
     @Column(name = "content", nullable = false, length = 1500)
     private String content;
 
+    public NarrativeAnswer(NarrativeQuestion narrativeQuestion, String content) {
+        this.narrativeQuestion = narrativeQuestion;
+        this.content = content;
+    }
+
     public NarrativeAnswer(Long id, NarrativeQuestion narrativeQuestion, String content) {
         this.id = id;
         this.narrativeQuestion = narrativeQuestion;

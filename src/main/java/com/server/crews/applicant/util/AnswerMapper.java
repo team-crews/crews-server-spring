@@ -8,6 +8,7 @@ import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.dto.request.QuestionType;
+import java.util.List;
 
 public class AnswerMapper {
 
@@ -29,16 +30,15 @@ public class AnswerMapper {
                 .build();
     }
 
-    public static SelectiveAnswer answerSaveRequestToSelectiveAnswer(AnswerSaveRequest answerSaveRequest) {
-        return new SelectiveAnswer(
-                answerSaveRequest.answerId(),
-                new Choice(answerSaveRequest.choiceId()),
-                new SelectiveQuestion(answerSaveRequest.questionId()));
+    public static List<SelectiveAnswer> answerSaveRequestToSelectiveAnswer(AnswerSaveRequest answerSaveRequest) {
+        return answerSaveRequest.choiceIds()
+                .stream()
+                .map(choiceId -> new SelectiveAnswer(new Choice(choiceId),
+                        new SelectiveQuestion(answerSaveRequest.questionId())))
+                .toList();
     }
 
     public static NarrativeAnswer answerSaveRequestToNarrativeAnswer(AnswerSaveRequest answerSaveRequest) {
-        return new NarrativeAnswer(answerSaveRequest.answerId(),
-                new NarrativeQuestion(answerSaveRequest.questionId()),
-                answerSaveRequest.content());
+        return new NarrativeAnswer(new NarrativeQuestion(answerSaveRequest.questionId()), answerSaveRequest.content());
     }
 }

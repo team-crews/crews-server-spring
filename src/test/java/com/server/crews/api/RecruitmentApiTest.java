@@ -286,7 +286,7 @@ public class RecruitmentApiTest extends ApiTest {
         TokenResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
         TokenResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 
-        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code(), 1l);
         createTestApplication(applicantATokenResponse.accessToken(), applicationSaveRequest);
         createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
 
@@ -518,7 +518,7 @@ public class RecruitmentApiTest extends ApiTest {
         TokenResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
         TokenResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 
-        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code(), 1l);
         createTestApplication(applicantATokenResponse.accessToken(), applicationSaveRequest);
         createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
 
@@ -546,7 +546,7 @@ public class RecruitmentApiTest extends ApiTest {
         TokenResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
         TokenResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 
-        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code(), 1l);
         createTestApplication(applicantATokenResponse.accessToken(), applicationSaveRequest);
         createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
 
