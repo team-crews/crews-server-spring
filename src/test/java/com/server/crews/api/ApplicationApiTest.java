@@ -15,7 +15,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
-import com.server.crews.applicant.dto.request.SectionSaveRequest;
+import com.server.crews.applicant.dto.request.ApplicationSectionSaveRequest;
 import com.server.crews.applicant.dto.response.AnswerResponse;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
@@ -48,9 +48,9 @@ public class ApplicationApiTest extends ApiTest {
         List<AnswerSaveRequest> firstAnswerSaveRequests = List.of(
                 new AnswerSaveRequest(2l, QuestionType.NARRATIVE.name(), null, DEFAULT_NARRATIVE_ANSWER),
                 new AnswerSaveRequest(1l, QuestionType.SELECTIVE.name(), List.of(2l), null));
-        SectionSaveRequest firstSectionSaveRequest = new SectionSaveRequest(1l, firstAnswerSaveRequests);
+        ApplicationSectionSaveRequest firstApplicationSectionSaveRequest = new ApplicationSectionSaveRequest(1l, firstAnswerSaveRequests);
         ApplicationSaveRequest applicationCreateRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
-                DEFAULT_MAJOR, DEFAULT_NAME, List.of(firstSectionSaveRequest), recruitmentDetailsResponse.code());
+                DEFAULT_MAJOR, DEFAULT_NAME, List.of(firstApplicationSectionSaveRequest), recruitmentDetailsResponse.code());
         ApplicationDetailsResponse testApplication = createTestApplication(applicantTokenResponse.accessToken(),
                 applicationCreateRequest);
 
@@ -58,9 +58,9 @@ public class ApplicationApiTest extends ApiTest {
                 new AnswerSaveRequest(2l, QuestionType.NARRATIVE.name(), null, "수정된내용"),
                 new AnswerSaveRequest(1l, QuestionType.SELECTIVE.name(), List.of(2l), null));
 
-        SectionSaveRequest secondSectionSaveRequest = new SectionSaveRequest(1l, secondAnswerSaveRequests);
+        ApplicationSectionSaveRequest secondApplicationSectionSaveRequest = new ApplicationSectionSaveRequest(1l, secondAnswerSaveRequests);
         ApplicationSaveRequest applicationUpdateRequest = new ApplicationSaveRequest(testApplication.id(),
-                DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, List.of(secondSectionSaveRequest),
+                DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, List.of(secondApplicationSectionSaveRequest),
                 recruitmentDetailsResponse.code());
 
         // when

@@ -4,7 +4,7 @@ import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;
 import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
-import com.server.crews.applicant.dto.request.SectionSaveRequest;
+import com.server.crews.applicant.dto.request.ApplicationSectionSaveRequest;
 import com.server.crews.applicant.dto.response.AnswerResponse;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
@@ -62,7 +62,7 @@ public class ApplicationMapper {
     public static List<NarrativeAnswer> narrativeAnswersInApplicationSaveRequest(
             ApplicationSaveRequest applicationSaveRequest) {
         return applicationSaveRequest.sections().stream()
-                .map(SectionSaveRequest::answers)
+                .map(ApplicationSectionSaveRequest::answers)
                 .flatMap(Collection::stream)
                 .filter(answerSaveRequest -> QuestionType.NARRATIVE.hasSameName(answerSaveRequest.questionType()))
                 .map(AnswerMapper::answerSaveRequestToNarrativeAnswer)
@@ -72,7 +72,7 @@ public class ApplicationMapper {
     public static List<SelectiveAnswer> selectiveAnswersInApplicationSaveRequest(
             ApplicationSaveRequest applicationSaveRequest) {
         return applicationSaveRequest.sections().stream()
-                .map(SectionSaveRequest::answers)
+                .map(ApplicationSectionSaveRequest::answers)
                 .flatMap(Collection::stream)
                 .filter(answerSaveRequest -> QuestionType.SELECTIVE.hasSameName(answerSaveRequest.questionType()))
                 .map(AnswerMapper::answerSaveRequestToSelectiveAnswer)

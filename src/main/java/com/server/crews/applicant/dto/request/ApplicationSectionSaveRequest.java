@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
-public record SectionSaveRequest(
+public record ApplicationSectionSaveRequest(
         @NotNull(message = "섹션 id는 null일 수 없습니다.")
         Long sectionId,
         @Valid

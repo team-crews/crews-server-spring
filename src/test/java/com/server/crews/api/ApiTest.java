@@ -10,7 +10,7 @@ import static org.springframework.restdocs.restassured.RestAssuredRestDocumentat
 
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
-import com.server.crews.applicant.dto.request.SectionSaveRequest;
+import com.server.crews.applicant.dto.request.ApplicationSectionSaveRequest;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
@@ -76,7 +76,7 @@ public abstract class ApiTest {
                 new AnswerSaveRequest(2l, QuestionType.NARRATIVE.name(), null, DEFAULT_NARRATIVE_ANSWER),
                 new AnswerSaveRequest(1l, QuestionType.SELECTIVE.name(), List.of(1l, 2l), null));
         return new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME,
-                List.of(new SectionSaveRequest(sectionId, answerSaveRequests)), recruitmentCode);
+                List.of(new ApplicationSectionSaveRequest(sectionId, answerSaveRequests)), recruitmentCode);
     }
 
     protected TokenResponse signUpAdmin(String clubName, String password) {

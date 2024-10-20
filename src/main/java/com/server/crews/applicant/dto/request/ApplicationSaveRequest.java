@@ -15,7 +15,7 @@ public record ApplicationSaveRequest(
         String name,
         @Valid
         @NotNull(message = "섹션 답변 리스트는 null일 수 없습니다.")
-        List<SectionSaveRequest> sections,
+        List<ApplicationSectionSaveRequest> sections,
         @NotBlank(message = "모집 공고 코드는 공백일 수 없습니다.")
         String recruitmentCode
 ) {

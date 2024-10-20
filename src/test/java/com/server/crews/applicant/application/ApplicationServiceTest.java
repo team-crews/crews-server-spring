@@ -18,7 +18,7 @@ import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
-import com.server.crews.applicant.dto.request.SectionSaveRequest;
+import com.server.crews.applicant.dto.request.ApplicationSectionSaveRequest;
 import com.server.crews.applicant.dto.response.AnswerResponse;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.repository.ApplicationRepository;
@@ -59,7 +59,7 @@ class ApplicationServiceTest extends ServiceTest {
     @ParameterizedTest
     @MethodSource("provideAnswersAndCount")
     @DisplayName("답변을 작성한 지원서를 저장한다.")
-    void saveApplication(List<SectionSaveRequest> sectionSaveRequests, int expectedSavedNarrativeAnsCount,
+    void saveApplication(List<ApplicationSectionSaveRequest> applicationSectionSaveRequests, int expectedSavedNarrativeAnsCount,
                          int expectedSavedSelectiveAnsCount) {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
@@ -71,7 +71,7 @@ class ApplicationServiceTest extends ServiceTest {
         Applicant applicant = JONGMEE_APPLICANT().applicant();
 
         ApplicationSaveRequest saveRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR,
-                DEFAULT_NAME, sectionSaveRequests, recruitment.getCode());
+                DEFAULT_NAME, applicationSectionSaveRequests, recruitment.getCode());
 
         // when
         ApplicationDetailsResponse applicationDetailsResponse = applicationService.saveApplication(applicant.getId(),
@@ -94,10 +94,10 @@ class ApplicationServiceTest extends ServiceTest {
                 List.of(1l, 2l), null);
         return Stream.of(
                 Arguments.of(List.of(
-                        new SectionSaveRequest(1l, List.of(narrativeAnswerSaveRequest)),
-                        new SectionSaveRequest(2l, List.of(selectiveAnswerSaveRequest))), 1, 2),
+                        new ApplicationSectionSaveRequest(1l, List.of(narrativeAnswerSaveRequest)),
+                        new ApplicationSectionSaveRequest(2l, List.of(selectiveAnswerSaveRequest))), 1, 2),
                 Arguments.of(List.of(
-                        new SectionSaveRequest(1l, List.of(narrativeAnswerSaveRequest))), 1, 0));
+                        new ApplicationSectionSaveRequest(1l, List.of(narrativeAnswerSaveRequest))), 1, 0));
     }
 
     @Test
