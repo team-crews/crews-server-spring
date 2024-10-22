@@ -16,8 +16,9 @@ public class AnswerMapper {
         List<Long> choiceIds = selectiveAnswers.stream()
                 .map(SelectiveAnswer::getChoiceId)
                 .toList();
+        Long questionId = selectiveAnswers.get(0).getQuestionId();
         return AnswerResponse.builder()
-                .questionId(selectiveAnswers.get(0).getId())
+                .questionId(questionId)
                 .choiceIds(choiceIds)
                 .type(QuestionType.SELECTIVE)
                 .build();

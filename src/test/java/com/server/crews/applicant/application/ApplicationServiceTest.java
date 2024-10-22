@@ -33,6 +33,7 @@ import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import java.util.Collection;
 import java.util.Comparator;
@@ -114,9 +115,10 @@ class ApplicationServiceTest extends ServiceTest {
                 .addSection(BACKEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()))
                 .addSection(FRONTEND_SECTION_NAME, List.of(NARRATIVE_QUESTION()), List.of(SELECTIVE_QUESTION()));
         Applicant applicant = JONGMEE_APPLICANT().applicant();
-        NarrativeQuestion narrativeQuestion = testRecruitment.narrativeQuestions().get(0);
-        SelectiveQuestion selectiveQuestion = testRecruitment.selectiveQuestions().get(0);
-        List<Choice> choices = testRecruitment.choices(0);
+        List<Section> sections = testRecruitment.sections();
+        NarrativeQuestion narrativeQuestion = sections.get(0).getNarrativeQuestions().get(0);
+        SelectiveQuestion selectiveQuestion = sections.get(0).getSelectiveQuestions().get(0);
+        List<Choice> choices = selectiveQuestion.getChoices();
         Application application = JONGMEE_APPLICATION(applicant, testRecruitment.recruitment())
                 .addNarrativeAnswers(narrativeQuestion, "안녕하세요")
                 .saveSelectiveAnswers(selectiveQuestion, choices.get(0))
