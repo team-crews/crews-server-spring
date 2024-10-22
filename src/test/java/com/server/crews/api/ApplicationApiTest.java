@@ -14,21 +14,23 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
-import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.request.ApplicationSectionSaveRequest;
+import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.AnswerResponse;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
+import com.server.crews.applicant.dto.response.SectionAnswerResponse;
 import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.presentation.AuthorizationExtractor;
 import com.server.crews.global.exception.CrewsErrorCode;
 import com.server.crews.global.exception.ErrorResponse;
-import com.server.crews.recruitment.dto.request.QuestionType;
+import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,19 +48,22 @@ public class ApplicationApiTest extends ApiTest {
         startTestRecruiting(adminTokenResponse.accessToken());
         TokenResponse applicantTokenResponse = signUpApplicant(TEST_EMAIL, TEST_PASSWORD);
         List<AnswerSaveRequest> firstAnswerSaveRequests = List.of(
-                new AnswerSaveRequest(2l, QuestionType.NARRATIVE.name(), null, DEFAULT_NARRATIVE_ANSWER),
+                new AnswerSaveRequest(1l, QuestionType.NARRATIVE.name(), null, DEFAULT_NARRATIVE_ANSWER),
                 new AnswerSaveRequest(1l, QuestionType.SELECTIVE.name(), List.of(2l), null));
-        ApplicationSectionSaveRequest firstApplicationSectionSaveRequest = new ApplicationSectionSaveRequest(1l, firstAnswerSaveRequests);
+        ApplicationSectionSaveRequest firstApplicationSectionSaveRequest = new ApplicationSectionSaveRequest(1l,
+                firstAnswerSaveRequests);
         ApplicationSaveRequest applicationCreateRequest = new ApplicationSaveRequest(null, DEFAULT_STUDENT_NUMBER,
-                DEFAULT_MAJOR, DEFAULT_NAME, List.of(firstApplicationSectionSaveRequest), recruitmentDetailsResponse.code());
+                DEFAULT_MAJOR, DEFAULT_NAME, List.of(firstApplicationSectionSaveRequest),
+                recruitmentDetailsResponse.code());
         ApplicationDetailsResponse testApplication = createTestApplication(applicantTokenResponse.accessToken(),
                 applicationCreateRequest);
 
         List<AnswerSaveRequest> secondAnswerSaveRequests = List.of(
-                new AnswerSaveRequest(2l, QuestionType.NARRATIVE.name(), null, "수정된내용"),
+                new AnswerSaveRequest(1l, QuestionType.NARRATIVE.name(), null, "수정된내용"),
                 new AnswerSaveRequest(1l, QuestionType.SELECTIVE.name(), List.of(2l), null));
 
-        ApplicationSectionSaveRequest secondApplicationSectionSaveRequest = new ApplicationSectionSaveRequest(1l, secondAnswerSaveRequests);
+        ApplicationSectionSaveRequest secondApplicationSectionSaveRequest = new ApplicationSectionSaveRequest(1l,
+                secondAnswerSaveRequests);
         ApplicationSaveRequest applicationUpdateRequest = new ApplicationSaveRequest(testApplication.id(),
                 DEFAULT_STUDENT_NUMBER, DEFAULT_MAJOR, DEFAULT_NAME, List.of(secondApplicationSectionSaveRequest),
                 recruitmentDetailsResponse.code());
@@ -76,16 +81,20 @@ public class ApplicationApiTest extends ApiTest {
 
         // then
         ApplicationDetailsResponse applicationDetailsResponse = response.as(ApplicationDetailsResponse.class);
+        List<AnswerResponse> answerResponses = applicationDetailsResponse.sections()
+                .stream()
+                .map(SectionAnswerResponse::answers)
+                .flatMap(Collection::stream)
+                .toList();
         assertSoftly(softAssertions -> {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(applicationDetailsResponse.id()).isNotNull();
-            softAssertions.assertThat(applicationDetailsResponse.answers())
+            softAssertions.assertThat(answerResponses)
                     .filteredOn(answerResponse -> answerResponse.type() == QuestionType.NARRATIVE)
-                    .flatExtracting(AnswerResponse::answerId)
-                    .containsExactly(1L);
-            softAssertions.assertThat(applicationDetailsResponse.answers())
+                    .hasSize(1);
+            softAssertions.assertThat(answerResponses)
                     .filteredOn(answerResponse -> answerResponse.type() == QuestionType.SELECTIVE)
-                    .flatExtracting(AnswerResponse::choiceId)
+                    .flatExtracting(AnswerResponse::choiceIds)
                     .hasSize(1);
         });
     }
@@ -176,15 +185,20 @@ public class ApplicationApiTest extends ApiTest {
 
         // then
         ApplicationDetailsResponse applicationDetailsResponse = response.as(ApplicationDetailsResponse.class);
+        List<AnswerResponse> answerResponses = applicationDetailsResponse.sections()
+                .stream()
+                .map(SectionAnswerResponse::answers)
+                .flatMap(Collection::stream)
+                .toList();
         assertSoftly(softAssertions -> {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(applicationDetailsResponse.id()).isNotNull();
-            softAssertions.assertThat(applicationDetailsResponse.answers())
+            softAssertions.assertThat(answerResponses)
                     .filteredOn(answerResponse -> answerResponse.type() == QuestionType.NARRATIVE)
                     .isNotEmpty();
-            softAssertions.assertThat(applicationDetailsResponse.answers())
+            softAssertions.assertThat(answerResponses)
                     .filteredOn(answerResponse -> answerResponse.type() == QuestionType.SELECTIVE)
-                    .flatExtracting(AnswerResponse::choiceId)
+                    .flatExtracting(AnswerResponse::choiceIds)
                     .isNotEmpty();
         });
     }
@@ -214,15 +228,20 @@ public class ApplicationApiTest extends ApiTest {
 
         // then
         ApplicationDetailsResponse applicationDetailsResponse = response.as(ApplicationDetailsResponse.class);
+        List<AnswerResponse> answerResponses = applicationDetailsResponse.sections()
+                .stream()
+                .map(SectionAnswerResponse::answers)
+                .flatMap(Collection::stream)
+                .toList();
         assertSoftly(softAssertions -> {
             checkStatusCode200(response, softAssertions);
             softAssertions.assertThat(applicationDetailsResponse.id()).isNotNull();
-            softAssertions.assertThat(applicationDetailsResponse.answers())
+            softAssertions.assertThat(answerResponses)
                     .filteredOn(answerResponse -> answerResponse.type() == QuestionType.NARRATIVE)
                     .isNotEmpty();
-            softAssertions.assertThat(applicationDetailsResponse.answers())
+            softAssertions.assertThat(answerResponses)
                     .filteredOn(answerResponse -> answerResponse.type() == QuestionType.SELECTIVE)
-                    .flatExtracting(AnswerResponse::choiceId)
+                    .flatExtracting(AnswerResponse::choiceIds)
                     .isNotEmpty();
         });
     }

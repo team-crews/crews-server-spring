@@ -15,7 +15,7 @@ import com.server.crews.environ.presentation.TestAuthArgumentResolverConfig;
 import com.server.crews.global.config.WebMvcConfiguration;
 import com.server.crews.recruitment.application.RecruitmentService;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
-import com.server.crews.recruitment.dto.request.QuestionType;
+import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.request.SectionSaveRequest;
 import java.time.LocalDateTime;

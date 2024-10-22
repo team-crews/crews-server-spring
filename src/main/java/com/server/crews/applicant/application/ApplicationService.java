@@ -63,7 +63,10 @@ public class ApplicationService {
         Application application = ApplicationMapper.applicationSaveRequestToApplication(request, recruitment,
                 applicantId, updatedNarrativeAnswers, updatedSelectiveAnswers);
         Application savedApplication = applicationRepository.save(application);
-        return ApplicationMapper.applicationToApplicationDetailsResponse(savedApplication);
+
+        ApplicationAnswerReader applicationAnswerReader = new ApplicationAnswerReader(narrativeQuestions,
+                selectiveQuestions, savedApplication);
+        return applicationAnswerReader.readBySection();
     }
 
     private void validateRecruitmentProgress(Recruitment recruitment) {
@@ -83,16 +86,31 @@ public class ApplicationService {
     }
 
     public ApplicationDetailsResponse findApplicationDetails(Long applicationId, Long publisherId) {
+        Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
+                .orElseThrow(() -> new NotFoundException("동아리 관리자 id", "모집 공고"));
+        Long recruitmentId = recruitment.getId();
+        List<NarrativeQuestion> narrativeQuestions = narrativeQuestionRepository.findAllByRecruitmentId(recruitmentId);
+        List<SelectiveQuestion> selectiveQuestions = selectiveQuestionRepository.findAllByRecruitmentId(recruitmentId);
+
         Application application = applicationRepository.findByIdWithRecruitmentAndPublisher(applicationId)
                 .orElseThrow(() -> new NotFoundException("지원서 id", "지원서"));
         List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
         List<SelectiveAnswer> selectiveAnswers = selectiveAnswerRepository.findAllByApplication(application);
         application.replaceNarrativeAnswers(narrativeAnswers);
         application.replaceSelectiveAnswers(selectiveAnswers);
-        return ApplicationMapper.applicationToApplicationDetailsResponse(application);
+
+        ApplicationAnswerReader applicationAnswerReader = new ApplicationAnswerReader(narrativeQuestions,
+                selectiveQuestions, application);
+        return applicationAnswerReader.readBySection();
     }
 
     public Optional<ApplicationDetailsResponse> findMyApplicationDetails(Long applicantId, String code) {
+        Recruitment recruitment = recruitmentRepository.findByCode(code)
+                .orElseThrow(() -> new NotFoundException("동아리 관리자 id", "모집 공고"));
+        Long recruitmentId = recruitment.getId();
+        List<NarrativeQuestion> narrativeQuestions = narrativeQuestionRepository.findAllByRecruitmentId(recruitmentId);
+        List<SelectiveQuestion> selectiveQuestions = selectiveQuestionRepository.findAllByRecruitmentId(recruitmentId);
+
         return applicationRepository.findByApplicantIdAndRecruitmentCode(applicantId, code)
                 .map(application -> {
                     List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(
@@ -101,7 +119,10 @@ public class ApplicationService {
                             application);
                     application.replaceNarrativeAnswers(narrativeAnswers);
                     application.replaceSelectiveAnswers(selectiveAnswers);
-                    return ApplicationMapper.applicationToApplicationDetailsResponse(application);
+
+                    ApplicationAnswerReader applicationAnswerReader = new ApplicationAnswerReader(narrativeQuestions,
+                            selectiveQuestions, application);
+                    return applicationAnswerReader.readBySection();
                 });
     }
 

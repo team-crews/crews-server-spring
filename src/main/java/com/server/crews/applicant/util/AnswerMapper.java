@@ -7,23 +7,24 @@ import com.server.crews.applicant.dto.response.AnswerResponse;
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
-import com.server.crews.recruitment.dto.request.QuestionType;
+import com.server.crews.recruitment.domain.QuestionType;
 import java.util.List;
 
 public class AnswerMapper {
 
-    public static AnswerResponse selectiveAnswerToAnswerResponse(SelectiveAnswer selectiveAnswer) {
+    public static AnswerResponse selectiveAnswerToAnswerResponse(List<SelectiveAnswer> selectiveAnswers) {
+        List<Long> choiceIds = selectiveAnswers.stream()
+                .map(SelectiveAnswer::getChoiceId)
+                .toList();
         return AnswerResponse.builder()
-                .answerId(selectiveAnswer.getId())
-                .questionId(selectiveAnswer.getSelectiveQuestion().getId())
-                .choiceId(selectiveAnswer.getChoice().getId())
+                .questionId(selectiveAnswers.get(0).getId())
+                .choiceIds(choiceIds)
                 .type(QuestionType.SELECTIVE)
                 .build();
     }
 
     public static AnswerResponse narrativeAnswerToAnswerResponse(NarrativeAnswer narrativeAnswer) {
         return AnswerResponse.builder()
-                .answerId(narrativeAnswer.getId())
                 .questionId(narrativeAnswer.getNarrativeQuestion().getId())
                 .content(narrativeAnswer.getContent())
                 .type(QuestionType.NARRATIVE)

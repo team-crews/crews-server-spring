@@ -20,7 +20,7 @@ import com.server.crews.environ.DatabaseCleaner;
 import com.server.crews.external.application.EmailService;
 import com.server.crews.global.config.DatabaseInitializer;
 import com.server.crews.recruitment.domain.Recruitment;
-import com.server.crews.recruitment.dto.request.QuestionType;
+import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.repository.RecruitmentRepository;

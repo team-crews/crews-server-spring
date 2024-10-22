@@ -1,14 +1,14 @@
 package com.server.crews.applicant.dto.response;
 
-import com.server.crews.recruitment.dto.request.QuestionType;
+import com.server.crews.recruitment.domain.QuestionType;
+import java.util.List;
 import lombok.Builder;
 
 @Builder
 public record AnswerResponse(
-        Long answerId,
         Long questionId,
         String content,
-        Long choiceId,
+        List<Long> choiceIds,
         QuestionType type
 ) {
 }

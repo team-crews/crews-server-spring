@@ -17,10 +17,11 @@ import com.server.crews.applicant.domain.Outcome;
 import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
-import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.request.ApplicationSectionSaveRequest;
+import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.AnswerResponse;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
+import com.server.crews.applicant.dto.response.SectionAnswerResponse;
 import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.repository.NarrativeAnswerRepository;
 import com.server.crews.applicant.repository.SelectiveAnswerRepository;
@@ -30,9 +31,10 @@ import com.server.crews.environ.service.ServiceTest;
 import com.server.crews.environ.service.TestRecruitment;
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
+import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
-import com.server.crews.recruitment.dto.request.QuestionType;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
@@ -59,7 +61,8 @@ class ApplicationServiceTest extends ServiceTest {
     @ParameterizedTest
     @MethodSource("provideAnswersAndCount")
     @DisplayName("답변을 작성한 지원서를 저장한다.")
-    void saveApplication(List<ApplicationSectionSaveRequest> applicationSectionSaveRequests, int expectedSavedNarrativeAnsCount,
+    void saveApplication(List<ApplicationSectionSaveRequest> applicationSectionSaveRequests,
+                         int expectedSavedNarrativeAnsCount,
                          int expectedSavedSelectiveAnsCount) {
         // given
         Administrator publisher = LIKE_LION_ADMIN().administrator();
@@ -82,6 +85,8 @@ class ApplicationServiceTest extends ServiceTest {
         List<NarrativeAnswer> savedNarrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
         List<SelectiveAnswer> savedSelectiveAnswers = selectiveAnswerRepository.findAllByApplication(application);
         assertAll(() -> {
+            assertThat(applicationDetailsResponse.sections()).extracting(SectionAnswerResponse::sectionId)
+                    .contains(1l, 2l);
             assertThat(savedNarrativeAnswers).hasSize(expectedSavedNarrativeAnsCount);
             assertThat(savedSelectiveAnswers).hasSize(expectedSavedSelectiveAnsCount);
         });
@@ -95,7 +100,7 @@ class ApplicationServiceTest extends ServiceTest {
         return Stream.of(
                 Arguments.of(List.of(
                         new ApplicationSectionSaveRequest(1l, List.of(narrativeAnswerSaveRequest)),
-                        new ApplicationSectionSaveRequest(2l, List.of(selectiveAnswerSaveRequest))), 1, 2),
+                        new ApplicationSectionSaveRequest(1l, List.of(selectiveAnswerSaveRequest))), 1, 2),
                 Arguments.of(List.of(
                         new ApplicationSectionSaveRequest(1l, List.of(narrativeAnswerSaveRequest))), 1, 0));
     }
@@ -123,12 +128,19 @@ class ApplicationServiceTest extends ServiceTest {
                 publisher.getId());
 
         // then
+        List<AnswerResponse> answerResponses = response.sections()
+                .stream()
+                .map(SectionAnswerResponse::answers)
+                .flatMap(Collection::stream)
+                .toList();
         assertAll(() -> {
-            assertThat(response.answers()).filteredOn(answerResponse -> answerResponse.type() == QuestionType.NARRATIVE)
+            assertThat(answerResponses).hasSize(2);
+            assertThat(response.sections().get(1).answers()).isEmpty();
+            assertThat(answerResponses).filteredOn(answerResponse -> answerResponse.type() == QuestionType.NARRATIVE)
                     .extracting(AnswerResponse::content)
                     .containsExactly("안녕하세요");
-            assertThat(response.answers()).filteredOn(answerResponse -> answerResponse.type() == QuestionType.SELECTIVE)
-                    .flatExtracting(AnswerResponse::choiceId)
+            assertThat(answerResponses).filteredOn(answerResponse -> answerResponse.type() == QuestionType.SELECTIVE)
+                    .flatExtracting(AnswerResponse::choiceIds)
                     .contains(1L, 2L);
         });
     }

@@ -9,7 +9,7 @@ import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
-import com.server.crews.recruitment.dto.request.QuestionType;
+import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.request.SectionSaveRequest;
 import java.time.LocalDateTime;

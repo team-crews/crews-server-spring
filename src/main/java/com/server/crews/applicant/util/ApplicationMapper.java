@@ -5,32 +5,24 @@ import com.server.crews.applicant.domain.NarrativeAnswer;
 import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSectionSaveRequest;
-import com.server.crews.applicant.dto.response.AnswerResponse;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
+import com.server.crews.applicant.dto.response.SectionAnswerResponse;
 import com.server.crews.recruitment.domain.Recruitment;
-import com.server.crews.recruitment.dto.request.QuestionType;
-import java.util.ArrayList;
+import com.server.crews.recruitment.domain.QuestionType;
 import java.util.Collection;
 import java.util.List;
 
 public class ApplicationMapper {
 
-    public static ApplicationDetailsResponse applicationToApplicationDetailsResponse(Application application) {
-        List<AnswerResponse> narrativeAnswerResponses = application.getNarrativeAnswers().stream()
-                .map(AnswerMapper::narrativeAnswerToAnswerResponse)
-                .toList();
-        List<AnswerResponse> selectiveAnswerResponses = application.getSelectiveAnswers().stream()
-                .map(AnswerMapper::selectiveAnswerToAnswerResponse)
-                .toList();
-        List<AnswerResponse> allAnswerResponses = new ArrayList<>(narrativeAnswerResponses);
-        allAnswerResponses.addAll(selectiveAnswerResponses);
+    public static ApplicationDetailsResponse applicationToApplicationDetailsResponse(Application application,
+                                                                                     List<SectionAnswerResponse> sectionAnswerResponses) {
         return ApplicationDetailsResponse.builder()
                 .id(application.getId())
                 .studentNumber(application.getStudentNumber())
                 .major(application.getMajor())
                 .name(application.getName())
-                .answers(allAnswerResponses)
+                .sections(sectionAnswerResponses)
                 .build();
     }
 

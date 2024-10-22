@@ -35,7 +35,7 @@ import lombok.NoArgsConstructor;
         }
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SelectiveQuestion {
+public class SelectiveQuestion implements OrderedQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -105,5 +105,13 @@ public class SelectiveQuestion {
 
     public void updateRecruitment(Recruitment recruitment) {
         this.recruitment = recruitment;
+    }
+
+    public Long getSectionId() {
+        return this.section.getId();
+    }
+
+    public QuestionType getQuestionType() {
+        return QuestionType.SELECTIVE;
     }
 }
