@@ -94,14 +94,20 @@ class ApplicationServiceTest extends ServiceTest {
     }
 
     private static Stream<Arguments> provideAnswersAndCount() {
-        AnswerSaveRequest narrativeAnswerSaveRequest = new AnswerSaveRequest(2l, QuestionType.NARRATIVE.name(),
+        AnswerSaveRequest narrativeAnswerSaveRequest = new AnswerSaveRequest(1l, QuestionType.NARRATIVE.name(),
                 null, DEFAULT_NARRATIVE_ANSWER);
         AnswerSaveRequest selectiveAnswerSaveRequest = new AnswerSaveRequest(1l, QuestionType.SELECTIVE.name(),
                 List.of(1l, 2l), null);
+        AnswerSaveRequest nullNarrativeAnswerSaveRequest = new AnswerSaveRequest(2l, QuestionType.NARRATIVE.name(),
+                null, null);
+        AnswerSaveRequest nullSelectiveAnswerSaveRequest = new AnswerSaveRequest(2l, QuestionType.SELECTIVE.name(),
+                null, null);
         return Stream.of(
                 Arguments.of(List.of(
                         new ApplicationSectionSaveRequest(1l, List.of(narrativeAnswerSaveRequest)),
-                        new ApplicationSectionSaveRequest(1l, List.of(selectiveAnswerSaveRequest))), 1, 2),
+                        new ApplicationSectionSaveRequest(1l, List.of(selectiveAnswerSaveRequest)),
+                        new ApplicationSectionSaveRequest(2l, List.of(nullNarrativeAnswerSaveRequest)),
+                        new ApplicationSectionSaveRequest(2l, List.of(nullSelectiveAnswerSaveRequest))), 1, 2),
                 Arguments.of(List.of(
                         new ApplicationSectionSaveRequest(1l, List.of(narrativeAnswerSaveRequest))), 1, 0));
     }

@@ -57,6 +57,7 @@ public class ApplicationMapper {
                 .map(ApplicationSectionSaveRequest::answers)
                 .flatMap(Collection::stream)
                 .filter(answerSaveRequest -> QuestionType.NARRATIVE.hasSameName(answerSaveRequest.questionType()))
+                .filter(answerSaveRequest -> answerSaveRequest.content() != null)
                 .map(AnswerMapper::answerSaveRequestToNarrativeAnswer)
                 .toList();
     }
@@ -67,6 +68,7 @@ public class ApplicationMapper {
                 .map(ApplicationSectionSaveRequest::answers)
                 .flatMap(Collection::stream)
                 .filter(answerSaveRequest -> QuestionType.SELECTIVE.hasSameName(answerSaveRequest.questionType()))
+                .filter(answerSaveRequest -> answerSaveRequest.choiceIds() != null)
                 .map(AnswerMapper::answerSaveRequestToSelectiveAnswer)
                 .flatMap(Collection::stream)
                 .toList();
