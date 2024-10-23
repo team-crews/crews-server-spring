@@ -80,12 +80,14 @@ public abstract class RepositoryTest {
     private NarrativeQuestion createNarrativeQuestion(Section section) {
         NarrativeQuestion narrativeQuestion = NARRATIVE_QUESTION();
         narrativeQuestion.updateSection(section);
+        narrativeQuestion.updateRecruitment(section.getRecruitment());
         return narrativeQuestion;
     }
 
     private SelectiveQuestion createSelectiveQuestion(Section section) {
         SelectiveQuestion selectiveQuestion = SELECTIVE_QUESTION();
         selectiveQuestion.updateSection(section);
+        selectiveQuestion.updateRecruitment(section.getRecruitment());
         return selectiveQuestion;
     }
 
@@ -95,8 +97,8 @@ public abstract class RepositoryTest {
         return choices;
     }
 
-    protected Application createDefaultApplication(Applicant applicant, Recruitment recruitment) {
-        Application application = APPLICATION(applicant, recruitment, List.of(), List.of());
+    protected Application createDefaultApplication(Long applicantId, Recruitment recruitment) {
+        Application application = APPLICATION(applicantId, recruitment, List.of(), List.of());
         testRepository.save(application);
         return application;
     }

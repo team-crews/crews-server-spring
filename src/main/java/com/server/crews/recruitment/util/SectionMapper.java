@@ -4,7 +4,7 @@ import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
-import com.server.crews.recruitment.dto.request.QuestionType;
+import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.dto.request.SectionSaveRequest;
 import com.server.crews.recruitment.dto.response.QuestionResponse;
 import com.server.crews.recruitment.dto.response.SectionResponse;

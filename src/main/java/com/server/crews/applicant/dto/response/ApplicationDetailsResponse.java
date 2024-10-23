@@ -9,6 +9,6 @@ public record ApplicationDetailsResponse(
         String studentNumber,
         String major,
         String name,
-        List<AnswerResponse> answers
+        List<SectionAnswerResponse> sections
 ) {
 }

@@ -1,6 +1,6 @@
 package com.server.crews.recruitment.presentation;
 
-import com.server.crews.recruitment.dto.request.QuestionType;
+import com.server.crews.recruitment.domain.QuestionType;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.Arrays;

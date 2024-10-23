@@ -1,4 +1,4 @@
-package com.server.crews.recruitment.dto.request;
+package com.server.crews.recruitment.domain;
 
 public enum QuestionType {
     NARRATIVE,

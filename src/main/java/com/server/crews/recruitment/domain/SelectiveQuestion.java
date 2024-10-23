@@ -1,7 +1,7 @@
 package com.server.crews.recruitment.domain;
 
-import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.CrewsErrorCode;
+import com.server.crews.global.exception.CrewsException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
@@ -29,13 +29,20 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @Table(name = "selective_question",
-        indexes = @Index(columnList = "section_id", name = "idx_section_id")
+        indexes = {
+                @Index(columnList = "section_id", name = "idx_section_id"),
+                @Index(columnList = "recruitment_id", name = "idx_recruitment_id")
+        }
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SelectiveQuestion {
+public class SelectiveQuestion implements OrderedQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recruitment_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Recruitment recruitment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
@@ -66,6 +73,10 @@ public class SelectiveQuestion {
     @Column(name = "maximum_selection", nullable = false)
     private Integer maximumSelection;
 
+    public SelectiveQuestion(Long id) {
+        this(id, List.of(), null, null, null, null, null);
+    }
+
     public SelectiveQuestion(Long id, List<Choice> choices, String content, Boolean necessity, Integer order,
                              Integer minimumSelection, Integer maximumSelection) {
         validateSelectionCount(minimumSelection, maximumSelection);
@@ -88,7 +99,19 @@ public class SelectiveQuestion {
         }
     }
 
-    public void updateSection(final Section section) {
+    public void updateSection(Section section) {
         this.section = section;
+    }
+
+    public void updateRecruitment(Recruitment recruitment) {
+        this.recruitment = recruitment;
+    }
+
+    public Long getSectionId() {
+        return this.section.getId();
+    }
+
+    public QuestionType getQuestionType() {
+        return QuestionType.SELECTIVE;
     }
 }

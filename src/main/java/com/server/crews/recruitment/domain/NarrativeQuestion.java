@@ -24,13 +24,21 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @Table(name = "narrative_question",
-        indexes = @Index(columnList = "section_id", name = "idx_section_id")
+        indexes = {
+                @Index(columnList = "section_id", name = "idx_section_id"),
+                @Index(columnList = "recruitment_id", name = "idx_recruitment_id")
+
+        }
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class NarrativeQuestion {
+public class NarrativeQuestion implements OrderedQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recruitment_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Recruitment recruitment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
@@ -51,6 +59,10 @@ public class NarrativeQuestion {
     @Column(name = "word_limit", nullable = false)
     private Integer wordLimit;
 
+    public NarrativeQuestion(Long id) {
+        this(id, null, null, null, null, null, null);
+    }
+
     public NarrativeQuestion(Long id, String content, Boolean necessity, Integer order, Integer wordLimit) {
         this.id = id;
         this.content = content;
@@ -59,7 +71,19 @@ public class NarrativeQuestion {
         this.wordLimit = wordLimit;
     }
 
-    public void updateSection(final Section section) {
+    public void updateSection(Section section) {
         this.section = section;
+    }
+
+    public void updateRecruitment(Recruitment recruitment) {
+        this.recruitment = recruitment;
+    }
+
+    public Long getSectionId() {
+        return this.section.getId();
+    }
+
+    public QuestionType getQuestionType() {
+        return QuestionType.NARRATIVE;
     }
 }

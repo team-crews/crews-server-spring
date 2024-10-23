@@ -25,7 +25,7 @@ public class TestApplication {
 
     public TestApplication create(Applicant applicant, Recruitment recruitment, String studentNumber, String major,
                                   String name) {
-        Application application = new Application(null, recruitment, applicant, studentNumber, major, name, List.of(),
+        Application application = new Application(null, recruitment, applicant.getId(), studentNumber, major, name, List.of(),
                 List.of());
         this.application = environ.applicationRepository().save(application);
         return this;

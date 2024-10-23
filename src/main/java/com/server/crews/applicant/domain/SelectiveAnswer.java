@@ -38,6 +38,11 @@ public class SelectiveAnswer {
     @ManyToOne(fetch = FetchType.LAZY)
     private SelectiveQuestion selectiveQuestion;
 
+    public SelectiveAnswer(Choice choice, SelectiveQuestion selectiveQuestion) {
+        this.choice = choice;
+        this.selectiveQuestion = selectiveQuestion;
+    }
+
     public SelectiveAnswer(Long id, Choice choice, SelectiveQuestion selectiveQuestion) {
         this.id = id;
         this.choice = choice;
@@ -46,5 +51,17 @@ public class SelectiveAnswer {
 
     public void updateApplication(Application application) {
         this.application = application;
+    }
+
+    public void setOriginalId(Long id) {
+        this.id = id;
+    }
+
+    public Long getQuestionId() {
+        return this.selectiveQuestion.getId();
+    }
+
+    public Long getChoiceId() {
+        return this.choice.getId();
     }
 }

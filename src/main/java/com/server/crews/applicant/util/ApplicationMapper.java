@@ -3,34 +3,26 @@ package com.server.crews.applicant.util;
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;
 import com.server.crews.applicant.domain.SelectiveAnswer;
-import com.server.crews.applicant.dto.request.AnswerSaveRequest;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
-import com.server.crews.applicant.dto.response.AnswerResponse;
+import com.server.crews.applicant.dto.request.ApplicationSectionSaveRequest;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
-import com.server.crews.auth.domain.Applicant;
+import com.server.crews.applicant.dto.response.SectionAnswerResponse;
 import com.server.crews.recruitment.domain.Recruitment;
-import com.server.crews.recruitment.dto.request.QuestionType;
-import java.util.ArrayList;
+import com.server.crews.recruitment.domain.QuestionType;
+import java.util.Collection;
 import java.util.List;
 
 public class ApplicationMapper {
 
-    public static ApplicationDetailsResponse applicationToApplicationDetailsResponse(Application application) {
-        List<AnswerResponse> narrativeAnswerResponses = application.getNarrativeAnswers().stream()
-                .map(AnswerMapper::narrativeAnswerToAnswerResponse)
-                .toList();
-        List<AnswerResponse> selectiveAnswerResponses = application.getSelectiveAnswers().stream()
-                .map(AnswerMapper::selectiveAnswerToAnswerResponse)
-                .toList();
-        List<AnswerResponse> allAnswerResponses = new ArrayList<>(narrativeAnswerResponses);
-        allAnswerResponses.addAll(selectiveAnswerResponses);
+    public static ApplicationDetailsResponse applicationToApplicationDetailsResponse(Application application,
+                                                                                     List<SectionAnswerResponse> sectionAnswerResponses) {
         return ApplicationDetailsResponse.builder()
                 .id(application.getId())
                 .studentNumber(application.getStudentNumber())
                 .major(application.getMajor())
                 .name(application.getName())
-                .answers(allAnswerResponses)
+                .sections(sectionAnswerResponses)
                 .build();
     }
 
@@ -45,24 +37,40 @@ public class ApplicationMapper {
     }
 
     public static Application applicationSaveRequestToApplication(ApplicationSaveRequest applicationSaveRequest,
-                                                                  Recruitment recruitment, Applicant applicant) {
-        List<AnswerSaveRequest> answerSaveRequests = applicationSaveRequest.answers();
-        List<NarrativeAnswer> narrativeAnswers = answerSaveRequests.stream()
-                .filter(answerSaveRequest -> QuestionType.NARRATIVE.hasSameName(answerSaveRequest.questionType()))
-                .map(AnswerMapper::answerSaveRequestToNarrativeAnswer)
-                .toList();
-        List<SelectiveAnswer> selectiveAnswers = answerSaveRequests.stream()
-                .filter(answerSaveRequest -> QuestionType.SELECTIVE.hasSameName(answerSaveRequest.questionType()))
-                .map(AnswerMapper::answerSaveRequestToSelectiveAnswer)
-                .toList();
+                                                                  Recruitment recruitment, Long applicantId,
+                                                                  List<NarrativeAnswer> narrativeAnswers,
+                                                                  List<SelectiveAnswer> selectiveAnswers) {
         return new Application(
                 applicationSaveRequest.id(),
                 recruitment,
-                applicant,
+                applicantId,
                 applicationSaveRequest.studentNumber(),
                 applicationSaveRequest.major(),
                 applicationSaveRequest.name(),
                 narrativeAnswers,
                 selectiveAnswers);
+    }
+
+    public static List<NarrativeAnswer> narrativeAnswersInApplicationSaveRequest(
+            ApplicationSaveRequest applicationSaveRequest) {
+        return applicationSaveRequest.sections().stream()
+                .map(ApplicationSectionSaveRequest::answers)
+                .flatMap(Collection::stream)
+                .filter(answerSaveRequest -> QuestionType.NARRATIVE.hasSameName(answerSaveRequest.questionType()))
+                .filter(answerSaveRequest -> answerSaveRequest.content() != null)
+                .map(AnswerMapper::answerSaveRequestToNarrativeAnswer)
+                .toList();
+    }
+
+    public static List<SelectiveAnswer> selectiveAnswersInApplicationSaveRequest(
+            ApplicationSaveRequest applicationSaveRequest) {
+        return applicationSaveRequest.sections().stream()
+                .map(ApplicationSectionSaveRequest::answers)
+                .flatMap(Collection::stream)
+                .filter(answerSaveRequest -> QuestionType.SELECTIVE.hasSameName(answerSaveRequest.questionType()))
+                .filter(answerSaveRequest -> answerSaveRequest.choiceIds() != null)
+                .map(AnswerMapper::answerSaveRequestToSelectiveAnswer)
+                .flatMap(Collection::stream)
+                .toList();
     }
 }

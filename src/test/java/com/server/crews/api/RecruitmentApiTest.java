@@ -27,7 +27,7 @@ import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
 import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
-import com.server.crews.recruitment.dto.request.QuestionType;
+import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.request.SectionSaveRequest;
 import com.server.crews.recruitment.dto.response.QuestionResponse;
@@ -286,7 +286,7 @@ public class RecruitmentApiTest extends ApiTest {
         TokenResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
         TokenResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 
-        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code(), 1l);
         createTestApplication(applicantATokenResponse.accessToken(), applicationSaveRequest);
         createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
 
@@ -518,7 +518,7 @@ public class RecruitmentApiTest extends ApiTest {
         TokenResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
         TokenResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 
-        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code(), 1l);
         createTestApplication(applicantATokenResponse.accessToken(), applicationSaveRequest);
         createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
 
@@ -546,7 +546,7 @@ public class RecruitmentApiTest extends ApiTest {
         TokenResponse applicantATokenResponse = signUpApplicant("A" + TEST_EMAIL, TEST_PASSWORD);
         TokenResponse applicantBTokenResponse = signUpApplicant("B" + TEST_EMAIL, TEST_PASSWORD);
 
-        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code());
+        ApplicationSaveRequest applicationSaveRequest = applicationSaveRequest(recruitmentDetailsResponse.code(), 1l);
         createTestApplication(applicantATokenResponse.accessToken(), applicationSaveRequest);
         createTestApplication(applicantBTokenResponse.accessToken(), applicationSaveRequest);
 
