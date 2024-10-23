@@ -83,14 +83,13 @@ public class ApplicationAnswerReader {
             List<AnswerResponse> answerResponses = new ArrayList<>();
 
             for (OrderedQuestion question : entry.getValue()) {
-                Long questionId = question.getId();
-                if (narrativeAnswerResponsesByQuestionId.containsKey(questionId)
-                        && question.getQuestionType() == QuestionType.NARRATIVE) {
-                    answerResponses.add(narrativeAnswerResponsesByQuestionId.get(questionId));
+                if (question.getQuestionType() == QuestionType.NARRATIVE) {
+                    AnswerResponse answerResponse = getAnswerResponse(narrativeAnswerResponsesByQuestionId, question);
+                    answerResponses.add(answerResponse);
                 }
-                if (selectiveAnswerResponsesByQuestionId.containsKey(questionId)
-                        && question.getQuestionType() == QuestionType.SELECTIVE) {
-                    answerResponses.add(selectiveAnswerResponsesByQuestionId.get(questionId));
+                if (question.getQuestionType() == QuestionType.SELECTIVE) {
+                    AnswerResponse answerResponse = getAnswerResponse(selectiveAnswerResponsesByQuestionId, question);
+                    answerResponses.add(answerResponse);
                 }
             }
 
@@ -112,5 +111,14 @@ public class ApplicationAnswerReader {
                 .stream()
                 .map(entry -> AnswerMapper.selectiveAnswerToAnswerResponse(entry.getValue()))
                 .collect(toMap(AnswerResponse::questionId, identity()));
+    }
+
+    private AnswerResponse getAnswerResponse(Map<Long, AnswerResponse> answerResponsesByQuestionId,
+                                             OrderedQuestion question) {
+        Long questionId = question.getId();
+        if (answerResponsesByQuestionId.containsKey(questionId)) {
+            return answerResponsesByQuestionId.get(questionId);
+        }
+        return new AnswerResponse(questionId, null, null, question.getQuestionType());
     }
 }

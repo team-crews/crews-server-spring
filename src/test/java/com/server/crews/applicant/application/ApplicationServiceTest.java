@@ -136,12 +136,13 @@ class ApplicationServiceTest extends ServiceTest {
                 .flatMap(Collection::stream)
                 .toList();
         assertAll(() -> {
-            assertThat(answerResponses).hasSize(2);
-            assertThat(response.sections().get(1).answers()).isEmpty();
+            assertThat(answerResponses).hasSize(4);
             assertThat(answerResponses).filteredOn(answerResponse -> answerResponse.type() == QuestionType.NARRATIVE)
+                    .filteredOn(answerResponse -> answerResponse.content() != null)
                     .extracting(AnswerResponse::content)
-                    .containsExactly("안녕하세요");
+                    .contains("안녕하세요");
             assertThat(answerResponses).filteredOn(answerResponse -> answerResponse.type() == QuestionType.SELECTIVE)
+                    .filteredOn(answerResponse -> answerResponse.choiceIds() != null)
                     .flatExtracting(AnswerResponse::choiceIds)
                     .contains(1L, 2L);
         });

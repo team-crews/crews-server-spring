@@ -91,11 +91,12 @@ public class ApplicationApiTest extends ApiTest {
             softAssertions.assertThat(applicationDetailsResponse.id()).isNotNull();
             softAssertions.assertThat(answerResponses)
                     .filteredOn(answerResponse -> answerResponse.type() == QuestionType.NARRATIVE)
-                    .hasSize(1);
+                    .isNotEmpty();
             softAssertions.assertThat(answerResponses)
                     .filteredOn(answerResponse -> answerResponse.type() == QuestionType.SELECTIVE)
+                    .filteredOn(answerResponse -> answerResponse.choiceIds() != null)
                     .flatExtracting(AnswerResponse::choiceIds)
-                    .hasSize(1);
+                    .isNotEmpty();
         });
     }
 
@@ -198,6 +199,7 @@ public class ApplicationApiTest extends ApiTest {
                     .isNotEmpty();
             softAssertions.assertThat(answerResponses)
                     .filteredOn(answerResponse -> answerResponse.type() == QuestionType.SELECTIVE)
+                    .filteredOn(answerResponse -> answerResponse.choiceIds() != null)
                     .flatExtracting(AnswerResponse::choiceIds)
                     .isNotEmpty();
         });
@@ -241,6 +243,7 @@ public class ApplicationApiTest extends ApiTest {
                     .isNotEmpty();
             softAssertions.assertThat(answerResponses)
                     .filteredOn(answerResponse -> answerResponse.type() == QuestionType.SELECTIVE)
+                    .filteredOn(answerResponse -> answerResponse.choiceIds() != null)
                     .flatExtracting(AnswerResponse::choiceIds)
                     .isNotEmpty();
         });
