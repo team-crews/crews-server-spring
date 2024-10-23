@@ -111,9 +111,10 @@ public class ApplicationAnswerReader {
         return application.getSelectiveAnswersByQuestionId()
                 .values()
                 .stream()
-                .peek(selectiveAnswers -> Collections.sort(selectiveAnswers,
-                        Comparator.comparingLong(SelectiveAnswer::getChoiceId)))
-                .map(selectiveAnswers -> AnswerMapper.selectiveAnswerToAnswerResponse(selectiveAnswers))
+                .map(selectiveAnswers -> {
+                    selectiveAnswers.sort(Comparator.comparingLong(SelectiveAnswer::getChoiceId));
+                    return AnswerMapper.selectiveAnswerToAnswerResponse(selectiveAnswers);
+                })
                 .collect(toMap(AnswerResponse::questionId, identity()));
     }
 
