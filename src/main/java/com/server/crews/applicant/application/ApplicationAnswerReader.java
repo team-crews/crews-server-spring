@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
 
 import com.server.crews.applicant.domain.Application;
+import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.applicant.dto.response.AnswerResponse;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.SectionAnswerResponse;
@@ -16,6 +17,7 @@ import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -107,9 +109,11 @@ public class ApplicationAnswerReader {
 
     private Map<Long, AnswerResponse> selectiveAnswerResponsesByQuestionIdInApplication() {
         return application.getSelectiveAnswersByQuestionId()
-                .entrySet()
+                .values()
                 .stream()
-                .map(entry -> AnswerMapper.selectiveAnswerToAnswerResponse(entry.getValue()))
+                .peek(selectiveAnswers -> Collections.sort(selectiveAnswers,
+                        Comparator.comparingLong(SelectiveAnswer::getChoiceId)))
+                .map(selectiveAnswers -> AnswerMapper.selectiveAnswerToAnswerResponse(selectiveAnswers))
                 .collect(toMap(AnswerResponse::questionId, identity()));
     }
 
