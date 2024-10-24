@@ -14,7 +14,6 @@ import com.server.crews.recruitment.domain.OrderedQuestion;
 import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.Section;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -32,27 +31,36 @@ public class ApplicationAnswerReader {
         Map<Long, AnswerResponse> narrativeAnswerResponsesByQuestionId = narrativeAnswerResponsesByQuestionIdInApplication();
         Map<Long, AnswerResponse> selectiveAnswerResponsesByQuestionId = selectiveAnswerResponsesByQuestionIdInApplication();
 
-        List<SectionAnswerResponse> sectionAnswerResponse = new ArrayList<>();
-        for (Section section : orderedSections) {
-            List<OrderedQuestion> orderedQuestions = section.getOrderedQuestions();
-            List<AnswerResponse> answerResponses = new ArrayList<>();
+        List<SectionAnswerResponse> sectionAnswerResponses = orderedSections.stream()
+                .map(section -> new SectionAnswerResponse(
+                        section.getId(),
+                        getAnswerResponsesBySection(section, narrativeAnswerResponsesByQuestionId,
+                                selectiveAnswerResponsesByQuestionId)
+                ))
+                .toList();
 
-            for (OrderedQuestion question : orderedQuestions) {
-                if (question.getQuestionType() == QuestionType.NARRATIVE) {
-                    AnswerResponse answerResponse = getAnswerResponse(narrativeAnswerResponsesByQuestionId, question);
-                    answerResponses.add(answerResponse);
-                }
-                if (question.getQuestionType() == QuestionType.SELECTIVE) {
-                    AnswerResponse answerResponse = getAnswerResponse(selectiveAnswerResponsesByQuestionId, question);
-                    answerResponses.add(answerResponse);
-                }
-            }
+        return ApplicationMapper.applicationToApplicationDetailsResponse(application, sectionAnswerResponses);
+    }
 
-            Long sectionId = section.getId();
-            sectionAnswerResponse.add(new SectionAnswerResponse(sectionId, answerResponses));
+    private List<AnswerResponse> getAnswerResponsesBySection(Section section,
+                                                             Map<Long, AnswerResponse> narrativeAnswers,
+                                                             Map<Long, AnswerResponse> selectiveAnswers) {
+        return section.getOrderedQuestions().stream()
+                .map(question -> getAnswerResponseByType(question, narrativeAnswers, selectiveAnswers))
+                .toList();
+    }
+
+    private AnswerResponse getAnswerResponseByType(OrderedQuestion question,
+                                                   Map<Long, AnswerResponse> narrativeAnswers,
+                                                   Map<Long, AnswerResponse> selectiveAnswers) {
+        if (question.getQuestionType() == QuestionType.NARRATIVE) {
+            return narrativeAnswers.getOrDefault(question.getId(), getBlankAnswerResponse(question));
         }
+        return selectiveAnswers.getOrDefault(question.getId(), getBlankAnswerResponse(question));
+    }
 
-        return ApplicationMapper.applicationToApplicationDetailsResponse(application, sectionAnswerResponse);
+    private AnswerResponse getBlankAnswerResponse(OrderedQuestion question) {
+        return new AnswerResponse(question.getId(), null, null, question.getQuestionType());
     }
 
     private Map<Long, AnswerResponse> narrativeAnswerResponsesByQuestionIdInApplication() {
@@ -70,14 +78,5 @@ public class ApplicationAnswerReader {
                     return AnswerMapper.selectiveAnswerToAnswerResponse(selectiveAnswers);
                 })
                 .collect(toMap(AnswerResponse::questionId, identity()));
-    }
-
-    private AnswerResponse getAnswerResponse(Map<Long, AnswerResponse> answerResponsesByQuestionId,
-                                             OrderedQuestion question) {
-        Long questionId = question.getId();
-        if (answerResponsesByQuestionId.containsKey(questionId)) {
-            return answerResponsesByQuestionId.get(questionId);
-        }
-        return new AnswerResponse(questionId, null, null, question.getQuestionType());
     }
 }
