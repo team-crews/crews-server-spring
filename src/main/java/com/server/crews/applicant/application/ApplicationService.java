@@ -39,15 +39,15 @@ public class ApplicationService {
         Recruitment recruitment = recruitmentDetailsQueryService.findByCode(request.recruitmentCode());
         validateRecruitmentProgress(recruitment);
 
-        ApplicationForm applicationForm = applicationRepository.findByApplicantId(applicantId)
-                .map(previosApplication -> new ApplicationForm(recruitment, previosApplication))
-                .orElse(new ApplicationForm(recruitment));
+        ApplicationManager applicationManager = applicationRepository.findByApplicantId(applicantId)
+                .map(previosApplication -> new ApplicationManager(recruitment, previosApplication))
+                .orElse(new ApplicationManager(recruitment));
 
         List<NarrativeAnswer> newNarrativeAnswers = ApplicationMapper.narrativeAnswersInApplicationSaveRequest(request);
         List<SelectiveAnswer> newSelectiveAnswers = ApplicationMapper.selectiveAnswersInApplicationSaveRequest(request);
 
-        List<NarrativeAnswer> updatedNarrativeAnswers = applicationForm.writeNarrativeAnswers(newNarrativeAnswers);
-        List<SelectiveAnswer> updatedSelectiveAnswers = applicationForm.writeSelectiveAnswers(newSelectiveAnswers);
+        List<NarrativeAnswer> updatedNarrativeAnswers = applicationManager.writeNarrativeAnswers(newNarrativeAnswers);
+        List<SelectiveAnswer> updatedSelectiveAnswers = applicationManager.writeSelectiveAnswers(newSelectiveAnswers);
 
         Application application = ApplicationMapper.applicationSaveRequestToApplication(request, recruitment,
                 applicantId, updatedNarrativeAnswers, updatedSelectiveAnswers);

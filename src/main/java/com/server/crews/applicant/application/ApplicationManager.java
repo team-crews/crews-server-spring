@@ -16,20 +16,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class ApplicationForm {
+public class ApplicationManager {
     private List<NarrativeQuestion> narrativeQuestions;
     private List<SelectiveQuestion> selectiveQuestions;
     private Map<Long, NarrativeAnswer> previousNarrativeAnswersByQuestionId;
     private Map<Long, List<SelectiveAnswer>> previousSelectiveAnswersByQuestionId;
 
-    public ApplicationForm(Recruitment recruitment) {
+    public ApplicationManager(Recruitment recruitment) {
         this.narrativeQuestions = recruitment.getNarrativeQuestion();
         this.selectiveQuestions = recruitment.getSelectiveQuestions();
         this.previousNarrativeAnswersByQuestionId = new HashMap<>();
         this.previousSelectiveAnswersByQuestionId = new HashMap<>();
     }
 
-    public ApplicationForm(Recruitment recruitment, Application previousApplication) {
+    public ApplicationManager(Recruitment recruitment, Application previousApplication) {
         this.narrativeQuestions = recruitment.getNarrativeQuestion();
         this.selectiveQuestions = recruitment.getSelectiveQuestions();
         this.previousNarrativeAnswersByQuestionId = previousApplication.getNarrativeAnswersByQuestionId();
