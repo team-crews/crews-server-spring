@@ -7,12 +7,12 @@ import static com.server.crews.fixture.UserFixture.TEST_EMAIL;
 import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import com.server.crews.auth.application.JwtTokenProvider;
+import com.server.crews.auth.service.JwtTokenProvider;
 import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
 import com.server.crews.auth.dto.response.TokenResponse;
-import com.server.crews.auth.presentation.AuthorizationExtractor;
+import com.server.crews.auth.controller.AuthorizationExtractor;
 import com.server.crews.global.exception.CrewsErrorCode;
 import com.server.crews.global.exception.ErrorResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;

@@ -1,6 +1,6 @@
 package com.server.crews.applicant.dto.request;
 
-import com.server.crews.recruitment.presentation.QuestionTypeFormat;
+import com.server.crews.recruitment.controller.QuestionTypeFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;

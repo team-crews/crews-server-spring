@@ -2,8 +2,8 @@ package com.server.crews.environ.presentation;
 
 import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.LoginUser;
-import com.server.crews.auth.presentation.AdminAuthentication;
-import com.server.crews.auth.presentation.AuthenticationArgumentResolver;
+import com.server.crews.auth.controller.AdminAuthentication;
+import com.server.crews.auth.controller.AuthenticationArgumentResolver;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
