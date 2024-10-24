@@ -33,7 +33,7 @@ import com.server.crews.recruitment.dto.response.ChoiceResponse;
 import com.server.crews.recruitment.dto.response.QuestionResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.SectionResponse;
-import com.server.crews.recruitment.repository.RecruitmentRepository;
+import com.server.crews.recruitment.domain.repository.RecruitmentRepository;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

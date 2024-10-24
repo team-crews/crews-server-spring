@@ -1,4 +1,4 @@
-package com.server.crews.recruitment.repository;
+package com.server.crews.recruitment.domain.repository;
 
 import static com.server.crews.fixture.QuestionFixture.INTRODUCTION_QUESTION;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -9,6 +9,7 @@ import com.server.crews.environ.repository.RepositoryTest;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.Section;
+import com.server.crews.recruitment.domain.repository.NarrativeQuestionRepository;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;

@@ -23,7 +23,7 @@ import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
-import com.server.crews.recruitment.repository.RecruitmentRepository;
+import com.server.crews.recruitment.domain.repository.RecruitmentRepository;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;

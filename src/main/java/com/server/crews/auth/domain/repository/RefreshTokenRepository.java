@@ -1,4 +1,4 @@
-package com.server.crews.auth.repository;
+package com.server.crews.auth.domain.repository;
 
 import com.server.crews.auth.domain.RefreshToken;
 import java.util.Optional;

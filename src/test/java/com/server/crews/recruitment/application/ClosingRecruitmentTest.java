@@ -11,7 +11,7 @@ import com.server.crews.environ.service.TestAdmin;
 import com.server.crews.environ.service.TestRecruitment;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.RecruitmentProgress;
-import com.server.crews.recruitment.repository.RecruitmentRepository;
+import com.server.crews.recruitment.domain.repository.RecruitmentRepository;
 import java.time.Clock;
 import java.time.Instant;
 import org.junit.jupiter.api.DisplayName;

@@ -1,9 +1,10 @@
-package com.server.crews.auth.repository;
+package com.server.crews.auth.domain.repository;
 
 import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.server.crews.auth.domain.Applicant;
+import com.server.crews.auth.domain.repository.ApplicantRepository;
 import com.server.crews.environ.repository.RepositoryTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.server.crews.recruitment.repository;
+package com.server.crews.recruitment.domain.repository;
 
 import com.server.crews.recruitment.domain.Recruitment;
 import java.util.Optional;

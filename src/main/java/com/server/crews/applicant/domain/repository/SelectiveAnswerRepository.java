@@ -1,4 +1,4 @@
-package com.server.crews.applicant.repository;
+package com.server.crews.applicant.domain.repository;
 
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.SelectiveAnswer;

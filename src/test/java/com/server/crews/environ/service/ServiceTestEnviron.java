@@ -1,15 +1,15 @@
 package com.server.crews.environ.service;
 
-import com.server.crews.applicant.repository.ApplicationRepository;
-import com.server.crews.applicant.repository.NarrativeAnswerRepository;
-import com.server.crews.applicant.repository.SelectiveAnswerRepository;
-import com.server.crews.auth.repository.AdministratorRepository;
-import com.server.crews.auth.repository.ApplicantRepository;
-import com.server.crews.recruitment.repository.ChoiceRepository;
-import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
-import com.server.crews.recruitment.repository.RecruitmentRepository;
-import com.server.crews.recruitment.repository.SectionRepository;
-import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
+import com.server.crews.applicant.domain.repository.ApplicationRepository;
+import com.server.crews.applicant.domain.repository.NarrativeAnswerRepository;
+import com.server.crews.applicant.domain.repository.SelectiveAnswerRepository;
+import com.server.crews.auth.domain.repository.AdministratorRepository;
+import com.server.crews.auth.domain.repository.ApplicantRepository;
+import com.server.crews.recruitment.domain.repository.ChoiceRepository;
+import com.server.crews.recruitment.domain.repository.NarrativeQuestionRepository;
+import com.server.crews.recruitment.domain.repository.RecruitmentRepository;
+import com.server.crews.recruitment.domain.repository.SectionRepository;
+import com.server.crews.recruitment.domain.repository.SelectiveQuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;

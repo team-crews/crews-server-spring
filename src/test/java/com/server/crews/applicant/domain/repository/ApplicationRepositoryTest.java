@@ -1,8 +1,9 @@
-package com.server.crews.applicant.repository;
+package com.server.crews.applicant.domain.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.server.crews.applicant.domain.Application;
+import com.server.crews.applicant.domain.repository.ApplicationRepository;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.domain.Applicant;
 import com.server.crews.environ.repository.RepositoryTest;
