@@ -21,6 +21,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -105,6 +106,11 @@ public class SelectiveQuestion implements OrderedQuestion {
 
     public void updateRecruitment(Recruitment recruitment) {
         this.recruitment = recruitment;
+    }
+
+    public List<Choice> getOrderedChoices() {
+        Collections.sort(choices);
+        return choices;
     }
 
     public Long getSectionId() {

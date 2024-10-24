@@ -1,33 +1,27 @@
 package com.server.crews.recruitment.util;
 
 import com.server.crews.recruitment.domain.NarrativeQuestion;
+import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
-import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.dto.request.SectionSaveRequest;
 import com.server.crews.recruitment.dto.response.QuestionResponse;
 import com.server.crews.recruitment.dto.response.SectionResponse;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SectionMapper {
 
     public static SectionResponse sectionToSectionResponse(Section section) {
-        List<QuestionResponse> selectiveQuestionResponses = section.getSelectiveQuestions().stream()
-                .map(QuestionMapper::selectiveQuestionToQuestionResponse)
-                .collect(Collectors.toList());
-        List<QuestionResponse> narrativeQuestionResponses = section.getNarrativeQuestions().stream()
-                .map(QuestionMapper::narrativeQuestionToQuestionResponse)
-                .collect(Collectors.toList());
-        List<QuestionResponse> allQuestionResponses = new ArrayList<>(selectiveQuestionResponses);
-        allQuestionResponses.addAll(narrativeQuestionResponses);
+        List<QuestionResponse> questionResponses = section.getOrderedQuestions()
+                .stream()
+                .map(QuestionMapper::orderedQuestionToQuestionResponse)
+                .toList();
         return SectionResponse.builder()
                 .id(section.getId())
                 .name(section.getName())
                 .description(section.getDescription())
-                .questions(allQuestionResponses)
+                .questions(questionResponses)
                 .build();
     }
 

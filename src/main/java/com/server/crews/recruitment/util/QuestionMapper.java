@@ -2,10 +2,11 @@ package com.server.crews.recruitment.util;
 
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
+import com.server.crews.recruitment.domain.OrderedQuestion;
+import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
-import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.dto.response.ChoiceResponse;
 import com.server.crews.recruitment.dto.response.QuestionResponse;
 import java.util.List;
@@ -34,8 +35,15 @@ public class QuestionMapper {
                 .order(selectiveQuestion.getOrder())
                 .minimumSelection(selectiveQuestion.getMinimumSelection())
                 .maximumSelection(selectiveQuestion.getMaximumSelection())
-                .choices(choiceResponses(selectiveQuestion.getChoices()))
+                .choices(choiceResponses(selectiveQuestion.getOrderedChoices()))
                 .build();
+    }
+
+    public static QuestionResponse orderedQuestionToQuestionResponse(OrderedQuestion orderedQuestion) {
+        if (orderedQuestion.getQuestionType() == QuestionType.NARRATIVE) {
+            return narrativeQuestionToQuestionResponse((NarrativeQuestion) orderedQuestion);
+        }
+        return selectiveQuestionToQuestionResponse((SelectiveQuestion) orderedQuestion);
     }
 
     private static List<ChoiceResponse> choiceResponses(List<Choice> choices) {

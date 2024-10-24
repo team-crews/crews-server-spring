@@ -25,7 +25,6 @@ import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressRespo
 import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
-import com.server.crews.recruitment.util.QuestionSorter;
 import com.server.crews.recruitment.util.RecruitmentMapper;
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -63,10 +62,7 @@ public class RecruitmentService {
         setCode(recruitment);
         validateDeadline(recruitment.getDeadline());
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
-        RecruitmentDetailsResponse recruitmentDetailsResponse = RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(
-                savedRecruitment);
-        QuestionSorter.sort(recruitmentDetailsResponse);
-        return recruitmentDetailsResponse;
+        return RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(savedRecruitment);
     }
 
     private void setCode(Recruitment recruitment) {
@@ -131,10 +127,7 @@ public class RecruitmentService {
             List<SelectiveQuestion> selectives = selectiveQuestionsBySection.getOrDefault(section, List.of());
             section.replaceQuestions(narratives, selectives);
         });
-        RecruitmentDetailsResponse recruitmentDetailsResponse = RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(
-                recruitment);
-        QuestionSorter.sort(recruitmentDetailsResponse);
-        return recruitmentDetailsResponse;
+        return RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(recruitment);
     }
 
     public RecruitmentProgressResponse findRecruitmentProgress(Long publisherId) {

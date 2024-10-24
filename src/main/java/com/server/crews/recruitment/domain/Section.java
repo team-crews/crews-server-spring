@@ -15,6 +15,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -61,6 +62,14 @@ public class Section {
         this.narrativeQuestions = new ArrayList<>(narrativeQuestions);
         selectiveQuestions.forEach(selectiveQuestion -> selectiveQuestion.updateSection(this));
         this.selectiveQuestions = new ArrayList<>(selectiveQuestions);
+    }
+
+    public List<OrderedQuestion> getOrderedQuestions() {
+        List<OrderedQuestion> orderedQuestions = new ArrayList<>();
+        orderedQuestions.addAll(narrativeQuestions);
+        orderedQuestions.addAll(selectiveQuestions);
+        Collections.sort(orderedQuestions);
+        return orderedQuestions;
     }
 
     public void updateRecruitment(Recruitment recruitment) {
