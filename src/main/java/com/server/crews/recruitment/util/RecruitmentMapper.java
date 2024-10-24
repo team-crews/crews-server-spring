@@ -11,7 +11,7 @@ import java.util.List;
 public class RecruitmentMapper {
 
     public static RecruitmentDetailsResponse recruitmentToRecruitmentDetailsResponse(Recruitment recruitment) {
-        List<Section> sections = recruitment.getSections();
+        List<Section> sections = recruitment.getOrderedSections();
         List<SectionResponse> sectionResponses = sections.stream()
                 .map(SectionMapper::sectionToSectionResponse)
                 .toList();

@@ -1,5 +1,7 @@
 package com.server.crews.recruitment.domain;
 
+import static java.util.stream.Collectors.groupingBy;
+
 import com.server.crews.auth.domain.Administrator;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -109,6 +112,21 @@ public class Recruitment {
         this.sections.addAll(sections);
     }
 
+    public void replaceQuestions(List<NarrativeQuestion> narrativeQuestions,
+                                 List<SelectiveQuestion> selectiveQuestions) {
+        Map<Long, List<NarrativeQuestion>> narrativeQuestionsBySectionId = narrativeQuestions.stream()
+                .collect(groupingBy(NarrativeQuestion::getSectionId));
+        Map<Long, List<SelectiveQuestion>> selectiveQuestionsBySectionId = selectiveQuestions.stream()
+                .collect(groupingBy(SelectiveQuestion::getSectionId));
+
+        sections.forEach(section ->
+                section.replaceQuestions(
+                        narrativeQuestionsBySectionId.getOrDefault(section.getId(), List.of()),
+                        selectiveQuestionsBySectionId.getOrDefault(section.getId(), List.of())
+                )
+        );
+    }
+
     public void start() {
         this.progress = RecruitmentProgress.IN_PROGRESS;
     }
@@ -141,9 +159,23 @@ public class Recruitment {
         return this.publisher.getId().equals(publisherId);
     }
 
-    public List<Section> getSections() {
+    public List<Section> getOrderedSections() {
         List<Section> sortedSections = new ArrayList<>(sections);
         sortedSections.sort(Comparator.comparingLong(Section::getId));
         return sortedSections;
+    }
+
+    public List<NarrativeQuestion> getNarrativeQuestion() {
+        return this.sections.stream()
+                .map(Section::getNarrativeQuestions)
+                .flatMap(Collection::stream)
+                .toList();
+    }
+
+    public List<SelectiveQuestion> getSelectiveQuestions() {
+        return this.sections.stream()
+                .map(Section::getSelectiveQuestions)
+                .flatMap(Collection::stream)
+                .toList();
     }
 }

@@ -1,7 +1,6 @@
 package com.server.crews.applicant.application;
 
 import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
 
 import com.server.crews.applicant.domain.Application;
@@ -11,69 +10,22 @@ import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.SectionAnswerResponse;
 import com.server.crews.applicant.util.AnswerMapper;
 import com.server.crews.applicant.util.ApplicationMapper;
-import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.OrderedQuestion;
 import com.server.crews.recruitment.domain.QuestionType;
-import com.server.crews.recruitment.domain.SelectiveQuestion;
+import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.recruitment.domain.Section;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class ApplicationAnswerReader {
-    private final LinkedHashMap<Long, List<OrderedQuestion>> orderedQuestionsByOrderedSectionId;
+    private final List<Section> orderedSections;
     private final Application application;
 
-    public ApplicationAnswerReader(List<NarrativeQuestion> narrativeQuestions,
-                                   List<SelectiveQuestion> selectiveQuestions,
-                                   Application application) {
-        this.orderedQuestionsByOrderedSectionId = orderedQuestionsFrom(narrativeQuestions, selectiveQuestions);
+    public ApplicationAnswerReader(Recruitment recruitment, Application application) {
+        this.orderedSections = recruitment.getOrderedSections();
         this.application = application;
-    }
-
-    private LinkedHashMap<Long, List<OrderedQuestion>> orderedQuestionsFrom(List<NarrativeQuestion> narrativeQuestions,
-                                                                            List<SelectiveQuestion> selectiveQuestions) {
-        Map<Long, List<OrderedQuestion>> narrativeQuestionsBySectionId = groupBySectionId(narrativeQuestions);
-        Map<Long, List<OrderedQuestion>> selectiveQuestionsBySectionId = groupBySectionId(selectiveQuestions);
-
-        List<Long> orderedSectionIds = getOrderedSectionIds(narrativeQuestionsBySectionId.keySet(),
-                selectiveQuestionsBySectionId.keySet());
-
-        LinkedHashMap<Long, List<OrderedQuestion>> orderedQuestionsBySectionId = new LinkedHashMap<>();
-        for (Long sectionId : orderedSectionIds) {
-            List<OrderedQuestion> narrativeOrderedQuestions = narrativeQuestionsBySectionId.getOrDefault(sectionId,
-                    Collections.emptyList());
-            List<OrderedQuestion> selectiveOrderedQuestions = selectiveQuestionsBySectionId.getOrDefault(sectionId,
-                    Collections.emptyList());
-
-            List<OrderedQuestion> orderedQuestions = new ArrayList<>(narrativeOrderedQuestions);
-            orderedQuestions.addAll(selectiveOrderedQuestions);
-            Collections.sort(orderedQuestions);
-
-            orderedQuestionsBySectionId.put(sectionId, orderedQuestions);
-        }
-
-        return orderedQuestionsBySectionId;
-    }
-
-    private <T extends OrderedQuestion> Map<Long, List<OrderedQuestion>> groupBySectionId(List<T> questions) {
-        return questions.stream()
-                .collect(groupingBy(OrderedQuestion::getSectionId));
-    }
-
-    private List<Long> getOrderedSectionIds(Set<Long> sectionIdsInNarrativeQuestions,
-                                            Set<Long> sectionIdsInSelectiveQuestions) {
-        Set<Long> sectionIds = new HashSet<>(sectionIdsInNarrativeQuestions);
-        sectionIds.addAll(sectionIdsInSelectiveQuestions);
-
-        List<Long> sortedSectionIds = new ArrayList<>(sectionIds);
-        Collections.sort(sortedSectionIds);
-
-        return sortedSectionIds;
     }
 
     public ApplicationDetailsResponse readBySection() {
@@ -81,10 +33,11 @@ public class ApplicationAnswerReader {
         Map<Long, AnswerResponse> selectiveAnswerResponsesByQuestionId = selectiveAnswerResponsesByQuestionIdInApplication();
 
         List<SectionAnswerResponse> sectionAnswerResponse = new ArrayList<>();
-        for (Map.Entry<Long, List<OrderedQuestion>> entry : orderedQuestionsByOrderedSectionId.entrySet()) {
+        for (Section section : orderedSections) {
+            List<OrderedQuestion> orderedQuestions = section.getOrderedQuestions();
             List<AnswerResponse> answerResponses = new ArrayList<>();
 
-            for (OrderedQuestion question : entry.getValue()) {
+            for (OrderedQuestion question : orderedQuestions) {
                 if (question.getQuestionType() == QuestionType.NARRATIVE) {
                     AnswerResponse answerResponse = getAnswerResponse(narrativeAnswerResponsesByQuestionId, question);
                     answerResponses.add(answerResponse);
@@ -95,7 +48,8 @@ public class ApplicationAnswerReader {
                 }
             }
 
-            sectionAnswerResponse.add(new SectionAnswerResponse(entry.getKey(), answerResponses));
+            Long sectionId = section.getId();
+            sectionAnswerResponse.add(new SectionAnswerResponse(sectionId, answerResponses));
         }
 
         return ApplicationMapper.applicationToApplicationDetailsResponse(application, sectionAnswerResponse);

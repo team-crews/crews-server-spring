@@ -8,6 +8,7 @@ import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;
 import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
+import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,17 +22,16 @@ public class ApplicationForm {
     private Map<Long, NarrativeAnswer> previousNarrativeAnswersByQuestionId;
     private Map<Long, List<SelectiveAnswer>> previousSelectiveAnswersByQuestionId;
 
-    public ApplicationForm(List<NarrativeQuestion> narrativeQuestions, List<SelectiveQuestion> selectiveQuestions) {
-        this.narrativeQuestions = narrativeQuestions;
-        this.selectiveQuestions = selectiveQuestions;
+    public ApplicationForm(Recruitment recruitment) {
+        this.narrativeQuestions = recruitment.getNarrativeQuestion();
+        this.selectiveQuestions = recruitment.getSelectiveQuestions();
         this.previousNarrativeAnswersByQuestionId = new HashMap<>();
         this.previousSelectiveAnswersByQuestionId = new HashMap<>();
     }
 
-    public ApplicationForm(List<NarrativeQuestion> narrativeQuestions, List<SelectiveQuestion> selectiveQuestions,
-                           Application previousApplication) {
-        this.narrativeQuestions = narrativeQuestions;
-        this.selectiveQuestions = selectiveQuestions;
+    public ApplicationForm(Recruitment recruitment, Application previousApplication) {
+        this.narrativeQuestions = recruitment.getNarrativeQuestion();
+        this.selectiveQuestions = recruitment.getSelectiveQuestions();
         this.previousNarrativeAnswersByQuestionId = previousApplication.getNarrativeAnswersByQuestionId();
         this.previousSelectiveAnswersByQuestionId = previousApplication.getSelectiveAnswersByQuestionId();
     }

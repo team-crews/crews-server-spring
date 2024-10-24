@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.environ.repository.RepositoryTest;
 import com.server.crews.recruitment.domain.Recruitment;
-import com.server.crews.recruitment.domain.repository.RecruitmentRepository;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +34,7 @@ class RecruitmentRepositoryTest extends RepositoryTest {
         // then
         assertAll(
                 () -> assertThat(recruitment.getTitle()).isEqualTo(DEFAULT_TITLE),
-                () -> assertThat(recruitment.getSections()).hasSize(2)
+                () -> assertThat(recruitment.getOrderedSections()).hasSize(2)
         );
     }
 

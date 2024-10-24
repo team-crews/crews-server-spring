@@ -1,36 +1,29 @@
 package com.server.crews.recruitment.application;
 
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
 
 import com.server.crews.applicant.domain.Application;
-import com.server.crews.applicant.event.OutcomeDeterminedEvent;
 import com.server.crews.applicant.domain.repository.ApplicationRepository;
+import com.server.crews.applicant.event.OutcomeDeterminedEvent;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.domain.repository.AdministratorRepository;
 import com.server.crews.global.CustomLogger;
 import com.server.crews.global.exception.CrewsErrorCode;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.NotFoundException;
-import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.RecruitmentProgress;
-import com.server.crews.recruitment.domain.Section;
-import com.server.crews.recruitment.domain.SelectiveQuestion;
+import com.server.crews.recruitment.domain.repository.RecruitmentRepository;
 import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentProgressResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
-import com.server.crews.recruitment.domain.repository.NarrativeQuestionRepository;
-import com.server.crews.recruitment.domain.repository.RecruitmentRepository;
-import com.server.crews.recruitment.domain.repository.SelectiveQuestionRepository;
 import com.server.crews.recruitment.util.RecruitmentMapper;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -46,8 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RecruitmentService {
     private final RecruitmentRepository recruitmentRepository;
-    private final NarrativeQuestionRepository narrativeQuestionRepository;
-    private final SelectiveQuestionRepository selectiveQuestionRepository;
+    private final RecruitmentDetailsQueryService recruitmentDetailsQueryService;
     private final AdministratorRepository administratorRepository;
     private final ApplicationRepository applicationRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -101,32 +93,15 @@ public class RecruitmentService {
     }
 
     public Optional<RecruitmentDetailsResponse> findRecruitmentDetailsInReady(Long publisherId) {
-        return recruitmentRepository.findWithSectionsByPublisherId(publisherId)
-                .map(this::toRecruitmentDetailsWithQuestions);
+        return recruitmentDetailsQueryService.findNullableByPublisher(publisherId)
+                .map(RecruitmentMapper::recruitmentToRecruitmentDetailsResponse);
     }
 
     public RecruitmentDetailsResponse findRecruitmentDetailsByCode(String code) {
-        Recruitment recruitment = recruitmentRepository.findWithSectionsByCode(code)
-                .orElseThrow(() -> new NotFoundException("모집 공고 코드", "모집 공고"));
+        Recruitment recruitment = recruitmentDetailsQueryService.findByCode(code);
         if (!recruitment.isStarted()) {
             throw new CrewsException(CrewsErrorCode.RECRUITMENT_NOT_STARTED);
         }
-        return toRecruitmentDetailsWithQuestions(recruitment);
-    }
-
-    public RecruitmentDetailsResponse toRecruitmentDetailsWithQuestions(Recruitment recruitment) {
-        List<Section> sections = recruitment.getSections();
-        List<NarrativeQuestion> narrativeQuestions = narrativeQuestionRepository.findAllBySectionIn(sections);
-        List<SelectiveQuestion> selectiveQuestions = selectiveQuestionRepository.findAllWithChoicesInSections(sections);
-        Map<Section, List<NarrativeQuestion>> narrativeQuestionsBySection = narrativeQuestions.stream()
-                .collect(groupingBy(NarrativeQuestion::getSection));
-        Map<Section, List<SelectiveQuestion>> selectiveQuestionsBySection = selectiveQuestions.stream()
-                .collect(groupingBy(SelectiveQuestion::getSection));
-        sections.forEach(section -> {
-            List<NarrativeQuestion> narratives = narrativeQuestionsBySection.getOrDefault(section, List.of());
-            List<SelectiveQuestion> selectives = selectiveQuestionsBySection.getOrDefault(section, List.of());
-            section.replaceQuestions(narratives, selectives);
-        });
         return RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(recruitment);
     }
 
