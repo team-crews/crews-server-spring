@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "choice")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Choice {
+public class Choice implements Comparable<Choice> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,5 +44,10 @@ public class Choice {
 
     public void updateSelectiveQuestion(SelectiveQuestion selectiveQuestion) {
         this.selectiveQuestion = selectiveQuestion;
+    }
+
+    @Override
+    public int compareTo(Choice other) {
+        return Long.compare(this.id, other.id);
     }
 }

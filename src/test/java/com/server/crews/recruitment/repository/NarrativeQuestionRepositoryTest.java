@@ -9,6 +9,7 @@ import com.server.crews.environ.repository.RepositoryTest;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.Section;
+import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +26,7 @@ class NarrativeQuestionRepositoryTest extends RepositoryTest {
         // given
         Administrator publisher = createDefaultAdmin();
         Recruitment recruitment = createDefaultRecruitment(publisher);
-        List<Section> sections = recruitment.getSections();
+        List<Section> sections = recruitment.getOrderedSections();
 
         // when
         List<NarrativeQuestion> narrativeQuestions = narrativeQuestionRepository.findAllBySectionIn(sections);
@@ -40,7 +41,7 @@ class NarrativeQuestionRepositoryTest extends RepositoryTest {
         // given
         Administrator publisher = createDefaultAdmin();
         Recruitment recruitment = createDefaultRecruitment(publisher);
-        List<Section> sections = recruitment.getSections();
+        List<Section> sections = recruitment.getOrderedSections();
 
         NarrativeQuestion narrativeQuestion = new NarrativeQuestion(null, INTRODUCTION_QUESTION, true, 1, 1501);
         narrativeQuestion.updateSection(sections.get(0));

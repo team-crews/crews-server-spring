@@ -84,16 +84,16 @@ public class Application {
         this.major = major;
         this.name = name;
         this.outcome = Outcome.PENDING;
-        replaceNarrativeAnswers(narrativeAnswers);
-        replaceSelectiveAnswers(selectiveAnswers);
+        replaceWithFetchedNarrativeAnswers(narrativeAnswers);
+        replaceWithFetchedSelectiveAnswers(selectiveAnswers);
     }
 
-    public void replaceNarrativeAnswers(List<NarrativeAnswer> narrativeAnswers) {
+    public void replaceWithFetchedNarrativeAnswers(List<NarrativeAnswer> narrativeAnswers) {
         narrativeAnswers.forEach(narrativeAnswer -> narrativeAnswer.updateApplication(this));
         this.narrativeAnswers = new HashSet<>(narrativeAnswers);
     }
 
-    public void replaceSelectiveAnswers(List<SelectiveAnswer> selectiveAnswers) {
+    public void replaceWithFetchedSelectiveAnswers(List<SelectiveAnswer> selectiveAnswers) {
         selectiveAnswers.forEach(selectiveAnswer -> selectiveAnswer.updateApplication(this));
         this.selectiveAnswers = new HashSet<>(selectiveAnswers);
     }
@@ -118,9 +118,5 @@ public class Application {
 
     public boolean isNotDetermined() {
         return outcome.equals(Outcome.PENDING);
-    }
-
-    public boolean canBeAccessedBy(Long publisherId) {
-        return this.recruitment.isPublishedBy(publisherId);
     }
 }

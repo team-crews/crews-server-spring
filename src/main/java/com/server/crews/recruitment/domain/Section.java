@@ -15,6 +15,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -42,10 +43,10 @@ public class Section {
     private String description;
 
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<NarrativeQuestion> narrativeQuestions;
+    private List<NarrativeQuestion> narrativeQuestions = new ArrayList<>();
 
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SelectiveQuestion> selectiveQuestions;
+    private List<SelectiveQuestion> selectiveQuestions = new ArrayList<>();
 
     public Section(Long id, String name, String description, List<NarrativeQuestion> narrativeQuestions,
                    List<SelectiveQuestion> selectiveQuestions) {
@@ -55,12 +56,23 @@ public class Section {
         replaceQuestions(narrativeQuestions, selectiveQuestions);
     }
 
-    public void replaceQuestions(List<NarrativeQuestion> narrativeQuestions,
-                                 List<SelectiveQuestion> selectiveQuestions) {
+    Section replaceQuestions(List<NarrativeQuestion> narrativeQuestions,
+                             List<SelectiveQuestion> selectiveQuestions) {
         narrativeQuestions.forEach(narrativeQuestion -> narrativeQuestion.updateSection(this));
-        this.narrativeQuestions = new ArrayList<>(narrativeQuestions);
+        this.narrativeQuestions.clear();
+        this.narrativeQuestions.addAll(narrativeQuestions);
         selectiveQuestions.forEach(selectiveQuestion -> selectiveQuestion.updateSection(this));
-        this.selectiveQuestions = new ArrayList<>(selectiveQuestions);
+        this.selectiveQuestions.clear();
+        this.selectiveQuestions.addAll(selectiveQuestions);
+        return this;
+    }
+
+    public List<OrderedQuestion> getOrderedQuestions() {
+        List<OrderedQuestion> orderedQuestions = new ArrayList<>();
+        orderedQuestions.addAll(narrativeQuestions);
+        orderedQuestions.addAll(selectiveQuestions);
+        Collections.sort(orderedQuestions);
+        return orderedQuestions;
     }
 
     public void updateRecruitment(Recruitment recruitment) {

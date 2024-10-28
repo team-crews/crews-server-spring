@@ -19,7 +19,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.auth.dto.response.TokenResponse;
-import com.server.crews.auth.presentation.AuthorizationExtractor;
+import com.server.crews.auth.controller.AuthorizationExtractor;
 import com.server.crews.global.exception.CrewsErrorCode;
 import com.server.crews.global.exception.ErrorResponse;
 import com.server.crews.global.exception.GlobalExceptionHandler;

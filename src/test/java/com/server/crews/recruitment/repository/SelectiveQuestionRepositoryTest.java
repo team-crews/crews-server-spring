@@ -11,6 +11,7 @@ import com.server.crews.environ.repository.RepositoryTest;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
+import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +31,7 @@ class SelectiveQuestionRepositoryTest extends RepositoryTest {
 
         // when
         List<SelectiveQuestion> selectiveQuestions = selectiveQuestionRepository.findAllWithChoicesInSections(
-                recruitment.getSections());
+                recruitment.getOrderedSections());
 
         // then
         assertAll(
@@ -46,7 +47,7 @@ class SelectiveQuestionRepositoryTest extends RepositoryTest {
         // given
         Administrator publisher = createDefaultAdmin();
         Recruitment recruitment = createDefaultRecruitment(publisher);
-        List<Section> sections = recruitment.getSections();
+        List<Section> sections = recruitment.getOrderedSections();
 
         SelectiveQuestion selectiveQuestion = new SelectiveQuestion(null, CHOICES(), STRENGTH_QUESTION, true, 1, 11,
                 11);

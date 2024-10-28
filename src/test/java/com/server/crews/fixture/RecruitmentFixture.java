@@ -8,6 +8,7 @@ import static com.server.crews.fixture.SectionFixture.FRONTEND_SECTION_NAME;
 
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.recruitment.domain.Recruitment;
+import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
 import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
@@ -36,8 +37,8 @@ public class RecruitmentFixture {
     public static final RecruitmentSaveRequest RECRUITMENT_SAVE_REQUEST = new RecruitmentSaveRequest(null, null,
             DEFAULT_TITLE, DEFAULT_DESCRIPTION, SECTION_REQUESTS, DEFAULT_DEADLINE);
 
-    public static Recruitment TEST_RECRUITMENT(Administrator publisher) {
+    public static Recruitment TEST_RECRUITMENT(Administrator publisher, List<Section> sections) {
         return new Recruitment(null, DEFAULT_CODE, DEFAULT_TITLE, DEFAULT_DESCRIPTION, DEFAULT_DEADLINE, publisher,
-                List.of());
+                sections);
     }
 }

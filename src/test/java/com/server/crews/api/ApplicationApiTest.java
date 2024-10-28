@@ -21,7 +21,7 @@ import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
 import com.server.crews.applicant.dto.response.SectionAnswerResponse;
 import com.server.crews.auth.dto.response.TokenResponse;
-import com.server.crews.auth.presentation.AuthorizationExtractor;
+import com.server.crews.auth.controller.AuthorizationExtractor;
 import com.server.crews.global.exception.CrewsErrorCode;
 import com.server.crews.global.exception.ErrorResponse;
 import com.server.crews.recruitment.domain.QuestionType;
