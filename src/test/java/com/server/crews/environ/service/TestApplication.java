@@ -35,7 +35,7 @@ public class TestApplication {
         NarrativeAnswer narrativeAnswer = new NarrativeAnswer(null, question, content);
         narrativeAnswer.updateApplication(this.application);
         NarrativeAnswer savedNarrativeAnswer = environ.narrativeAnswerRepository().save(narrativeAnswer);
-        this.application.replaceNarrativeAnswers(List.of(narrativeAnswer));
+        this.application.replaceWithFetchedNarrativeAnswers(List.of(narrativeAnswer));
         this.narrativeAnswers.add(savedNarrativeAnswer);
         return this;
     }
@@ -44,7 +44,7 @@ public class TestApplication {
         SelectiveAnswer selectiveAnswer = new SelectiveAnswer(null, choice, question);
         selectiveAnswer.updateApplication(this.application);
         SelectiveAnswer savedSelectiveAnswer = environ.selectiveAnswerRepository().save(selectiveAnswer);
-        this.application.replaceSelectiveAnswers(List.of(selectiveAnswer));
+        this.application.replaceWithFetchedSelectiveAnswers(List.of(selectiveAnswer));
         this.selectiveAnswers.add(savedSelectiveAnswer);
         return this;
     }

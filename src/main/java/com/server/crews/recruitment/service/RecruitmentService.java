@@ -93,12 +93,12 @@ public class RecruitmentService {
     }
 
     public Optional<RecruitmentDetailsResponse> findRecruitmentDetailsInReady(Long publisherId) {
-        return recruitmentDetailsQueryService.findNullableByPublisher(publisherId)
+        return recruitmentDetailsQueryService.findNullableWithSectionsByPublisherId(publisherId)
                 .map(RecruitmentMapper::recruitmentToRecruitmentDetailsResponse);
     }
 
     public RecruitmentDetailsResponse findRecruitmentDetailsByCode(String code) {
-        Recruitment recruitment = recruitmentDetailsQueryService.findByCode(code);
+        Recruitment recruitment = recruitmentDetailsQueryService.findWithSectionsByCode(code);
         if (!recruitment.isStarted()) {
             throw new CrewsException(CrewsErrorCode.RECRUITMENT_NOT_STARTED);
         }

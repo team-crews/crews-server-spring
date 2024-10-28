@@ -3,17 +3,14 @@ package com.server.crews.applicant.service;
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;
 import com.server.crews.applicant.domain.SelectiveAnswer;
-import com.server.crews.applicant.repository.ApplicationRepository;
-import com.server.crews.applicant.repository.NarrativeAnswerRepository;
-import com.server.crews.applicant.repository.SelectiveAnswerRepository;
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
 import com.server.crews.applicant.dto.request.EvaluationRequest;
 import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.ApplicationsResponse;
 import com.server.crews.applicant.mapper.ApplicationMapper;
+import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.global.exception.CrewsErrorCode;
 import com.server.crews.global.exception.CrewsException;
-import com.server.crews.global.exception.NotFoundException;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.service.RecruitmentDetailsQueryService;
 import java.util.HashSet;
@@ -30,13 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ApplicationService {
     private final ApplicationRepository applicationRepository;
-    private final SelectiveAnswerRepository selectiveAnswerRepository;
-    private final NarrativeAnswerRepository narrativeAnswerRepository;
+    private final ApplicationDetailsQueryService applicationDetailsQueryService;
     private final RecruitmentDetailsQueryService recruitmentDetailsQueryService;
 
     @Transactional
     public ApplicationDetailsResponse saveApplication(Long applicantId, ApplicationSaveRequest request) {
-        Recruitment recruitment = recruitmentDetailsQueryService.findByCode(request.recruitmentCode());
+        Recruitment recruitment = recruitmentDetailsQueryService.findWithSectionsByCode(request.recruitmentCode());
         validateRecruitmentProgress(recruitment);
 
         ApplicationManager applicationManager = applicationRepository.findByApplicantId(applicantId)
@@ -74,31 +70,18 @@ public class ApplicationService {
     }
 
     public ApplicationDetailsResponse findApplicationDetails(Long applicationId, Long publisherId) {
-        Recruitment recruitment = recruitmentDetailsQueryService.findByPublisher(publisherId);
+        Recruitment recruitment = recruitmentDetailsQueryService.findWithSectionsByPublisherId(publisherId);
 
-        Application application = applicationRepository.findByIdWithRecruitmentAndPublisher(applicationId)
-                .orElseThrow(() -> new NotFoundException("지원서 id", "지원서"));
-        List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(application);
-        List<SelectiveAnswer> selectiveAnswers = selectiveAnswerRepository.findAllByApplication(application);
-        application.replaceNarrativeAnswers(narrativeAnswers);
-        application.replaceSelectiveAnswers(selectiveAnswers);
+        Application application = applicationDetailsQueryService.findByIdWithRecruitmentAndPublisher(applicationId);
 
         ApplicationAnswerReader applicationAnswerReader = new ApplicationAnswerReader(recruitment, application);
         return applicationAnswerReader.readBySection();
     }
 
     public Optional<ApplicationDetailsResponse> findMyApplicationDetails(Long applicantId, String code) {
-        Recruitment recruitment = recruitmentDetailsQueryService.findByCode(code);
-
-        return applicationRepository.findByApplicantIdAndRecruitmentCode(applicantId, code)
+        Recruitment recruitment = recruitmentDetailsQueryService.findWithSectionsByCode(code);
+        return applicationDetailsQueryService.findNullableByApplicantIdAndRecruitmentCode(applicantId, code)
                 .map(application -> {
-                    List<NarrativeAnswer> narrativeAnswers = narrativeAnswerRepository.findAllByApplication(
-                            application);
-                    List<SelectiveAnswer> selectiveAnswers = selectiveAnswerRepository.findAllByApplication(
-                            application);
-                    application.replaceNarrativeAnswers(narrativeAnswers);
-                    application.replaceSelectiveAnswers(selectiveAnswers);
-
                     ApplicationAnswerReader applicationAnswerReader = new ApplicationAnswerReader(recruitment,
                             application);
                     return applicationAnswerReader.readBySection();
