@@ -49,8 +49,7 @@ public class ApplicationService {
                 applicantId, updatedNarrativeAnswers, updatedSelectiveAnswers);
         Application savedApplication = applicationRepository.save(application);
 
-        ApplicationAnswerReader applicationAnswerReader = new ApplicationAnswerReader(recruitment, savedApplication);
-        return applicationAnswerReader.readBySection();
+        return ApplicationAnswerReader.readBySection(recruitment, savedApplication);
     }
 
     private void validateRecruitmentProgress(Recruitment recruitment) {
@@ -74,18 +73,13 @@ public class ApplicationService {
 
         Application application = applicationDetailsQueryService.findByIdWithRecruitmentAndPublisher(applicationId);
 
-        ApplicationAnswerReader applicationAnswerReader = new ApplicationAnswerReader(recruitment, application);
-        return applicationAnswerReader.readBySection();
+        return ApplicationAnswerReader.readBySection(recruitment, application);
     }
 
     public Optional<ApplicationDetailsResponse> findMyApplicationDetails(Long applicantId, String code) {
         Recruitment recruitment = recruitmentDetailsQueryService.findWithSectionsByCode(code);
         return applicationDetailsQueryService.findNullableByApplicantIdAndRecruitmentCode(applicantId, code)
-                .map(application -> {
-                    ApplicationAnswerReader applicationAnswerReader = new ApplicationAnswerReader(recruitment,
-                            application);
-                    return applicationAnswerReader.readBySection();
-                });
+                .map(application -> ApplicationAnswerReader.readBySection(recruitment, application));
     }
 
     @Transactional

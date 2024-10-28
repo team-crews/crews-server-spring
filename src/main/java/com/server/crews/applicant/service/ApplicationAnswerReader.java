@@ -19,17 +19,14 @@ import java.util.List;
 import java.util.Map;
 
 public class ApplicationAnswerReader {
-    private final List<Section> orderedSections;
-    private final Application application;
 
-    public ApplicationAnswerReader(Recruitment recruitment, Application application) {
-        this.orderedSections = recruitment.getOrderedSections();
-        this.application = application;
-    }
+    public static ApplicationDetailsResponse readBySection(Recruitment recruitment, Application application) {
+        List<Section> orderedSections = recruitment.getOrderedSections();
 
-    public ApplicationDetailsResponse readBySection() {
-        Map<Long, AnswerResponse> narrativeAnswerResponsesByQuestionId = narrativeAnswerResponsesByQuestionIdInApplication();
-        Map<Long, AnswerResponse> selectiveAnswerResponsesByQuestionId = selectiveAnswerResponsesByQuestionIdInApplication();
+        Map<Long, AnswerResponse> narrativeAnswerResponsesByQuestionId = narrativeAnswerResponsesByQuestionIdInApplication(
+                application);
+        Map<Long, AnswerResponse> selectiveAnswerResponsesByQuestionId = selectiveAnswerResponsesByQuestionIdInApplication(
+                application);
 
         List<SectionAnswerResponse> sectionAnswerResponses = orderedSections.stream()
                 .map(section -> new SectionAnswerResponse(
@@ -42,34 +39,36 @@ public class ApplicationAnswerReader {
         return ApplicationMapper.applicationToApplicationDetailsResponse(application, sectionAnswerResponses);
     }
 
-    private List<AnswerResponse> getAnswerResponsesBySection(Section section,
-                                                             Map<Long, AnswerResponse> narrativeAnswers,
-                                                             Map<Long, AnswerResponse> selectiveAnswers) {
+    private static List<AnswerResponse> getAnswerResponsesBySection(Section section,
+                                                                    Map<Long, AnswerResponse> narrativeAnswers,
+                                                                    Map<Long, AnswerResponse> selectiveAnswers) {
         return section.getOrderedQuestions().stream()
                 .map(question -> getAnswerResponseByType(question, narrativeAnswers, selectiveAnswers))
                 .toList();
     }
 
-    private AnswerResponse getAnswerResponseByType(OrderedQuestion question,
-                                                   Map<Long, AnswerResponse> narrativeAnswers,
-                                                   Map<Long, AnswerResponse> selectiveAnswers) {
+    private static AnswerResponse getAnswerResponseByType(OrderedQuestion question,
+                                                          Map<Long, AnswerResponse> narrativeAnswers,
+                                                          Map<Long, AnswerResponse> selectiveAnswers) {
         if (question.getQuestionType() == QuestionType.NARRATIVE) {
             return narrativeAnswers.getOrDefault(question.getId(), getBlankAnswerResponse(question));
         }
         return selectiveAnswers.getOrDefault(question.getId(), getBlankAnswerResponse(question));
     }
 
-    private AnswerResponse getBlankAnswerResponse(OrderedQuestion question) {
+    private static AnswerResponse getBlankAnswerResponse(OrderedQuestion question) {
         return new AnswerResponse(question.getId(), null, null, question.getQuestionType());
     }
 
-    private Map<Long, AnswerResponse> narrativeAnswerResponsesByQuestionIdInApplication() {
+    private static Map<Long, AnswerResponse> narrativeAnswerResponsesByQuestionIdInApplication(
+            Application application) {
         return application.getNarrativeAnswers().stream()
                 .map(AnswerMapper::narrativeAnswerToAnswerResponse)
                 .collect(toMap(AnswerResponse::questionId, identity()));
     }
 
-    private Map<Long, AnswerResponse> selectiveAnswerResponsesByQuestionIdInApplication() {
+    private static Map<Long, AnswerResponse> selectiveAnswerResponsesByQuestionIdInApplication(
+            Application application) {
         return application.getSelectiveAnswersByQuestionId()
                 .values()
                 .stream()
