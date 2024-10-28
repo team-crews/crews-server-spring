@@ -55,9 +55,9 @@ public abstract class RepositoryTest {
     }
 
     protected Recruitment createDefaultRecruitment(Administrator publisher) {
-        Recruitment recruitment = TEST_RECRUITMENT(publisher);
-        Section BESection = createSection(BACKEND_SECTION_NAME, recruitment);
-        Section FESection = createSection(FRONTEND_SECTION_NAME, recruitment);
+        Section BESection = SECTION(BACKEND_SECTION_NAME);
+        Section FESection = SECTION(FRONTEND_SECTION_NAME);
+        Recruitment recruitment = TEST_RECRUITMENT(publisher, List.of(BESection, FESection));
         NarrativeQuestion BENarrativeQuestion = createNarrativeQuestion(BESection);
         NarrativeQuestion FENarrativeQuestion = createNarrativeQuestion(FESection);
         SelectiveQuestion BESelectivequestion = createSelectiveQuestion(BESection);
@@ -68,13 +68,6 @@ public abstract class RepositoryTest {
                 BESelectivequestion, FESelectivequestion
         );
         return recruitment;
-    }
-
-    private Section createSection(String sectionName, Recruitment recruitment) {
-        Section section = SECTION(sectionName);
-        section.updateRecruitment(recruitment);
-        recruitment.addSections(List.of(section));
-        return section;
     }
 
     private NarrativeQuestion createNarrativeQuestion(Section section) {

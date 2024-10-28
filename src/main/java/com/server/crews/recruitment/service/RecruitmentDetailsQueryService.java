@@ -40,7 +40,7 @@ public class RecruitmentDetailsQueryService {
         Long recruitmentId = recruitment.getId();
         List<NarrativeQuestion> narrativeQuestions = narrativeQuestionRepository.findAllByRecruitmentId(recruitmentId);
         List<SelectiveQuestion> selectiveQuestions = selectiveQuestionRepository.findAllByRecruitmentId(recruitmentId);
-        recruitment.replaceQuestions(narrativeQuestions, selectiveQuestions);
+        recruitment.replaceQuestionsWithFetchedData(narrativeQuestions, selectiveQuestions);
         return recruitment;
     }
 }
