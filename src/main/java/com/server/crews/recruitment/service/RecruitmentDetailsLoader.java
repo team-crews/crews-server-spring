@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class RecruitmentDetailsQueryService {
+public class RecruitmentDetailsLoader {
     private final RecruitmentRepository recruitmentRepository;
     private final NarrativeQuestionRepository narrativeQuestionRepository;
     private final SelectiveQuestionRepository selectiveQuestionRepository;

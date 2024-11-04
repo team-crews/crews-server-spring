@@ -12,7 +12,7 @@ import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.global.exception.CrewsErrorCode;
 import com.server.crews.global.exception.CrewsException;
 import com.server.crews.recruitment.domain.Recruitment;
-import com.server.crews.recruitment.service.RecruitmentDetailsQueryService;
+import com.server.crews.recruitment.service.RecruitmentDetailsLoader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -27,12 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ApplicationService {
     private final ApplicationRepository applicationRepository;
-    private final ApplicationDetailsQueryService applicationDetailsQueryService;
-    private final RecruitmentDetailsQueryService recruitmentDetailsQueryService;
+    private final ApplicationDetailsLoader applicationDetailsLoader;
+    private final RecruitmentDetailsLoader recruitmentDetailsLoader;
 
     @Transactional
     public ApplicationDetailsResponse saveApplication(Long applicantId, ApplicationSaveRequest request) {
-        Recruitment recruitment = recruitmentDetailsQueryService.findWithSectionsByCode(request.recruitmentCode());
+        Recruitment recruitment = recruitmentDetailsLoader.findWithSectionsByCode(request.recruitmentCode());
         validateRecruitmentProgress(recruitment);
 
         ApplicationManager applicationManager = applicationRepository.findByApplicantId(applicantId)
@@ -69,16 +69,16 @@ public class ApplicationService {
     }
 
     public ApplicationDetailsResponse findApplicationDetails(Long applicationId, Long publisherId) {
-        Recruitment recruitment = recruitmentDetailsQueryService.findWithSectionsByPublisherId(publisherId);
+        Recruitment recruitment = recruitmentDetailsLoader.findWithSectionsByPublisherId(publisherId);
 
-        Application application = applicationDetailsQueryService.findByIdWithRecruitmentAndPublisher(applicationId);
+        Application application = applicationDetailsLoader.findByIdWithRecruitmentAndPublisher(applicationId);
 
         return ApplicationAnswerReader.readBySection(recruitment, application);
     }
 
     public Optional<ApplicationDetailsResponse> findMyApplicationDetails(Long applicantId, String code) {
-        Recruitment recruitment = recruitmentDetailsQueryService.findWithSectionsByCode(code);
-        return applicationDetailsQueryService.findNullableByApplicantIdAndRecruitmentCode(applicantId, code)
+        Recruitment recruitment = recruitmentDetailsLoader.findWithSectionsByCode(code);
+        return applicationDetailsLoader.findNullableByApplicantIdAndRecruitmentCode(applicantId, code)
                 .map(application -> ApplicationAnswerReader.readBySection(recruitment, application));
     }
 

@@ -39,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RecruitmentService {
     private final RecruitmentRepository recruitmentRepository;
-    private final RecruitmentDetailsQueryService recruitmentDetailsQueryService;
+    private final RecruitmentDetailsLoader recruitmentDetailsLoader;
     private final AdministratorRepository administratorRepository;
     private final ApplicationRepository applicationRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -93,12 +93,12 @@ public class RecruitmentService {
     }
 
     public Optional<RecruitmentDetailsResponse> findRecruitmentDetailsInReady(Long publisherId) {
-        return recruitmentDetailsQueryService.findNullableWithSectionsByPublisherId(publisherId)
+        return recruitmentDetailsLoader.findNullableWithSectionsByPublisherId(publisherId)
                 .map(RecruitmentMapper::recruitmentToRecruitmentDetailsResponse);
     }
 
     public RecruitmentDetailsResponse findRecruitmentDetailsByCode(String code) {
-        Recruitment recruitment = recruitmentDetailsQueryService.findWithSectionsByCode(code);
+        Recruitment recruitment = recruitmentDetailsLoader.findWithSectionsByCode(code);
         if (!recruitment.isStarted()) {
             throw new CrewsException(CrewsErrorCode.RECRUITMENT_NOT_STARTED);
         }
