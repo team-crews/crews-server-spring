@@ -49,7 +49,7 @@ public class JwtTokenProvider {
 
     public RefreshToken createRefreshToken(Role role, String payload) {
         String token = createToken(role, payload, refreshTokenValidityInMilliseconds, REFRESH_TOKEN_ALGORITHM);
-        return new RefreshToken(payload, refreshTokenValidityInMilliseconds, token);
+        return new RefreshToken(payload, refreshTokenValidityInMilliseconds / 1000, token);
     }
 
     private String createToken(Role role, String payload, long validityInMilliseconds, SignatureAlgorithm algorithm) {

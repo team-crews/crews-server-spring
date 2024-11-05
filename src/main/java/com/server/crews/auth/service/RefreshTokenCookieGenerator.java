@@ -12,7 +12,7 @@ public class RefreshTokenCookieGenerator {
     private final int defaultTokenValidity;
 
     public RefreshTokenCookieGenerator(@Value("${jwt.refresh-token-validity}") int refreshTokenValidityInMilliseconds) {
-        this.defaultTokenValidity = refreshTokenValidityInMilliseconds;
+        this.defaultTokenValidity = refreshTokenValidityInMilliseconds / 1000;
     }
 
     public ResponseCookie generateWithDefaultValidity(String token) {
