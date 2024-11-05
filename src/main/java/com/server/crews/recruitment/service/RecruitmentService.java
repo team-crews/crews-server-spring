@@ -92,7 +92,7 @@ public class RecruitmentService {
             throw new CrewsException(CrewsErrorCode.RECRUITMENT_ALREADY_STARTED);
         }
         recruitment.start();
-        recruitmentSearchCacheStore.saveRecruitmentTitle(recruitment.getTitle());
+        recruitmentSearchCacheStore.saveRecruitment(recruitment);
     }
 
     public RecruitmentStateInProgressResponse findRecruitmentStateInProgress(Long publisherId) {

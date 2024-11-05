@@ -69,7 +69,7 @@ public class DatabaseInitializer implements ApplicationRunner {
                 List.of(commonSection, backendSection, frontendSection));
         recruitment.close();
         recruitmentRepository.save(recruitment);
-        recruitmentSearchCacheStore.saveRecruitmentTitle(recruitment.getTitle());
+        recruitmentSearchCacheStore.saveRecruitment(recruitment);
 
         Applicant kh = new Applicant("kh@google.com", passwordEncoder.encode("test-password"));
         Applicant lkh = new Applicant("lkh@google.com", passwordEncoder.encode("test-password"));
