@@ -18,28 +18,31 @@ import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.server.crews.applicant.dto.request.ApplicationSaveRequest;
-import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.controller.AuthorizationExtractor;
+import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.global.exception.CrewsErrorCode;
 import com.server.crews.global.exception.ErrorResponse;
 import com.server.crews.global.exception.GlobalExceptionHandler;
+import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.domain.RecruitmentProgress;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
 import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.QuestionSaveRequest;
-import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.request.SectionSaveRequest;
 import com.server.crews.recruitment.dto.response.QuestionResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentProgressResponse;
+import com.server.crews.recruitment.dto.response.RecruitmentSearchResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
 import com.server.crews.recruitment.dto.response.SectionResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -222,6 +225,39 @@ public class RecruitmentApiTest extends ApiTest {
     }
 
     @Test
+    @DisplayName("모집 공고 제목 목록를 prefix로 검색한다.")
+    void searchRecruitmentsTitle() {
+        // given
+        TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        String accessToken = adminTokenResponse.accessToken();
+        createRecruitment(accessToken);
+
+        RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
+                .when().patch("/recruitments/in-progress");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.SEARCH_RECRUITMENTS_TITLE_200_DOCUMENT())
+                .queryParams(Map.of("prefix", "TI", "limit", "3"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/recruitments/search")
+                .then().log().all()
+                .extract();
+
+        // then
+        List<RecruitmentSearchResponse> recruitmentSearchResponses = Arrays.stream(
+                response.as(RecruitmentSearchResponse[].class)).toList();
+        assertSoftly(softAssertions -> {
+            checkStatusCode200(response, softAssertions);
+            softAssertions.assertThat(recruitmentSearchResponses).hasSize(1)
+                    .extracting(RecruitmentSearchResponse::title)
+                    .containsExactly(DEFAULT_TITLE);
+        });
+    }
+
+    @Test
     @DisplayName("모집을 시작한다.")
     void startRecruiting() {
         // given
@@ -253,9 +289,7 @@ public class RecruitmentApiTest extends ApiTest {
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + accessToken)
-                .when().patch("/recruitments/in-progress")
-                .then()
-                .extract();
+                .when().patch("/recruitments/in-progress");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
@@ -415,6 +449,33 @@ public class RecruitmentApiTest extends ApiTest {
             checkStatusCode409(response, softAssertions);
             softAssertions.assertThat(errorResponse.code()).isEqualTo(CrewsErrorCode.RECRUITMENT_NOT_STARTED.getCode());
         });
+    }
+
+    @Test
+    @DisplayName("모집 공고 및 지원서 양식 상세 정보를 모집 공고 제목으로 조회한다.")
+    void getRecruitmentDetailsByTitle() {
+        // given
+        TokenResponse adminTokenResponse = signUpAdmin(TEST_CLUB_NAME, TEST_PASSWORD);
+        String adminAccessToken = adminTokenResponse.accessToken();
+        RecruitmentDetailsResponse savedRecruitmentDetailsResponse = createRecruitment(adminAccessToken);
+
+        RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .when().patch("/recruitments/in-progress");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given(spec).log().all()
+                .filter(RecruitmentApiDocuments.GET_RECRUITMENT_BY_TITLE_200_DOCUMENT())
+                .queryParam("title", savedRecruitmentDetailsResponse.title())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AuthorizationExtractor.BEARER_TYPE + adminAccessToken)
+                .when().get("/recruitments/search-by")
+                .then().log().all()
+                .extract();
+
+        // then
+        checkStatusCode200(response);
     }
 
     @Test

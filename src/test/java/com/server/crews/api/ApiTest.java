@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -50,6 +51,9 @@ public abstract class ApiTest {
 
     @Autowired
     private DatabaseCleaner databaseCleaner;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     @MockBean
     private EmailService emailService;
@@ -69,6 +73,9 @@ public abstract class ApiTest {
                 .addFilter(documentationConfiguration(restDocumentation))
                 .build();
         databaseCleaner.clear();
+        redisTemplate.getConnectionFactory()
+                .getConnection()
+                .flushDb();
     }
 
     protected ApplicationSaveRequest applicationSaveRequest(String recruitmentCode, Long sectionId) {

@@ -14,6 +14,7 @@ import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
+import com.server.crews.recruitment.repository.RecruitmentSearchKeywordRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class DatabaseInitializer implements ApplicationRunner {
     private final RecruitmentRepository recruitmentRepository;
     private final ApplicantRepository applicantRepository;
     private final ApplicationRepository applicationRepository;
+    private final RecruitmentSearchKeywordRepository recruitmentSearchKeywordRepository;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -67,6 +69,7 @@ public class DatabaseInitializer implements ApplicationRunner {
                 List.of(commonSection, backendSection, frontendSection));
         recruitment.close();
         recruitmentRepository.save(recruitment);
+        recruitmentSearchKeywordRepository.saveRecruitment(recruitment);
 
         Applicant kh = new Applicant("kh@google.com", passwordEncoder.encode("test-password"));
         Applicant lkh = new Applicant("lkh@google.com", passwordEncoder.encode("test-password"));

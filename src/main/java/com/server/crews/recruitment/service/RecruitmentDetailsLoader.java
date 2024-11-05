@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class RecruitmentDetailsQueryService {
+public class RecruitmentDetailsLoader {
     private final RecruitmentRepository recruitmentRepository;
     private final NarrativeQuestionRepository narrativeQuestionRepository;
     private final SelectiveQuestionRepository selectiveQuestionRepository;
@@ -24,6 +24,12 @@ public class RecruitmentDetailsQueryService {
     public Recruitment findWithSectionsByCode(String code) {
         Recruitment recruitment = recruitmentRepository.findWithSectionsByCode(code)
                 .orElseThrow(() -> new NotFoundException("모집 공고 코드", "모집 공고"));
+        return fetchQuestions(recruitment);
+    }
+
+    public Recruitment findWithSectionsByTitle(String title) {
+        Recruitment recruitment = recruitmentRepository.findWithSectionsByTitle(title)
+                .orElseThrow(() -> new NotFoundException("모집 공고 제목", "모집 공고"));
         return fetchQuestions(recruitment);
     }
 
