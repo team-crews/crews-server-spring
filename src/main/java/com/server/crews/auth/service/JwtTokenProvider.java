@@ -3,9 +3,10 @@ package com.server.crews.auth.service;
 import static io.jsonwebtoken.SignatureAlgorithm.HS256;
 import static io.jsonwebtoken.SignatureAlgorithm.HS384;
 
+import com.server.crews.auth.domain.RefreshToken;
 import com.server.crews.auth.domain.Role;
-import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.CrewsErrorCode;
+import com.server.crews.global.exception.CrewsException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -46,8 +47,9 @@ public class JwtTokenProvider {
         return createToken(role, payload, accessTokenValidityInMilliseconds, ACCESS_TOKEN_ALGORITHM);
     }
 
-    public String createRefreshToken(Role role, String payload) {
-        return createToken(role, payload, refreshTokenValidityInMilliseconds, REFRESH_TOKEN_ALGORITHM);
+    public RefreshToken createRefreshToken(Role role, String payload) {
+        String token = createToken(role, payload, refreshTokenValidityInMilliseconds, REFRESH_TOKEN_ALGORITHM);
+        return new RefreshToken(payload, refreshTokenValidityInMilliseconds / 1000, token);
     }
 
     private String createToken(Role role, String payload, long validityInMilliseconds, SignatureAlgorithm algorithm) {

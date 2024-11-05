@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.redis.core.RedisTemplate;
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.NONE,
@@ -25,6 +26,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 public abstract class ServiceTest {
     @Autowired
     private DatabaseCleaner databaseCleaner;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     @Autowired
     private ServiceTestEnviron serviceTestEnviron;
@@ -41,6 +45,9 @@ public abstract class ServiceTest {
     @BeforeEach
     void setUp() {
         databaseCleaner.clear();
+        redisTemplate.getConnectionFactory()
+                .getConnection()
+                .flushDb();
     }
 
     protected TestRecruitment LIKE_LION_RECRUITMENT(Administrator publisher) {

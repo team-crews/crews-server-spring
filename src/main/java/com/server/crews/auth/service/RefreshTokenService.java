@@ -25,15 +25,14 @@ public class RefreshTokenService {
 
     @Transactional
     public RefreshToken createRefreshToken(Role role, String username) {
-        String refreshToken = jwtTokenProvider.createRefreshToken(role, username);
-        refreshTokenRepository.deleteByUsername(username);
-        return refreshTokenRepository.save(new RefreshToken(username, refreshToken));
+        RefreshToken refreshToken = jwtTokenProvider.createRefreshToken(role, username);
+        return refreshTokenRepository.save(refreshToken);
     }
 
     public TokenResponse renew(String refreshToken) {
         jwtTokenProvider.validateRefreshToken(refreshToken);
         String username = jwtTokenProvider.getPayload(refreshToken);
-        RefreshToken savedRefreshToken = refreshTokenRepository.findByUsername(username)
+        RefreshToken savedRefreshToken = refreshTokenRepository.findById(username)
                 .orElseThrow(() -> new CrewsException(CrewsErrorCode.REFRESH_TOKEN_NOT_FOUND));
         if (!savedRefreshToken.isSameToken(refreshToken)) {
             throw new CrewsException(CrewsErrorCode.INVALID_REFRESH_TOKEN);
@@ -48,11 +47,11 @@ public class RefreshTokenService {
         if (role == Role.ADMIN) {
             Administrator administrator = administratorRepository.findById(userId)
                     .orElseThrow(() -> new CrewsException(CrewsErrorCode.USER_NOT_FOUND));
-            refreshTokenRepository.deleteByUsername(administrator.getClubName());
+            refreshTokenRepository.deleteById(administrator.getClubName());
             return;
         }
         Applicant applicant = applicantRepository.findById(userId)
                 .orElseThrow(() -> new CrewsException(CrewsErrorCode.USER_NOT_FOUND));
-        refreshTokenRepository.deleteByUsername(applicant.getEmail());
+        refreshTokenRepository.deleteById(applicant.getEmail());
     }
 }
