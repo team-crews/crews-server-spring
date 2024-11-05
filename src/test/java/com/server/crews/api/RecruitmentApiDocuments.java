@@ -69,6 +69,14 @@ public class RecruitmentApiDocuments {
                         fieldWithPath(".deadline").description("현재 날짜 이후여야 하는 모집 마감일")));
     }
 
+    public static RestDocumentationFilter SEARCH_RECRUITMENTS_TITLE_200_DOCUMENT() {
+        return document(RECRUITMENT_API + "모집 공고 제목 검색",
+                queryParameters(
+                        parameterWithName("prefix").description("접두사 (검색 키워드)"),
+                        parameterWithName("limit").description("개수")),
+                responseFields(fieldWithPath("[].title").description("모집 공고 제목")));
+    }
+
     public static RestDocumentationFilter START_RECRUITMENT_200_DOCUMENT() {
         return document(RECRUITMENT_API + "모집 시작",
                 "모집을 시작한다.");

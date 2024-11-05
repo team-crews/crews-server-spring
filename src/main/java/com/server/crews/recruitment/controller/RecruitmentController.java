@@ -1,14 +1,16 @@
 package com.server.crews.recruitment.controller;
 
-import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.controller.AdminAuthentication;
-import com.server.crews.recruitment.service.RecruitmentService;
+import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentProgressResponse;
+import com.server.crews.recruitment.dto.response.RecruitmentSearchResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
+import com.server.crews.recruitment.service.RecruitmentService;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,13 +30,24 @@ public class RecruitmentController {
     private final RecruitmentService recruitmentService;
 
     /**
-     * 지원서 양식을 저장한다.
+     * 모집 공고 상세 정보를 저장한다.
      */
     @PostMapping
     public ResponseEntity<RecruitmentDetailsResponse> saveRecruitment(
             @AdminAuthentication LoginUser loginUser, @RequestBody @Valid RecruitmentSaveRequest request) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(recruitmentService.saveRecruitment(loginUser.userId(), request));
+    }
+
+    /**
+     * 모집 공고 제목 목록을 prefix로 검색한다.
+     */
+    @GetMapping("/search")
+    public ResponseEntity<List<RecruitmentSearchResponse>> searchRecruitmentsTitle(
+            @RequestParam(value = "prefix") String prefix,
+            @RequestParam(value = "limit", defaultValue = "5") int limit) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(recruitmentService.searchRecruitmentsTitle(prefix, limit));
     }
 
     /**

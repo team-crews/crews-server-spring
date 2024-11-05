@@ -13,6 +13,7 @@ import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.NotFoundException;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.RecruitmentProgress;
+import com.server.crews.recruitment.dto.response.RecruitmentSearchResponse;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
@@ -20,6 +21,7 @@ import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentProgressResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
 import com.server.crews.recruitment.mapper.RecruitmentMapper;
+import com.server.crews.recruitment.repository.RecruitmentSearchCacheStore;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -40,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecruitmentService {
     private final RecruitmentRepository recruitmentRepository;
     private final RecruitmentDetailsLoader recruitmentDetailsLoader;
+    private final RecruitmentSearchCacheStore recruitmentSearchCacheStore;
     private final AdministratorRepository administratorRepository;
     private final ApplicationRepository applicationRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -74,6 +77,13 @@ public class RecruitmentService {
         }
     }
 
+    public List<RecruitmentSearchResponse> searchRecruitmentsTitle(String prefix, int limit) {
+        List<String> recruitmentCodes = recruitmentSearchCacheStore.findRecruitmentTitlesByPrefix(prefix, limit);
+        return recruitmentCodes.stream()
+                .map(RecruitmentSearchResponse::new)
+                .toList();
+    }
+
     @Transactional
     public void startRecruiting(Long publisherId) {
         Recruitment recruitment = recruitmentRepository.findByPublisher(publisherId)
@@ -82,6 +92,7 @@ public class RecruitmentService {
             throw new CrewsException(CrewsErrorCode.RECRUITMENT_ALREADY_STARTED);
         }
         recruitment.start();
+        recruitmentSearchCacheStore.saveRecruitmentTitle(recruitment.getTitle());
     }
 
     public RecruitmentStateInProgressResponse findRecruitmentStateInProgress(Long publisherId) {
