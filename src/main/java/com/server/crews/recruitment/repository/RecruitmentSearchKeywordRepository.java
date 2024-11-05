@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class RecruitmentSearchCacheStore {
+public class RecruitmentSearchKeywordRepository {
 
     private static final String ZSET_KEY = "recruitment_titles";
     private static final String SEARCH_DELIMITER = "\uFFFF";

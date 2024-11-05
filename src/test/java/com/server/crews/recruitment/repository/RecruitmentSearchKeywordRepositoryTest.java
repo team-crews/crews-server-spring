@@ -12,30 +12,30 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class RecruitmentSearchCacheStoreTest extends CacheStoreTest {
+class RecruitmentSearchKeywordRepositoryTest extends CacheStoreTest {
 
     @Autowired
-    private RecruitmentSearchCacheStore recruitmentSearchCacheStore;
+    private RecruitmentSearchKeywordRepository recruitmentSearchKeywordRepository;
 
     @Test
     @DisplayName("모집 공고 제목을 저장소에 저장하고 접두사로 찾는다.")
     void findRecruitmentTitlesByPrefix() {
         // given
-        recruitmentSearchCacheStore.saveRecruitment(
+        recruitmentSearchKeywordRepository.saveRecruitment(
                 new Recruitment(null, DEFAULT_CODE, "멋쟁이사자처럼 서강대학교 99기 아기사자 모집", DEFAULT_DESCRIPTION,
                         LocalDateTime.of(2030, 10, 5, 0, 0, 0), null,
                         List.of()));
-        recruitmentSearchCacheStore.saveRecruitment(
+        recruitmentSearchKeywordRepository.saveRecruitment(
                 new Recruitment(null, DEFAULT_CODE, "멋쟁이사자처럼 서강대학교 100기 아기사자 모집", DEFAULT_DESCRIPTION,
                         LocalDateTime.of(2030, 11, 5, 0, 0, 0), null,
                         List.of()));
-        recruitmentSearchCacheStore.saveRecruitment(
+        recruitmentSearchKeywordRepository.saveRecruitment(
                 new Recruitment(null, DEFAULT_CODE, "CEOS 백엔드 99기 모집", DEFAULT_DESCRIPTION,
                         LocalDateTime.of(2030, 11, 5, 0, 0, 0), null,
                         List.of()));
 
         // when
-        List<String> results = recruitmentSearchCacheStore.findRecruitmentTitlesByPrefix("멋쟁이", 2);
+        List<String> results = recruitmentSearchKeywordRepository.findRecruitmentTitlesByPrefix("멋쟁이", 2);
 
         // then
         assertThat(results).hasSize(2)

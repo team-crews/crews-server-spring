@@ -21,7 +21,7 @@ import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentProgressResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
 import com.server.crews.recruitment.mapper.RecruitmentMapper;
-import com.server.crews.recruitment.repository.RecruitmentSearchCacheStore;
+import com.server.crews.recruitment.repository.RecruitmentSearchKeywordRepository;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -42,7 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecruitmentService {
     private final RecruitmentRepository recruitmentRepository;
     private final RecruitmentDetailsLoader recruitmentDetailsLoader;
-    private final RecruitmentSearchCacheStore recruitmentSearchCacheStore;
+    private final RecruitmentSearchKeywordRepository recruitmentSearchKeywordRepository;
     private final AdministratorRepository administratorRepository;
     private final ApplicationRepository applicationRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -78,7 +78,7 @@ public class RecruitmentService {
     }
 
     public List<RecruitmentSearchResponse> searchRecruitmentsTitle(String prefix, int limit) {
-        List<String> recruitmentCodes = recruitmentSearchCacheStore.findRecruitmentTitlesByPrefix(prefix, limit);
+        List<String> recruitmentCodes = recruitmentSearchKeywordRepository.findRecruitmentTitlesByPrefix(prefix, limit);
         return recruitmentCodes.stream()
                 .map(RecruitmentSearchResponse::new)
                 .toList();
@@ -92,7 +92,7 @@ public class RecruitmentService {
             throw new CrewsException(CrewsErrorCode.RECRUITMENT_ALREADY_STARTED);
         }
         recruitment.start();
-        recruitmentSearchCacheStore.saveRecruitment(recruitment);
+        recruitmentSearchKeywordRepository.saveRecruitment(recruitment);
     }
 
     public RecruitmentStateInProgressResponse findRecruitmentStateInProgress(Long publisherId) {

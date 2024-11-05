@@ -1,6 +1,6 @@
 package com.server.crews.environ.repository;
 
-import com.server.crews.recruitment.repository.RecruitmentSearchCacheStore;
+import com.server.crews.recruitment.repository.RecruitmentSearchKeywordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +13,7 @@ public class CacheStoreTestConfig {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Bean
-    public RecruitmentSearchCacheStore recruitmentSearchCacheStore() {
-        return new RecruitmentSearchCacheStore(redisTemplate);
+    public RecruitmentSearchKeywordRepository recruitmentSearchCacheStore() {
+        return new RecruitmentSearchKeywordRepository(redisTemplate);
     }
 }
