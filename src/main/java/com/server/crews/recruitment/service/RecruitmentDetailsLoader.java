@@ -27,6 +27,12 @@ public class RecruitmentDetailsLoader {
         return fetchQuestions(recruitment);
     }
 
+    public Recruitment findWithSectionsByTitle(String title) {
+        Recruitment recruitment = recruitmentRepository.findWithSectionsByTitle(title)
+                .orElseThrow(() -> new NotFoundException("모집 공고 제목", "모집 공고"));
+        return fetchQuestions(recruitment);
+    }
+
     public Recruitment findWithSectionsByPublisherId(Long publisherId) {
         Recruitment recruitment = recruitmentRepository.findWithSectionsByPublisherId(publisherId)
                 .orElseThrow(() -> new NotFoundException("동아리 관리자 id", "모집 공고"));

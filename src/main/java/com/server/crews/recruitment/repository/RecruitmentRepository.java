@@ -34,4 +34,11 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
             where r.code = :code
             """)
     Optional<Recruitment> findWithSectionsByCode(@Param("code") String code);
+
+    @Query("""
+            select r from Recruitment r
+            left join fetch r.sections
+            where r.title = :title
+            """)
+    Optional<Recruitment> findWithSectionsByTitle(@Param("title") String title);
 }

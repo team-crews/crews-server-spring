@@ -71,6 +71,7 @@ public class RecruitmentApiDocuments {
 
     public static RestDocumentationFilter SEARCH_RECRUITMENTS_TITLE_200_DOCUMENT() {
         return document(RECRUITMENT_API + "모집 공고 제목 검색",
+                "prefix로 모집 공고 제목 목록을 검색한다",
                 queryParameters(
                         parameterWithName("prefix").description("접두사 (검색 키워드)"),
                         parameterWithName("limit").description("개수")),
@@ -116,6 +117,15 @@ public class RecruitmentApiDocuments {
     public static RestDocumentationFilter GET_RECRUITMENT_BY_CODE_409_DOCUMENT() {
         return document(RECRUITMENT_API + "준비 중인 모집 공고를 코드로 조회");
     }
+
+    public static RestDocumentationFilter GET_RECRUITMENT_BY_TITLE_200_DOCUMENT() {
+        return document(RECRUITMENT_API + "제목으로 모집 공고 조회",
+                "제목으로 모집공고 상세 정보를 조회한다.",
+                queryParameters(
+                        parameterWithName("title").description("모집 공고 제목")),
+                recruitmentDetailsResponseFields());
+    }
+
 
     public static RestDocumentationFilter GET_RECRUITMENT_PROGRESS_200_DOCUMENT() {
         return document(RECRUITMENT_API + "모집 공고 단계 조회",

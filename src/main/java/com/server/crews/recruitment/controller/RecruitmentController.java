@@ -89,6 +89,16 @@ public class RecruitmentController {
         return ResponseEntity.ok(recruitmentService.findRecruitmentDetailsByCode(code));
     }
 
+
+    /**
+     * 모집 공고 상세 정보를 모집 공고 제목으로 조회한다.
+     */
+    @GetMapping("/search-by")
+    public ResponseEntity<RecruitmentDetailsResponse> getRecruitmentDetailsByTitle(
+            @RequestParam(value = "title") String title) {
+        return ResponseEntity.ok(recruitmentService.findRecruitmentDetailsByTitle(title));
+    }
+
     /**
      * 모집 공고의 단계를 조회한다.
      */

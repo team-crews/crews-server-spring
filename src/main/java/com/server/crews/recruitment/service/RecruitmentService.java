@@ -116,6 +116,14 @@ public class RecruitmentService {
         return RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(recruitment);
     }
 
+    public RecruitmentDetailsResponse findRecruitmentDetailsByTitle(String title) {
+        Recruitment recruitment = recruitmentDetailsLoader.findWithSectionsByTitle(title);
+        if (!recruitment.isStarted()) {
+            throw new CrewsException(CrewsErrorCode.RECRUITMENT_NOT_STARTED);
+        }
+        return RecruitmentMapper.recruitmentToRecruitmentDetailsResponse(recruitment);
+    }
+
     public RecruitmentProgressResponse findRecruitmentProgress(Long publisherId) {
         return recruitmentRepository.findByPublisher(publisherId)
                 .map(Recruitment::getProgress)
