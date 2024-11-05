@@ -31,5 +31,10 @@ jobs:
           mysql user: ${{ secrets.TEST_DB_USERNAME }}
           mysql password: ${{ secrets.TEST_DB_PASSWORD }}
 
+      - name: Set up Redis
+        uses: supercharge/redis-github-action@1.7.0
+        with:
+          redis-port: 36379
+
       - name: Run Test
         run: ./gradlew clean test
