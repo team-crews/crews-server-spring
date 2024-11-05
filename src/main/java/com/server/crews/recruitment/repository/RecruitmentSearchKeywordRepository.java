@@ -1,7 +1,6 @@
 package com.server.crews.recruitment.repository;
 
 import com.server.crews.recruitment.domain.Recruitment;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -17,15 +16,13 @@ public class RecruitmentSearchKeywordRepository {
 
     private static final String ZSET_KEY = "recruitment_titles";
     private static final String SEARCH_DELIMITER = "\uFFFF";
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
+    private static final double DEFAULT_SCORE = 0;
 
     private final RedisTemplate<String, String> redisTemplate;
 
     public void saveRecruitment(Recruitment recruitment) {
-        String deadline = recruitment.getDeadline().format(formatter);
-        double score = Double.parseDouble(deadline);
         redisTemplate.opsForZSet()
-                .add(ZSET_KEY, recruitment.getTitle(), score);
+                .add(ZSET_KEY, recruitment.getTitle(), DEFAULT_SCORE);
     }
 
 
