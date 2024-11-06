@@ -100,6 +100,10 @@ public class SelectiveQuestion implements Question {
         }
     }
 
+    public boolean isSelectionCountOutOfBounds(int count) {
+        return minimumSelection > count || maximumSelection < count;
+    }
+
     public void updateSection(Section section) {
         this.section = section;
     }

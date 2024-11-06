@@ -3,6 +3,8 @@ package com.server.crews.applicant.service;
 import static java.util.stream.Collectors.toMap;
 
 import com.server.crews.applicant.domain.SelectiveAnswer;
+import com.server.crews.global.exception.CrewsErrorCode;
+import com.server.crews.global.exception.CrewsException;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import jakarta.annotation.Nullable;
 import java.util.List;
@@ -14,7 +16,10 @@ public class SelectiveAnswerManager extends AnswerManager<SelectiveQuestion, Lis
 
     @Override
     protected void validate(SelectiveQuestion question, List<SelectiveAnswer> answer) {
-        // question 에 따라 검증
+        int selectionCount = answer.size();
+        if (question.isSelectionCountOutOfBounds(selectionCount)) {
+            throw new CrewsException(CrewsErrorCode.SELECTION_COUNT_OUT_OF_RANGE);
+        }
     }
 
     @Override

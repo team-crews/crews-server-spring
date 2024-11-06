@@ -23,7 +23,7 @@ public abstract class AnswerManager<Q extends Question, A> {
         }
     }
 
-    protected abstract void validate(Q question, A newAnswer);
+    protected abstract void validate(Q question, A answer);
 
     protected abstract A synchronizeWithPreviousAnswers(@Nullable A previousAnswer, A newAnswer);
 }

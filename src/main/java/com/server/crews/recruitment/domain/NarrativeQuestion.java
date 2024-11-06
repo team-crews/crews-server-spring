@@ -71,6 +71,10 @@ public class NarrativeQuestion implements Question {
         this.wordLimit = wordLimit;
     }
 
+    public boolean exceedWordLimit(int length) {
+        return wordLimit < length;
+    }
+
     public void updateSection(Section section) {
         this.section = section;
     }

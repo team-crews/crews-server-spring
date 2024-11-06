@@ -31,6 +31,8 @@ public enum CrewsErrorCode {
     WRONG_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.", 1022),
 
     ANSWER_REQUIRED(HttpStatus.BAD_REQUEST, "필수 문항의 답변이 없습니다.", 1023),
+    EXCEED_WORD_LIMIT_ANSWER(HttpStatus.BAD_REQUEST, "서술형 문항의 글자수 제한을 초과했습니다.", 1024),
+    SELECTION_COUNT_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, "선택한 항목의 개수가 허용 범위를 벗어났습니다.", 1025),
     ;
 
     private final HttpStatus httpStatus;
