@@ -67,12 +67,12 @@ public class Section {
         return this;
     }
 
-    public List<OrderedQuestion> getOrderedQuestions() {
-        List<OrderedQuestion> orderedQuestions = new ArrayList<>();
-        orderedQuestions.addAll(narrativeQuestions);
-        orderedQuestions.addAll(selectiveQuestions);
-        Collections.sort(orderedQuestions);
-        return orderedQuestions;
+    public List<Question> getOrderedQuestions() {
+        List<Question> questions = new ArrayList<>();
+        questions.addAll(narrativeQuestions);
+        questions.addAll(selectiveQuestions);
+        Collections.sort(questions);
+        return questions;
     }
 
     public void updateRecruitment(Recruitment recruitment) {

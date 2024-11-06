@@ -10,7 +10,7 @@ import com.server.crews.applicant.dto.response.ApplicationDetailsResponse;
 import com.server.crews.applicant.dto.response.SectionAnswerResponse;
 import com.server.crews.applicant.mapper.AnswerMapper;
 import com.server.crews.applicant.mapper.ApplicationMapper;
-import com.server.crews.recruitment.domain.OrderedQuestion;
+import com.server.crews.recruitment.domain.Question;
 import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.Section;
@@ -47,7 +47,7 @@ public class ApplicationAnswerReader {
                 .toList();
     }
 
-    private static AnswerResponse getAnswerResponseByType(OrderedQuestion question,
+    private static AnswerResponse getAnswerResponseByType(Question question,
                                                           Map<Long, AnswerResponse> narrativeAnswers,
                                                           Map<Long, AnswerResponse> selectiveAnswers) {
         if (question.getQuestionType() == QuestionType.NARRATIVE) {
@@ -56,7 +56,7 @@ public class ApplicationAnswerReader {
         return selectiveAnswers.getOrDefault(question.getId(), getBlankAnswerResponse(question));
     }
 
-    private static AnswerResponse getBlankAnswerResponse(OrderedQuestion question) {
+    private static AnswerResponse getBlankAnswerResponse(Question question) {
         return new AnswerResponse(question.getId(), null, null, question.getQuestionType());
     }
 

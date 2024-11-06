@@ -1,6 +1,6 @@
 package com.server.crews.recruitment.domain;
 
-public interface OrderedQuestion extends Comparable<OrderedQuestion> {
+public interface Question extends Comparable<Question> {
     Long getId();
 
     Integer getOrder();
@@ -9,8 +9,10 @@ public interface OrderedQuestion extends Comparable<OrderedQuestion> {
 
     QuestionType getQuestionType();
 
+    boolean isNecessary();
+
     @Override
-    default int compareTo(OrderedQuestion o) {
+    default int compareTo(Question o) {
         return Integer.compare(this.getOrder(), o.getOrder());
     }
 }

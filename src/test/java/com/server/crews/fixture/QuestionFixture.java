@@ -24,10 +24,10 @@ public class QuestionFixture {
     }
 
     public static NarrativeQuestion NARRATIVE_QUESTION() {
-        return new NarrativeQuestion(null, INTRODUCTION_QUESTION, true, 1, 100);
+        return new NarrativeQuestion(null, INTRODUCTION_QUESTION, false, 1, 100);
     }
 
     public static SelectiveQuestion SELECTIVE_QUESTION() {
-        return new SelectiveQuestion(null, CHOICES(), STRENGTH_QUESTION, true, 1, 1, 1);
+        return new SelectiveQuestion(null, CHOICES(), STRENGTH_QUESTION, false, 1, 1, 1);
     }
 }

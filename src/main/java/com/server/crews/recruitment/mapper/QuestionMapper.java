@@ -2,7 +2,7 @@ package com.server.crews.recruitment.mapper;
 
 import com.server.crews.recruitment.domain.Choice;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
-import com.server.crews.recruitment.domain.OrderedQuestion;
+import com.server.crews.recruitment.domain.Question;
 import com.server.crews.recruitment.domain.QuestionType;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.dto.request.ChoiceSaveRequest;
@@ -39,11 +39,11 @@ public class QuestionMapper {
                 .build();
     }
 
-    public static QuestionResponse orderedQuestionToQuestionResponse(OrderedQuestion orderedQuestion) {
-        if (orderedQuestion.getQuestionType() == QuestionType.NARRATIVE) {
-            return narrativeQuestionToQuestionResponse((NarrativeQuestion) orderedQuestion);
+    public static QuestionResponse orderedQuestionToQuestionResponse(Question question) {
+        if (question.getQuestionType() == QuestionType.NARRATIVE) {
+            return narrativeQuestionToQuestionResponse((NarrativeQuestion) question);
         }
-        return selectiveQuestionToQuestionResponse((SelectiveQuestion) orderedQuestion);
+        return selectiveQuestionToQuestionResponse((SelectiveQuestion) question);
     }
 
     private static List<ChoiceResponse> choiceResponses(List<Choice> choices) {

@@ -28,7 +28,10 @@ public enum CrewsErrorCode {
     USER_NOT_FOUND(HttpStatus.UNAUTHORIZED, "존재하지 않는 사용자입니다.", 1019),
     UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "권한이 없는 사용자입니다.", 1020),
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "존재하지 않는 리프레시 토큰입니다.", 1021),
-    WRONG_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.", 1022);
+    WRONG_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.", 1022),
+
+    ANSWER_REQUIRED(HttpStatus.BAD_REQUEST, "필수 문항의 답변이 없습니다.", 1023),
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;

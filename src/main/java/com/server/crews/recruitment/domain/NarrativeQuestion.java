@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
         }
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class NarrativeQuestion implements OrderedQuestion {
+public class NarrativeQuestion implements Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -85,5 +85,10 @@ public class NarrativeQuestion implements OrderedQuestion {
 
     public QuestionType getQuestionType() {
         return QuestionType.NARRATIVE;
+    }
+
+    @Override
+    public boolean isNecessary() {
+        return necessity;
     }
 }
