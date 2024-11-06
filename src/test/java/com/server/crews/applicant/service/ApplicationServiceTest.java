@@ -87,7 +87,7 @@ class ApplicationServiceTest extends ServiceTest {
         List<SelectiveAnswer> savedSelectiveAnswers = selectiveAnswerRepository.findAllByApplication(application);
         assertAll(() -> {
             assertThat(applicationDetailsResponse.sections()).extracting(SectionAnswerResponse::sectionId)
-                    .contains(1l, 2l);
+                    .contains(2l);
             assertThat(savedNarrativeAnswers).hasSize(expectedSavedNarrativeAnsCount);
             assertThat(savedSelectiveAnswers).hasSize(expectedSavedSelectiveAnsCount);
         });
@@ -97,7 +97,7 @@ class ApplicationServiceTest extends ServiceTest {
         AnswerSaveRequest narrativeAnswerSaveRequest = new AnswerSaveRequest(1l, QuestionType.NARRATIVE.name(),
                 null, DEFAULT_NARRATIVE_ANSWER);
         AnswerSaveRequest selectiveAnswerSaveRequest = new AnswerSaveRequest(1l, QuestionType.SELECTIVE.name(),
-                List.of(1l, 2l), null);
+                List.of(2l), null);
         AnswerSaveRequest nullNarrativeAnswerSaveRequest = new AnswerSaveRequest(2l, QuestionType.NARRATIVE.name(),
                 null, null);
         AnswerSaveRequest nullSelectiveAnswerSaveRequest = new AnswerSaveRequest(2l, QuestionType.SELECTIVE.name(),
@@ -107,7 +107,7 @@ class ApplicationServiceTest extends ServiceTest {
                         new ApplicationSectionSaveRequest(1l, List.of(narrativeAnswerSaveRequest)),
                         new ApplicationSectionSaveRequest(1l, List.of(selectiveAnswerSaveRequest)),
                         new ApplicationSectionSaveRequest(2l, List.of(nullNarrativeAnswerSaveRequest)),
-                        new ApplicationSectionSaveRequest(2l, List.of(nullSelectiveAnswerSaveRequest))), 1, 2),
+                        new ApplicationSectionSaveRequest(2l, List.of(nullSelectiveAnswerSaveRequest))), 1, 1),
                 Arguments.of(List.of(
                         new ApplicationSectionSaveRequest(1l, List.of(narrativeAnswerSaveRequest))), 1, 0));
     }

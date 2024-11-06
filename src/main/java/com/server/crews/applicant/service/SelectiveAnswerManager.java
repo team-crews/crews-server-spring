@@ -3,23 +3,32 @@ package com.server.crews.applicant.service;
 import static java.util.stream.Collectors.toMap;
 
 import com.server.crews.applicant.domain.SelectiveAnswer;
+import com.server.crews.global.exception.CrewsErrorCode;
+import com.server.crews.global.exception.CrewsException;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
+import jakarta.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Service;
 
+@Service
 public class SelectiveAnswerManager extends AnswerManager<SelectiveQuestion, List<SelectiveAnswer>> {
-    public SelectiveAnswerManager(SelectiveQuestion question, List<SelectiveAnswer> previousAnswers,
-                                  List<SelectiveAnswer> updatingAnswers) {
-        super(question, previousAnswers, updatingAnswers);
+
+    @Override
+    protected void validate(SelectiveQuestion question, List<SelectiveAnswer> answer) {
+        int selectionCount = answer.size();
+        if (question.isSelectionCountOutOfBounds(selectionCount)) {
+            throw new CrewsException(CrewsErrorCode.SELECTION_COUNT_OUT_OF_RANGE);
+        }
     }
 
     @Override
-    protected void validate() {
-        // question 에 따라 검증
-    }
+    protected List<SelectiveAnswer> synchronizeWithPreviousAnswers(@Nullable List<SelectiveAnswer> previousAnswer,
+                                                                   List<SelectiveAnswer> newAnswer) {
+        if (previousAnswer == null) {
+            return newAnswer;
+        }
 
-    @Override
-    protected List<SelectiveAnswer> synchronizeWithPreviousAnswers() {
         Map<Long, Long> previousAnswerIdsByChoiceId = previousAnswer.stream()
                 .collect(toMap(SelectiveAnswer::getChoiceId, SelectiveAnswer::getId));
         newAnswer.forEach(selectiveAnswer ->

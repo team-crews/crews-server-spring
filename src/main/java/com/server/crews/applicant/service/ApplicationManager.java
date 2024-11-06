@@ -10,72 +10,80 @@ import com.server.crews.applicant.domain.SelectiveAnswer;
 import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
+import jakarta.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
+@Service
+@RequiredArgsConstructor
 public class ApplicationManager {
-    private List<NarrativeQuestion> narrativeQuestions;
-    private List<SelectiveQuestion> selectiveQuestions;
-    private Map<Long, NarrativeAnswer> previousNarrativeAnswersByQuestionId;
-    private Map<Long, List<SelectiveAnswer>> previousSelectiveAnswersByQuestionId;
 
-    public ApplicationManager(Recruitment recruitment) {
-        this.narrativeQuestions = recruitment.getNarrativeQuestion();
-        this.selectiveQuestions = recruitment.getSelectiveQuestions();
-        this.previousNarrativeAnswersByQuestionId = new HashMap<>();
-        this.previousSelectiveAnswersByQuestionId = new HashMap<>();
-    }
+    private final NarrativeAnswerManager narrativeAnswerManager;
+    private final SelectiveAnswerManager selectiveAnswerManager;
 
-    public ApplicationManager(Recruitment recruitment, Application previousApplication) {
-        this.narrativeQuestions = recruitment.getNarrativeQuestion();
-        this.selectiveQuestions = recruitment.getSelectiveQuestions();
-        this.previousNarrativeAnswersByQuestionId = previousApplication.getNarrativeAnswersByQuestionId();
-        this.previousSelectiveAnswersByQuestionId = previousApplication.getSelectiveAnswersByQuestionId();
-    }
-
-    public List<NarrativeAnswer> writeNarrativeAnswers(List<NarrativeAnswer> newNarrativeAnswers) {
+    public List<NarrativeAnswer> writeNarrativeAnswers(Recruitment recruitment,
+                                                       @Nullable Application previousApplication,
+                                                       List<NarrativeAnswer> newNarrativeAnswers) {
+        List<NarrativeQuestion> narrativeQuestions = recruitment.getNarrativeQuestion();
         Map<Long, NarrativeAnswer> newNarrativeAnswersByQuestionId = newNarrativeAnswers.stream()
                 .collect(toMap(NarrativeAnswer::getQuestionId, identity()));
 
+        if (previousApplication == null) {
+            return writeNarrativeAnswersWithQuestions(narrativeQuestions, new HashMap<>(),
+                    newNarrativeAnswersByQuestionId);
+        }
+
+        Map<Long, NarrativeAnswer> previousNarrativeAnswersByQuestionId = previousApplication.getNarrativeAnswersByQuestionId();
+        return writeNarrativeAnswersWithQuestions(narrativeQuestions, previousNarrativeAnswersByQuestionId,
+                newNarrativeAnswersByQuestionId);
+    }
+
+    private List<NarrativeAnswer> writeNarrativeAnswersWithQuestions(List<NarrativeQuestion> narrativeQuestions,
+                                                                     Map<Long, NarrativeAnswer> previousNarrativeAnswersByQuestionId,
+                                                                     Map<Long, NarrativeAnswer> newNarrativeAnswersByQuestionId) {
         return narrativeQuestions.stream()
-                .map(question -> writerNarrativeAnswer(question, newNarrativeAnswersByQuestionId.get(question.getId())))
+                .map(question -> narrativeAnswerManager.getValidatedAnswers(
+                        question,
+                        previousNarrativeAnswersByQuestionId.get(question.getId()),
+                        newNarrativeAnswersByQuestionId.get(question.getId()))
+                )
                 .filter(Objects::nonNull)
                 .toList();
     }
 
-    private NarrativeAnswer writerNarrativeAnswer(NarrativeQuestion question, NarrativeAnswer newAnswer) {
-        if (newAnswer == null) {
-            return null;
-        }
-
-        NarrativeAnswer previousAnswer = previousNarrativeAnswersByQuestionId.get(question.getId());
-        NarrativeAnswerManager answerManager = new NarrativeAnswerManager(question, previousAnswer, newAnswer);
-        return answerManager.getValidatedAnswers();
-    }
-
-    public List<SelectiveAnswer> writeSelectiveAnswers(List<SelectiveAnswer> newSelectiveAnswers) {
+    public List<SelectiveAnswer> writeSelectiveAnswers(Recruitment recruitment,
+                                                       @Nullable Application previousApplication,
+                                                       List<SelectiveAnswer> newSelectiveAnswers) {
+        List<SelectiveQuestion> selectiveQuestions = recruitment.getSelectiveQuestions();
         Map<Long, List<SelectiveAnswer>> newSelectiveAnswersByQuestionId = newSelectiveAnswers.stream()
                 .collect(groupingBy(SelectiveAnswer::getQuestionId));
 
+        if (previousApplication == null) {
+            return writeSelectiveAnswersWithQuestionId(selectiveQuestions, new HashMap<>(),
+                    newSelectiveAnswersByQuestionId);
+        }
+
+        Map<Long, List<SelectiveAnswer>> previousSelectiveAnswersByQuestionId = previousApplication.getSelectiveAnswersByQuestionId();
+        return writeSelectiveAnswersWithQuestionId(selectiveQuestions, previousSelectiveAnswersByQuestionId,
+                newSelectiveAnswersByQuestionId);
+    }
+
+    private List<SelectiveAnswer> writeSelectiveAnswersWithQuestionId(List<SelectiveQuestion> selectiveQuestions,
+                                                                      Map<Long, List<SelectiveAnswer>> previousSelectiveAnswersByQuestionId,
+                                                                      Map<Long, List<SelectiveAnswer>> newSelectiveAnswersByQuestionId) {
         return selectiveQuestions.stream()
-                .map(question -> writeSelectiveAnswers(question, newSelectiveAnswersByQuestionId.get(question.getId())))
+                .map(question -> selectiveAnswerManager.getValidatedAnswers(
+                        question,
+                        previousSelectiveAnswersByQuestionId.get(question.getId()),
+                        newSelectiveAnswersByQuestionId.get(question.getId()))
+                )
                 .filter(Objects::nonNull)
                 .flatMap(Collection::stream)
                 .toList();
-    }
-
-    private List<SelectiveAnswer> writeSelectiveAnswers(SelectiveQuestion question,
-                                                        List<SelectiveAnswer> newAnswers) {
-        if (newAnswers == null) {
-            return null;
-        }
-
-        List<SelectiveAnswer> previousAnswers = previousSelectiveAnswersByQuestionId.getOrDefault(question.getId(),
-                List.of());
-        SelectiveAnswerManager answerManager = new SelectiveAnswerManager(question, previousAnswers, newAnswers);
-        return answerManager.getValidatedAnswers();
     }
 }

@@ -1,22 +1,29 @@
 package com.server.crews.applicant.service;
 
-public abstract class AnswerManager<Q, A> {
-    protected Q question;
-    protected A previousAnswer;
-    protected A newAnswer;
+import com.server.crews.global.exception.CrewsErrorCode;
+import com.server.crews.global.exception.CrewsException;
+import com.server.crews.recruitment.domain.Question;
+import jakarta.annotation.Nullable;
 
-    public AnswerManager(Q question, A previousAnswer, A newAnswer) {
-        this.question = question;
-        this.previousAnswer = previousAnswer;
-        this.newAnswer = newAnswer;
+public abstract class AnswerManager<Q extends Question, A> {
+
+    public A getValidatedAnswers(Q question, @Nullable A previousAnswer, @Nullable A newAnswer) {
+        validateNecessity(question, newAnswer);
+        if (newAnswer == null) {
+            return null;
+        }
+
+        validate(question, newAnswer);
+        return synchronizeWithPreviousAnswers(previousAnswer, newAnswer);
     }
 
-    public A getValidatedAnswers() {
-        validate();
-        return synchronizeWithPreviousAnswers();
+    private void validateNecessity(Q question, A answer) {
+        if (question.isNecessary() && answer == null) {
+            throw new CrewsException(CrewsErrorCode.ANSWER_REQUIRED);
+        }
     }
 
-   protected abstract void validate();
+    protected abstract void validate(Q question, A answer);
 
-    protected abstract A synchronizeWithPreviousAnswers();
+    protected abstract A synchronizeWithPreviousAnswers(@Nullable A previousAnswer, A newAnswer);
 }

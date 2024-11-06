@@ -29,21 +29,21 @@ public class ApplicationService {
     private final ApplicationRepository applicationRepository;
     private final ApplicationDetailsLoader applicationDetailsLoader;
     private final RecruitmentDetailsLoader recruitmentDetailsLoader;
+    private final ApplicationManager applicationManager;
 
     @Transactional
     public ApplicationDetailsResponse saveApplication(Long applicantId, ApplicationSaveRequest request) {
         Recruitment recruitment = recruitmentDetailsLoader.findWithSectionsByCode(request.recruitmentCode());
         validateRecruitmentProgress(recruitment);
 
-        ApplicationManager applicationManager = applicationRepository.findByApplicantId(applicantId)
-                .map(previosApplication -> new ApplicationManager(recruitment, previosApplication))
-                .orElse(new ApplicationManager(recruitment));
-
         List<NarrativeAnswer> newNarrativeAnswers = ApplicationMapper.narrativeAnswersInApplicationSaveRequest(request);
         List<SelectiveAnswer> newSelectiveAnswers = ApplicationMapper.selectiveAnswersInApplicationSaveRequest(request);
 
-        List<NarrativeAnswer> updatedNarrativeAnswers = applicationManager.writeNarrativeAnswers(newNarrativeAnswers);
-        List<SelectiveAnswer> updatedSelectiveAnswers = applicationManager.writeSelectiveAnswers(newSelectiveAnswers);
+        Application previosApplication = applicationRepository.findByApplicantId(applicantId).orElse(null);
+        List<NarrativeAnswer> updatedNarrativeAnswers = applicationManager.writeNarrativeAnswers(recruitment,
+                previosApplication, newNarrativeAnswers);
+        List<SelectiveAnswer> updatedSelectiveAnswers = applicationManager.writeSelectiveAnswers(recruitment,
+                previosApplication, newSelectiveAnswers);
 
         Application application = ApplicationMapper.applicationSaveRequestToApplication(request, recruitment,
                 applicantId, updatedNarrativeAnswers, updatedSelectiveAnswers);
