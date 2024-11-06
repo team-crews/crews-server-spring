@@ -7,8 +7,12 @@ import jakarta.annotation.Nullable;
 
 public abstract class AnswerManager<Q extends Question, A> {
 
-    public A getValidatedAnswers(Q question, A previousAnswer, A newAnswer) {
+    public A getValidatedAnswers(Q question, @Nullable A previousAnswer, @Nullable A newAnswer) {
         validateNecessity(question, newAnswer);
+        if (newAnswer == null) {
+            return null;
+        }
+
         validate(question, newAnswer);
         return synchronizeWithPreviousAnswers(previousAnswer, newAnswer);
     }
