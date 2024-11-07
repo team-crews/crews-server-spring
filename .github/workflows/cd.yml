@@ -62,7 +62,7 @@ jobs:
             linux/arm64
 
       - name: Upload Docker files Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: crews-docker-file
           path: ./src/main/resources/config/docker-compose.yml
@@ -73,10 +73,10 @@ jobs:
     steps:
 
       - name: Download Docker files Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: crews-docker-file
-          path: /home/ubuntu
+          path: /home/ubuntu/docker-compose.yml
 
       - name: deploy
         uses: appleboy/ssh-action@master
