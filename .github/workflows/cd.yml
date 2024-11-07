@@ -2,7 +2,7 @@ name: crews backend deploy
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "refactor/#101-apply-reusable-workflow" ]
 
 permissions:
   contents: read
