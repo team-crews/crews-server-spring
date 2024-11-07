@@ -8,6 +8,10 @@ permissions:
   contents: read
 
 jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+
   build:
     runs-on: ubuntu-latest
     steps:
