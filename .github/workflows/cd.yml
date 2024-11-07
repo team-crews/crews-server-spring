@@ -68,7 +68,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.KEY }}
           source: "./src/main/resources/config/docker-compose.yml"
-          target: "/home/ubuntu/docker-compose.yml"
+          target: "/home/ubuntu"
 
   deploy:
     needs: build
