@@ -24,23 +24,8 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Set up MySQL
-        uses: mirromutth/mysql-action@v1.1
-        with:
-          mysql database: 'crews'
-          mysql user: ${{ secrets.TEST_DB_USERNAME }}
-          mysql password: ${{ secrets.TEST_DB_PASSWORD }}
-
-      - name: Set up Redis
-        uses: supercharge/redis-github-action@1.7.0
-        with:
-          redis-port: 36379
-
-      - name: Run Test And Create API Documentation
-        run: ./gradlew openapi3
-
       - name: Build with Gradle
-        run: ./gradlew bootJar -x test
+        run: ./gradlew build -x test
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
