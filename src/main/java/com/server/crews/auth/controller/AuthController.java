@@ -93,7 +93,7 @@ public class AuthController {
      */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@AdminAuthentication @ApplicantAuthentication LoginUser loginUser) {
-        refreshTokenService.delete(loginUser.userId(), loginUser.role());
+        refreshTokenService.delete(loginUser.username());
         ResponseCookie cookie = refreshTokenCookieGenerator.generate(0, "");
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())

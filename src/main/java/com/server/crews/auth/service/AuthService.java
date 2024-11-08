@@ -92,7 +92,7 @@ public class AuthService {
         String clubName = jwtTokenProvider.getPayload(accessToken);
         Administrator administrator = administratorRepository.findByClubName(clubName)
                 .orElseThrow(() -> new CrewsException(CrewsErrorCode.USER_NOT_FOUND));
-        return new LoginUser(administrator.getId(), Role.ADMIN);
+        return new LoginUser(administrator.getId(), administrator.getClubName(), Role.ADMIN);
     }
 
     private void validateAdminAuthorization(String accessToken) {
@@ -108,7 +108,7 @@ public class AuthService {
         String email = jwtTokenProvider.getPayload(accessToken);
         Applicant applicant = applicantRepository.findByEmail(email)
                 .orElseThrow(() -> new CrewsException(CrewsErrorCode.USER_NOT_FOUND));
-        return new LoginUser(applicant.getId(), Role.APPLICANT);
+        return new LoginUser(applicant.getId(), applicant.getEmail(), Role.APPLICANT);
     }
 
     private void validateApplicantAuthorization(String accessToken) {
@@ -125,10 +125,10 @@ public class AuthService {
         if (role == Role.APPLICANT) {
             Applicant applicant = applicantRepository.findByEmail(payload)
                     .orElseThrow(() -> new CrewsException(CrewsErrorCode.USER_NOT_FOUND));
-            return new LoginUser(applicant.getId(), Role.APPLICANT);
+            return new LoginUser(applicant.getId(), applicant.getEmail(), Role.APPLICANT);
         }
         Administrator administrator = administratorRepository.findByClubName(payload)
                 .orElseThrow(() -> new CrewsException(CrewsErrorCode.USER_NOT_FOUND));
-        return new LoginUser(administrator.getId(), Role.ADMIN);
+        return new LoginUser(administrator.getId(), administrator.getClubName(), Role.ADMIN);
     }
 }
