@@ -1,15 +1,15 @@
 package com.server.crews.auth.controller;
 
-import com.server.crews.auth.service.AuthService;
-import com.server.crews.auth.service.RefreshTokenCookieGenerator;
-import com.server.crews.auth.service.RefreshTokenService;
 import com.server.crews.auth.domain.RefreshToken;
 import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.LoginUser;
 import com.server.crews.auth.dto.request.AdminLoginRequest;
 import com.server.crews.auth.dto.request.ApplicantLoginRequest;
 import com.server.crews.auth.dto.response.TokenResponse;
-import lombok.RequiredArgsConstructor;
+import com.server.crews.auth.service.AuthService;
+import com.server.crews.auth.service.RefreshTokenCookieGenerator;
+import com.server.crews.auth.service.RefreshTokenService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -22,11 +22,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/auth")
-@RequiredArgsConstructor
 public class AuthController {
-    private final RefreshTokenService refreshTokenService;
     private final AuthService authService;
     private final RefreshTokenCookieGenerator refreshTokenCookieGenerator;
+    private final RefreshTokenService refreshTokenService;
+
+    public AuthController(AuthService authService,
+                          RefreshTokenCookieGenerator refreshTokenCookieGenerator,
+                          @Qualifier("refreshTokenStorageFailureHandler") RefreshTokenService refreshTokenService) {
+        this.refreshTokenService = refreshTokenService;
+        this.authService = authService;
+        this.refreshTokenCookieGenerator = refreshTokenCookieGenerator;
+    }
 
     /**
      * [동아리 관리자] 회원가입하고 토큰을 발급 받는다.
@@ -85,7 +92,7 @@ public class AuthController {
      */
     @PostMapping("/refresh")
     public ResponseEntity<TokenResponse> renew(@CookieValue("refreshToken") String refreshToken) {
-        return ResponseEntity.ok(refreshTokenService.renew(refreshToken));
+        return ResponseEntity.ok(refreshTokenService.renew(refreshToken)); // FE 와 상의
     }
 
     /**

@@ -1,7 +1,6 @@
 package com.server.crews.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.server.crews.auth.domain.RefreshToken;
 import com.server.crews.auth.domain.Role;
@@ -11,10 +10,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class RefreshTokenServiceTest extends ServiceTest {
+class RefreshTokenManagerTest extends ServiceTest {
 
     @Autowired
-    private RefreshTokenService refreshTokenService;
+    private RefreshTokenManager refreshTokenManager;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
@@ -27,7 +26,7 @@ class RefreshTokenServiceTest extends ServiceTest {
         String username = "mia";
 
         // when
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(role, username);
+        RefreshToken refreshToken = refreshTokenManager.createRefreshToken(role, username);
 
         // then
         assertThat(refreshToken.getUsername()).isEqualTo(username);
@@ -39,10 +38,10 @@ class RefreshTokenServiceTest extends ServiceTest {
         // given
         Role role = Role.APPLICANT;
         String username = "mia";
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(role, username);
+        RefreshToken refreshToken = refreshTokenManager.createRefreshToken(role, username);
 
         // when
-        TokenResponse tokenResponse = refreshTokenService.renew(refreshToken.getToken());
+        TokenResponse tokenResponse = refreshTokenManager.renew(refreshToken.getToken());
 
         // then
         assertThat(tokenResponse.username()).isEqualTo(username);
