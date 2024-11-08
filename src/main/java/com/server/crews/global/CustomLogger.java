@@ -13,8 +13,10 @@ public class CustomLogger {
     }
 
     public void error(Exception e) {
-        MDC.put("lineNumber", String.valueOf(e.getStackTrace()[0].getLineNumber()));
-        MDC.put("className", e.getStackTrace()[0].getClassName());
+        if (e.getStackTrace().length > 0) {
+            MDC.put("lineNumber", String.valueOf(e.getStackTrace()[0].getLineNumber()));
+            MDC.put("className", e.getStackTrace()[0].getClassName());
+        }
         MDC.put("exceptionName", e.getClass().getSimpleName());
         MDC.put("exceptionMessage", e.getMessage());
         MDC.put("stackTrace", extractStackTrace(e));

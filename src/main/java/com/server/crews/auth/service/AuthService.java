@@ -52,12 +52,20 @@ public class AuthService {
     public TokenResponse registerForApplicant(ApplicantLoginRequest request) {
         String email = request.email();
         String password = request.password();
+        validateDuplicatedEmail(email);
 
         String encodedPassword = passwordEncoder.encode(password);
         Applicant applicant = new Applicant(email, encodedPassword);
         applicantRepository.save(applicant);
         String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, email);
         return new TokenResponse(applicant.getEmail(), accessToken);
+    }
+
+    private void validateDuplicatedEmail(String email) {
+        applicantRepository.findByEmail(email)
+                .ifPresent(applicant -> {
+                    throw new CrewsException(CrewsErrorCode.DUPLICATED_EMAIL);
+                });
     }
 
     public TokenResponse loginForApplicant(ApplicantLoginRequest request) {
@@ -84,7 +92,7 @@ public class AuthService {
         String clubName = jwtTokenProvider.getPayload(accessToken);
         Administrator administrator = administratorRepository.findByClubName(clubName)
                 .orElseThrow(() -> new CrewsException(CrewsErrorCode.USER_NOT_FOUND));
-        return new LoginUser(administrator.getId(), Role.ADMIN);
+        return new LoginUser(administrator.getId(), administrator.getClubName(), Role.ADMIN);
     }
 
     private void validateAdminAuthorization(String accessToken) {
@@ -100,7 +108,7 @@ public class AuthService {
         String email = jwtTokenProvider.getPayload(accessToken);
         Applicant applicant = applicantRepository.findByEmail(email)
                 .orElseThrow(() -> new CrewsException(CrewsErrorCode.USER_NOT_FOUND));
-        return new LoginUser(applicant.getId(), Role.APPLICANT);
+        return new LoginUser(applicant.getId(), applicant.getEmail(), Role.APPLICANT);
     }
 
     private void validateApplicantAuthorization(String accessToken) {
@@ -117,10 +125,10 @@ public class AuthService {
         if (role == Role.APPLICANT) {
             Applicant applicant = applicantRepository.findByEmail(payload)
                     .orElseThrow(() -> new CrewsException(CrewsErrorCode.USER_NOT_FOUND));
-            return new LoginUser(applicant.getId(), Role.APPLICANT);
+            return new LoginUser(applicant.getId(), applicant.getEmail(), Role.APPLICANT);
         }
         Administrator administrator = administratorRepository.findByClubName(payload)
                 .orElseThrow(() -> new CrewsException(CrewsErrorCode.USER_NOT_FOUND));
-        return new LoginUser(administrator.getId(), Role.ADMIN);
+        return new LoginUser(administrator.getId(), administrator.getClubName(), Role.ADMIN);
     }
 }

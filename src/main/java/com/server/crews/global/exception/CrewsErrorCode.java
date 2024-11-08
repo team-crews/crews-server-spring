@@ -29,6 +29,7 @@ public enum CrewsErrorCode {
     UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "권한이 없는 사용자입니다.", 1020),
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "존재하지 않는 리프레시 토큰입니다.", 1021),
     WRONG_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.", 1022),
+    DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "이미 가입된 지원자 이메일입니다.", 1026),
 
     ANSWER_REQUIRED(HttpStatus.BAD_REQUEST, "필수 문항의 답변이 없습니다.", 1023),
     EXCEED_WORD_LIMIT_ANSWER(HttpStatus.BAD_REQUEST, "서술형 문항의 글자수 제한을 초과했습니다.", 1024),
