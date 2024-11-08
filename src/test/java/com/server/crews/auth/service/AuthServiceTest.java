@@ -1,7 +1,9 @@
 package com.server.crews.auth.service;
 
+import static com.server.crews.fixture.UserFixture.TEST_EMAIL;
 import static com.server.crews.fixture.UserFixture.TEST_PASSWORD;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.server.crews.auth.domain.Administrator;
@@ -14,6 +16,8 @@ import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.auth.repository.ApplicantRepository;
 import com.server.crews.environ.service.ServiceTest;
+import com.server.crews.global.exception.CrewsErrorCode;
+import com.server.crews.global.exception.CrewsException;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -86,6 +90,19 @@ class AuthServiceTest extends ServiceTest {
             softAssertions.assertThat(createdApplicant).isNotEmpty();
             softAssertions.assertThat(tokenResponse.accessToken()).isNotNull();
         });
+    }
+
+    @Test
+    @DisplayName("지원자는 중복된 이메일로 회원가입할 수 없다.")
+    void validateDuplicatedEmail() {
+        // given
+        ApplicantLoginRequest request = new ApplicantLoginRequest(TEST_EMAIL, TEST_PASSWORD);
+        authService.registerForApplicant(request);
+
+        // when & then
+        assertThatThrownBy(() -> authService.registerForApplicant(request))
+                .isInstanceOf(CrewsException.class)
+                .hasMessage(CrewsErrorCode.DUPLICATED_EMAIL.getMessage());
     }
 
     @Test

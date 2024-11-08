@@ -1,6 +1,6 @@
 package com.server.crews.auth.service;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.server.crews.auth.domain.RefreshToken;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
@@ -9,14 +9,8 @@ public class RefreshTokenCookieGenerator {
     private static final String COOKIE_NAME = "refreshToken";
     private static final String COOKIE_PATH = "/auth/refresh";
 
-    private final int defaultTokenValidity;
-
-    public RefreshTokenCookieGenerator(@Value("${jwt.refresh-token-validity}") int refreshTokenValidityInMilliseconds) {
-        this.defaultTokenValidity = refreshTokenValidityInMilliseconds / 1000;
-    }
-
-    public ResponseCookie generateWithDefaultValidity(String token) {
-        return generate(this.defaultTokenValidity, token);
+    public ResponseCookie generate(RefreshToken refreshToken) {
+        return generate(refreshToken.getValidityInSeconds(), refreshToken.getToken());
     }
 
     public ResponseCookie generate(long validity, String token) {
