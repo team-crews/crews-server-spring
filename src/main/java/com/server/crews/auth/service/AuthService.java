@@ -52,12 +52,20 @@ public class AuthService {
     public TokenResponse registerForApplicant(ApplicantLoginRequest request) {
         String email = request.email();
         String password = request.password();
+        validateDuplicatedEmail(email);
 
         String encodedPassword = passwordEncoder.encode(password);
         Applicant applicant = new Applicant(email, encodedPassword);
         applicantRepository.save(applicant);
         String accessToken = jwtTokenProvider.createAccessToken(Role.APPLICANT, email);
         return new TokenResponse(applicant.getEmail(), accessToken);
+    }
+
+    private void validateDuplicatedEmail(String email) {
+        applicantRepository.findByEmail(email)
+                .ifPresent(applicant -> {
+                    throw new CrewsException(CrewsErrorCode.DUPLICATED_EMAIL);
+                });
     }
 
     public TokenResponse loginForApplicant(ApplicantLoginRequest request) {
