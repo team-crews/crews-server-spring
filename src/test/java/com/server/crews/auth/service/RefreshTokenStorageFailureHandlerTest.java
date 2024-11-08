@@ -37,7 +37,7 @@ class RefreshTokenStorageFailureHandlerTest extends ServiceTest {
         // then
         assertAll(() -> {
             assertThat(refreshToken.getToken()).isEqualTo("");
-            assertThat(refreshToken.getValidity()).isEqualTo(0l);
+            assertThat(refreshToken.getValidityInSeconds()).isEqualTo(0l);
         });
     }
 }

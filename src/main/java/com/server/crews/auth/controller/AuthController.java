@@ -42,7 +42,7 @@ public class AuthController {
     public ResponseEntity<TokenResponse> registerForAdmin(@RequestBody AdminLoginRequest request) {
         TokenResponse tokenResponse = authService.registerForAdmin(request);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(Role.ADMIN, tokenResponse.username());
-        ResponseCookie cookie = refreshTokenCookieGenerator.generateWithDefaultValidity(refreshToken.getToken());
+        ResponseCookie cookie = refreshTokenCookieGenerator.generate(refreshToken);
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(tokenResponse);
@@ -55,7 +55,7 @@ public class AuthController {
     public ResponseEntity<TokenResponse> loginForAdmin(@RequestBody AdminLoginRequest request) {
         TokenResponse tokenResponse = authService.loginForAdmin(request);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(Role.ADMIN, tokenResponse.username());
-        ResponseCookie cookie = refreshTokenCookieGenerator.generateWithDefaultValidity(refreshToken.getToken());
+        ResponseCookie cookie = refreshTokenCookieGenerator.generate(refreshToken);
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(tokenResponse);
@@ -68,7 +68,7 @@ public class AuthController {
     public ResponseEntity<TokenResponse> registerForApplicant(@RequestBody ApplicantLoginRequest request) {
         TokenResponse tokenResponse = authService.registerForApplicant(request);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(Role.APPLICANT, tokenResponse.username());
-        ResponseCookie cookie = refreshTokenCookieGenerator.generateWithDefaultValidity(refreshToken.getToken());
+        ResponseCookie cookie = refreshTokenCookieGenerator.generate(refreshToken);
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(tokenResponse);
@@ -81,7 +81,7 @@ public class AuthController {
     public ResponseEntity<TokenResponse> loginForApplicant(@RequestBody ApplicantLoginRequest request) {
         TokenResponse tokenResponse = authService.loginForApplicant(request);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(Role.APPLICANT, tokenResponse.username());
-        ResponseCookie cookie = refreshTokenCookieGenerator.generateWithDefaultValidity(refreshToken.getToken());
+        ResponseCookie cookie = refreshTokenCookieGenerator.generate(refreshToken);
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(tokenResponse);
@@ -92,7 +92,7 @@ public class AuthController {
      */
     @PostMapping("/refresh")
     public ResponseEntity<TokenResponse> renew(@CookieValue("refreshToken") String refreshToken) {
-        return ResponseEntity.ok(refreshTokenService.renew(refreshToken)); // FE 와 상의
+        return ResponseEntity.ok(refreshTokenService.renew(refreshToken));
     }
 
     /**

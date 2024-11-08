@@ -15,13 +15,13 @@ public class RefreshToken {
     private String username;
 
     @TimeToLive
-    private Long validity;
+    private Long validityInSeconds;
 
     private String token;
 
-    public RefreshToken(String username, Long validity, String token) {
+    public RefreshToken(String username, Long validityInSeconds, String token) {
         this.username = username;
-        this.validity = validity;
+        this.validityInSeconds = validityInSeconds;
         this.token = token;
     }
 
