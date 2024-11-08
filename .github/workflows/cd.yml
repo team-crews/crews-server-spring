@@ -13,6 +13,7 @@ jobs:
     secrets: inherit
 
   build:
+    needs: test
     runs-on: ubuntu-latest
     steps:
 
@@ -60,6 +61,16 @@ jobs:
             linux/amd64
             linux/arm64
 
+      - name: Copy docker-compose.yml to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          key: ${{ secrets.KEY }}
+          source: "./src/main/resources/config/docker-compose.yml"
+          target: "/home/ubuntu"
+          strip_components: 5
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -75,12 +86,11 @@ jobs:
             cd /home/ubuntu
             
             sudo chmod 666 /var/run/docker.sock
-            docker rm -f $(docker ps -qa)
+            sudo chmod +x /usr/local/bin/docker-compose
+            
             docker pull ${{ secrets.DOCKER_PROD_SERVER_IMAGE_NAME }}
-            docker run -d -p 8080:8080 --name crews-server \
-              -e JAVA_OPTS="-XX:InitialRAMPercentage=70.0 -XX:MaxRAMPercentage=70.0" \
-              -e SPRING_PROFILES_ACTIVE=prod \
-              ${{ secrets.DOCKER_PROD_SERVER_IMAGE_NAME }}
+            docker rm -f crews-server
+            docker-compose up crews-server -d
 
             docker image prune -f
             docker volume prune -f
