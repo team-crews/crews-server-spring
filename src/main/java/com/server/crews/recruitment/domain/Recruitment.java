@@ -1,7 +1,5 @@
 package com.server.crews.recruitment.domain;
 
-import static java.util.stream.Collectors.groupingBy;
-
 import com.server.crews.auth.domain.Administrator;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -26,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -113,19 +110,9 @@ public class Recruitment {
         this.code = code;
     }
 
-    public void replaceQuestionsWithFetchedData(List<NarrativeQuestion> narrativeQuestions,
-                                                List<SelectiveQuestion> selectiveQuestions) {
-        Map<Long, List<NarrativeQuestion>> narrativeQuestionsBySectionId = narrativeQuestions.stream()
-                .collect(groupingBy(NarrativeQuestion::getSectionId));
-        Map<Long, List<SelectiveQuestion>> selectiveQuestionsBySectionId = selectiveQuestions.stream()
-                .collect(groupingBy(SelectiveQuestion::getSectionId));
-
-        sections.forEach(section ->
-                section.replaceQuestions(
-                        narrativeQuestionsBySectionId.getOrDefault(section.getId(), List.of()),
-                        selectiveQuestionsBySectionId.getOrDefault(section.getId(), List.of())
-                )
-        );
+    public void replaceSectionsWithFetchedData(List<Section> sections) {
+        this.sections.clear();
+        this.sections.addAll(sections);
     }
 
     public void start() {

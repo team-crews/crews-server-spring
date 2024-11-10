@@ -1,12 +1,10 @@
 package com.server.crews.recruitment.service;
 
 import com.server.crews.global.exception.NotFoundException;
-import com.server.crews.recruitment.domain.NarrativeQuestion;
 import com.server.crews.recruitment.domain.Recruitment;
-import com.server.crews.recruitment.domain.SelectiveQuestion;
-import com.server.crews.recruitment.repository.NarrativeQuestionRepository;
+import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
-import com.server.crews.recruitment.repository.SelectiveQuestionRepository;
+import com.server.crews.recruitment.repository.SectionRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class RecruitmentDetailsLoader {
     private final RecruitmentRepository recruitmentRepository;
-    private final NarrativeQuestionRepository narrativeQuestionRepository;
-    private final SelectiveQuestionRepository selectiveQuestionRepository;
+    private final SectionRepository sectionRepository;
 
     public Recruitment findWithSectionsByCode(String code) {
         Recruitment recruitment = recruitmentRepository.findWithSectionsByCode(code)
@@ -46,9 +43,8 @@ public class RecruitmentDetailsLoader {
 
     private Recruitment fetchQuestions(Recruitment recruitment) {
         Long recruitmentId = recruitment.getId();
-        List<NarrativeQuestion> narrativeQuestions = narrativeQuestionRepository.findAllByRecruitmentId(recruitmentId);
-        List<SelectiveQuestion> selectiveQuestions = selectiveQuestionRepository.findAllByRecruitmentId(recruitmentId);
-        recruitment.replaceQuestionsWithFetchedData(narrativeQuestions, selectiveQuestions);
+        List<Section> sections = sectionRepository.findAllWithQuestionsByRecruitmentId(recruitmentId);
+        recruitment.replaceSectionsWithFetchedData(sections);
         return recruitment;
     }
 }

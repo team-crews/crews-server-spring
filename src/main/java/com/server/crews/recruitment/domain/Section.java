@@ -16,7 +16,9 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,28 +45,20 @@ public class Section {
     private String description;
 
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<NarrativeQuestion> narrativeQuestions = new ArrayList<>();
+    private Set<NarrativeQuestion> narrativeQuestions = new HashSet<>();
 
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SelectiveQuestion> selectiveQuestions = new ArrayList<>();
+    private Set<SelectiveQuestion> selectiveQuestions = new HashSet<>();
 
     public Section(Long id, String name, String description, List<NarrativeQuestion> narrativeQuestions,
                    List<SelectiveQuestion> selectiveQuestions) {
         this.id = id;
         this.name = name;
         this.description = description;
-        replaceQuestions(narrativeQuestions, selectiveQuestions);
-    }
-
-    Section replaceQuestions(List<NarrativeQuestion> narrativeQuestions,
-                             List<SelectiveQuestion> selectiveQuestions) {
         narrativeQuestions.forEach(narrativeQuestion -> narrativeQuestion.updateSection(this));
-        this.narrativeQuestions.clear();
         this.narrativeQuestions.addAll(narrativeQuestions);
         selectiveQuestions.forEach(selectiveQuestion -> selectiveQuestion.updateSection(this));
-        this.selectiveQuestions.clear();
         this.selectiveQuestions.addAll(selectiveQuestions);
-        return this;
     }
 
     public List<Question> getOrderedQuestions() {
@@ -77,5 +71,13 @@ public class Section {
 
     public void updateRecruitment(Recruitment recruitment) {
         this.recruitment = recruitment;
+    }
+
+    public List<NarrativeQuestion> getNarrativeQuestions() {
+        return new ArrayList<>(narrativeQuestions);
+    }
+
+    public List<SelectiveQuestion> getSelectiveQuestions() {
+        return new ArrayList<>(selectiveQuestions);
     }
 }
