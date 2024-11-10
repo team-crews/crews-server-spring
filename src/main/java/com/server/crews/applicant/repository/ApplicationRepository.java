@@ -50,7 +50,8 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     @EntityGraph(attributePaths = {"narrativeAnswers", "selectiveAnswers"})
     @Query("""
             select a from Application a
-            where a.applicant.id = :applicantId
+            where a.applicant.id = :applicantId and a.recruitment.id = :recruitmentId
             """)
-    Optional<Application> findByApplicantId(@Param("applicantId") Long applicantId);
+    Optional<Application> findByApplicantIdAndRecruitmentId(@Param("applicantId") Long applicantId,
+                                                            @Param("recruitmentId") Long recruitmentId);
 }
