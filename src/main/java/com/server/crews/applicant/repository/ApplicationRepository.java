@@ -52,6 +52,6 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
             select a from Application a
             where a.applicant.id = :applicantId and a.recruitment.id = :recruitmentId
             """)
-    Optional<Application> findByApplicantId(@Param("applicantId") Long applicantId,
-                                            @Param("recruitmentId") Long recruitmentId);
+    Optional<Application> findByApplicantIdAndRecruitmentId(@Param("applicantId") Long applicantId,
+                                                            @Param("recruitmentId") Long recruitmentId);
 }

@@ -39,7 +39,7 @@ public class ApplicationService {
         List<NarrativeAnswer> newNarrativeAnswers = ApplicationMapper.narrativeAnswersInApplicationSaveRequest(request);
         List<SelectiveAnswer> newSelectiveAnswers = ApplicationMapper.selectiveAnswersInApplicationSaveRequest(request);
 
-        Application previosApplication = applicationRepository.findByApplicantId(applicantId, recruitment.getId())
+        Application previosApplication = applicationRepository.findByApplicantIdAndRecruitmentId(applicantId, recruitment.getId())
                 .orElse(null);
         List<NarrativeAnswer> updatedNarrativeAnswers = applicationManager.writeNarrativeAnswers(recruitment,
                 previosApplication, newNarrativeAnswers);
