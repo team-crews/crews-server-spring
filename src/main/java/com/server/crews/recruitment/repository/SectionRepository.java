@@ -10,8 +10,8 @@ public interface SectionRepository extends JpaRepository<Section, Long> {
 
     @Query("""
             select s from Section s
-            join fetch s.narrativeQuestions
-            join fetch s.selectiveQuestions
+            left join fetch s.narrativeQuestions
+            left join fetch s.selectiveQuestions
             where s.recruitment.id = :recruitmentId
             """)
     List<Section> findAllWithQuestionsByRecruitmentId(@Param("recruitmentId") Long recruitmentId);
