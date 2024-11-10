@@ -12,10 +12,10 @@ public class NarrativeAnswerManager extends AnswerManager<NarrativeQuestion, Nar
 
     @Override
     protected void validate(NarrativeQuestion question, NarrativeAnswer answer) {
-        String content = answer.getContent();
-        if (question.exceedWordLimit(content.length())) {
-            throw new CrewsException(CrewsErrorCode.EXCEED_WORD_LIMIT_ANSWER);
-        }
+//        String content = answer.getContent();
+//        if (question.exceedWordLimit(content.length())) {
+//            throw new CrewsException(CrewsErrorCode.EXCEED_WORD_LIMIT_ANSWER);
+//        }
     }
 
     @Override
