@@ -18,9 +18,9 @@ public abstract class AnswerManager<Q extends Question, A> {
     }
 
     private void validateNecessity(Q question, A answer) {
-        if (question.isNecessary() && answer == null) {
-            throw new CrewsException(CrewsErrorCode.ANSWER_REQUIRED);
-        }
+//        if (question.isNecessary() && answer == null) {
+//            throw new CrewsException(CrewsErrorCode.ANSWER_REQUIRED);
+//        }
     }
 
     protected abstract void validate(Q question, A answer);

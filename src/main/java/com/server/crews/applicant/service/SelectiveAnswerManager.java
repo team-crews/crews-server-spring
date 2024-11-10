@@ -16,10 +16,10 @@ public class SelectiveAnswerManager extends AnswerManager<SelectiveQuestion, Lis
 
     @Override
     protected void validate(SelectiveQuestion question, List<SelectiveAnswer> answer) {
-        int selectionCount = answer.size();
-        if (question.isSelectionCountOutOfBounds(selectionCount)) {
-            throw new CrewsException(CrewsErrorCode.SELECTION_COUNT_OUT_OF_RANGE);
-        }
+//        int selectionCount = answer.size();
+//        if (question.isSelectionCountOutOfBounds(selectionCount)) {
+//            throw new CrewsException(CrewsErrorCode.SELECTION_COUNT_OUT_OF_RANGE);
+//        }
     }
 
     @Override
