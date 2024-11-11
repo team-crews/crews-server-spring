@@ -1,7 +1,8 @@
-package com.server.crews.external.application;
+package com.server.crews.external.event;
 
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.event.OutcomeDeterminedEvent;
+import com.server.crews.external.application.EmailService;
 import com.server.crews.recruitment.domain.Recruitment;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

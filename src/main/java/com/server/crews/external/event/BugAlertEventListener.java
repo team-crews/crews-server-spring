@@ -1,5 +1,6 @@
-package com.server.crews.external.application;
+package com.server.crews.external.event;
 
+import com.server.crews.external.application.SlackBugAlertService;
 import com.server.crews.global.exception.AsyncInternalErrorOccurredEvent;
 import com.server.crews.global.exception.InternalErrorOccurredEvent;
 import java.util.HashMap;
