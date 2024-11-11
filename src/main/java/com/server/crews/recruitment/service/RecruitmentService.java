@@ -3,8 +3,8 @@ package com.server.crews.recruitment.service;
 import static java.util.stream.Collectors.joining;
 
 import com.server.crews.applicant.domain.Application;
-import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.applicant.event.OutcomeDeterminedEvent;
+import com.server.crews.applicant.repository.ApplicationRepository;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.auth.repository.AdministratorRepository;
 import com.server.crews.global.CustomLogger;
@@ -13,14 +13,14 @@ import com.server.crews.global.exception.CrewsException;
 import com.server.crews.global.exception.NotFoundException;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.RecruitmentProgress;
-import com.server.crews.recruitment.dto.response.RecruitmentSearchResponse;
-import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.dto.request.DeadlineUpdateRequest;
 import com.server.crews.recruitment.dto.request.RecruitmentSaveRequest;
 import com.server.crews.recruitment.dto.response.RecruitmentDetailsResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentProgressResponse;
+import com.server.crews.recruitment.dto.response.RecruitmentSearchResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
 import com.server.crews.recruitment.mapper.RecruitmentMapper;
+import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.RecruitmentSearchKeywordRepository;
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -40,6 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class RecruitmentService {
+    private static final CustomLogger customLogger = new CustomLogger(RecruitmentService.class);
+
     private final RecruitmentRepository recruitmentRepository;
     private final RecruitmentDetailsLoader recruitmentDetailsLoader;
     private final RecruitmentSearchKeywordRepository recruitmentSearchKeywordRepository;
@@ -47,7 +49,6 @@ public class RecruitmentService {
     private final ApplicationRepository applicationRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final Clock clock;
-    private final CustomLogger customLogger = new CustomLogger(RecruitmentService.class);
 
     @Transactional
     public RecruitmentDetailsResponse saveRecruitment(Long publisherId, RecruitmentSaveRequest request) {

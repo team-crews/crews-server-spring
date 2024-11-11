@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 @RequiredArgsConstructor
 public class AsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
-    private final CustomLogger customLogger = new CustomLogger(AsyncExceptionHandler.class);
+    private static final CustomLogger customLogger = new CustomLogger(AsyncExceptionHandler.class);
 
     private final ApplicationEventPublisher eventPublisher;
 
