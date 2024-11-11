@@ -4,9 +4,11 @@ import com.server.crews.auth.domain.RefreshToken;
 import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.global.CustomLogger;
+import com.server.crews.global.exception.InternalErrorOccurredEvent;
 import io.lettuce.core.RedisCommandTimeoutException;
 import io.lettuce.core.RedisException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.RedisSystemException;
 import org.springframework.stereotype.Service;
@@ -16,13 +18,16 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class RefreshTokenStorageFailureHandler implements RefreshTokenService {
+    private static final CustomLogger customLogger = new CustomLogger(RefreshTokenStorageFailureHandler.class);
+
     private final RefreshTokenService refreshTokenService;
-    private final CustomLogger customLogger;
+    private final ApplicationEventPublisher eventPublisher;
 
     public RefreshTokenStorageFailureHandler(
-            @Qualifier("refreshTokenManager") RefreshTokenService refreshTokenService) {
+            @Qualifier("refreshTokenManager") RefreshTokenService refreshTokenService,
+            ApplicationEventPublisher applicationEventPublisher) {
         this.refreshTokenService = refreshTokenService;
-        this.customLogger = new CustomLogger(RefreshTokenStorageFailureHandler.class);
+        this.eventPublisher = applicationEventPublisher;
     }
 
     @Override
@@ -31,6 +36,7 @@ public class RefreshTokenStorageFailureHandler implements RefreshTokenService {
             return refreshTokenService.createRefreshToken(role, username);
         } catch (RedisConnectionFailureException | RedisSystemException | RedisException e) {
             customLogger.error(e);
+            eventPublisher.publishEvent(new InternalErrorOccurredEvent(e, null));
             return new RefreshToken("", 0l, "");
         }
     }
@@ -49,6 +55,7 @@ public class RefreshTokenStorageFailureHandler implements RefreshTokenService {
             refreshTokenService.delete(username);
         } catch (RedisConnectionFailureException | RedisCommandTimeoutException | RedisSystemException e) {
             customLogger.error(e);
+            eventPublisher.publishEvent(new InternalErrorOccurredEvent(e, null));
         }
     }
 }
