@@ -18,6 +18,7 @@ import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.auth.controller.AuthorizationExtractor;
 import com.server.crews.environ.DatabaseCleaner;
 import com.server.crews.external.application.EmailService;
+import com.server.crews.external.application.SlackBugAlertService;
 import com.server.crews.global.config.DatabaseInitializer;
 import com.server.crews.recruitment.domain.Recruitment;
 import com.server.crews.recruitment.domain.QuestionType;
@@ -57,6 +58,9 @@ public abstract class ApiTest {
 
     @MockBean
     private EmailService emailService;
+
+    @MockBean
+    private SlackBugAlertService slackBugAlertService;
 
     @MockBean
     private DatabaseInitializer databaseInitializer;
