@@ -54,4 +54,4 @@ services:
     container_name: redis-stack
     restart: always
     ports:
-      - "46379:6379"
+      - "56379:6379"
