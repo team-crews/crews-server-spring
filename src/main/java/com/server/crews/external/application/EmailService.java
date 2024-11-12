@@ -16,10 +16,11 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 @Service
 @RequiredArgsConstructor
 public class EmailService {
+    private static final CustomLogger customLogger = new CustomLogger(EmailService.class);
     private static final String TITLE = "[Crews] 지원 결과 발표";
+
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
-    private final CustomLogger customLogger = new CustomLogger(EmailService.class);
 
     public void send(Application application, Recruitment recruitment) {
         customLogger.info("send - application id: {} recruitment id: {}", application.getId(), recruitment.getId());
