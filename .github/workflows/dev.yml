@@ -41,10 +41,10 @@ jobs:
           mysql user: ${{ secrets.TEST_DB_USERNAME }}
           mysql password: ${{ secrets.TEST_DB_PASSWORD }}
 
-      - name: Set up Redis
-        uses: supercharge/redis-github-action@1.7.0
+      - name: Set up Redis And Redis Stack
+        uses: hoverkraft-tech/compose-action@v2.0.1
         with:
-          redis-port: 36379
+          compose-file: "./docker-compose-local.yml"
 
       - name: Run Test And Create API Documentation
         run: ./gradlew openapi3
