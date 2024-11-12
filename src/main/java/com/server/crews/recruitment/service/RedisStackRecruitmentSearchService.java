@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -26,18 +25,15 @@ public class RedisStackRecruitmentSearchService implements RecruitmentSearchServ
     private static final ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
     private static final CustomLogger customLogger = new CustomLogger(RedisStackRecruitmentSearchService.class);
 
-    private final GenericObjectPool<StatefulRedisModulesConnection<String, String>> redisStackConnectionPool;
+    private final StatefulRedisModulesConnection<String, String> redisModulesConnection;
 
     @Override
     public void saveRecruitment(Recruitment recruitment) {
         String recruitmentKey = INDEX_KEY + recruitment.getId();
-        try (StatefulRedisModulesConnection<String, String> connection = redisStackConnectionPool.borrowObject()) {
-            RedisModulesCommands<String, String> commands = connection.sync();
-            commands.hset(recruitmentKey, "title", recruitment.getTitle());
-            commands.hset(recruitmentKey, "deadline", String.valueOf(getUnixTimestamp(recruitment.getDeadline())));
-        } catch (Exception e) {
-            customLogger.error(e);
-        }
+        RedisModulesCommands<String, String> commands = redisModulesConnection.sync();
+        commands.hset(recruitmentKey, "title", recruitment.getTitle());
+        commands.hset(recruitmentKey, "deadline", String.valueOf(getUnixTimestamp(recruitment.getDeadline())));
+
     }
 
     private static long getUnixTimestamp(LocalDateTime dateTime) {
@@ -46,39 +42,31 @@ public class RedisStackRecruitmentSearchService implements RecruitmentSearchServ
 
     @Override
     public List<String> findRecruitmentTitlesByKeyword(String keyword, int limit) {
-        try (StatefulRedisModulesConnection<String, String> connection = redisStackConnectionPool.borrowObject()) {
-            RedisModulesCommands<String, String> commands = connection.sync();
+        RedisModulesCommands<String, String> commands = redisModulesConnection.sync();
 
-            SearchOptions searchOptions = new SearchOptions();
-            searchOptions.setLimit(new Limit(0, limit));
-            String query = "*" + keyword + "*";
+        SearchOptions searchOptions = new SearchOptions();
+        searchOptions.setLimit(new Limit(0, limit));
+        String query = "*" + keyword + "*";
 
-            SearchResults searchResults = commands.ftSearch(INDEX_NAME, query, searchOptions);
+        SearchResults searchResults = commands.ftSearch(INDEX_NAME, query, searchOptions);
 
-            List<Document<String, String>> documents = searchResults.stream().toList();
-            return documents.stream()
-                    .map(document -> document.get("title"))
-                    .toList();
-        } catch (Exception e) {
-            customLogger.error(e);
-            return List.of();
-        }
+        List<Document<String, String>> documents = searchResults.stream().toList();
+        return documents.stream()
+                .map(document -> document.get("title"))
+                .toList();
+
     }
 
     /*
     운영 서버에서는 사용하지 말 것.
      */
     public void createIndex() {
-        try (StatefulRedisModulesConnection<String, String> connection = redisStackConnectionPool.borrowObject()) {
-            RedisModulesCommands<String, String> commands = connection.sync();
-            if (!isIndexExists(commands)) {
-                CreateOptions createOptions = new CreateOptions.Builder().prefix(INDEX_KEY).build();
-                commands.ftCreate(INDEX_NAME, createOptions,
-                        Field.text("title").build(),
-                        Field.numeric("deadline").build());
-            }
-        } catch (Exception e) {
-            customLogger.error(e);
+        RedisModulesCommands<String, String> commands = redisModulesConnection.sync();
+        if (!isIndexExists(commands)) {
+            CreateOptions createOptions = new CreateOptions.Builder().prefix(INDEX_KEY).build();
+            commands.ftCreate(INDEX_NAME, createOptions,
+                    Field.text("title").build(),
+                    Field.numeric("deadline").build());
         }
     }
 
