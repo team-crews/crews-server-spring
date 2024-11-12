@@ -5,12 +5,8 @@ import com.server.crews.auth.domain.Role;
 import com.server.crews.auth.dto.response.TokenResponse;
 import com.server.crews.global.CustomLogger;
 import com.server.crews.global.exception.InternalErrorOccurredEvent;
-import io.lettuce.core.RedisCommandTimeoutException;
-import io.lettuce.core.RedisException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.redis.RedisConnectionFailureException;
-import org.springframework.data.redis.RedisSystemException;
 import org.springframework.stereotype.Service;
 
 /*
@@ -34,7 +30,7 @@ public class RefreshTokenStorageFailureHandler implements RefreshTokenService {
     public RefreshToken createRefreshToken(Role role, String username) {
         try {
             return refreshTokenService.createRefreshToken(role, username);
-        } catch (RedisConnectionFailureException | RedisSystemException | RedisException e) {
+        } catch (Exception e) {
             customLogger.error(e);
             eventPublisher.publishEvent(new InternalErrorOccurredEvent(e, null));
             return new RefreshToken("", 0l, "");
@@ -53,7 +49,7 @@ public class RefreshTokenStorageFailureHandler implements RefreshTokenService {
     public void delete(String username) {
         try {
             refreshTokenService.delete(username);
-        } catch (RedisConnectionFailureException | RedisCommandTimeoutException | RedisSystemException e) {
+        } catch (Exception e) {
             customLogger.error(e);
             eventPublisher.publishEvent(new InternalErrorOccurredEvent(e, null));
         }
