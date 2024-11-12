@@ -41,10 +41,10 @@ jobs:
           mysql user: ${{ secrets.TEST_DB_USERNAME }}
           mysql password: ${{ secrets.TEST_DB_PASSWORD }}
 
-      - name: Set up Redis
-        uses: supercharge/redis-github-action@1.7.0
+      - name: Set up Redis And Redis Stack
+        uses: hoverkraft-tech/compose-action@v2.0.1
         with:
-          redis-port: 36379
+          compose-file: "./docker-compose-local.yml"
 
       - name: Run Test And Create API Documentation
         run: ./gradlew openapi3
@@ -70,3 +70,27 @@ jobs:
           platforms: |
             linux/amd64
             linux/arm64
+
+  alarm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack on Success
+        if: success()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "새로운 개발 서버 버전이 배포됐어요! \n ✅PR: <${{ github.event.pull_request.title }}|${{ github.event.pull_request.html_url }}>"
+                    }
+                  }
+                ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

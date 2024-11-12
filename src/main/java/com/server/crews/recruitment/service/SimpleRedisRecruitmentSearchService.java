@@ -1,4 +1,4 @@
-package com.server.crews.recruitment.repository;
+package com.server.crews.recruitment.service;
 
 import com.server.crews.recruitment.domain.Recruitment;
 import java.util.List;
@@ -8,11 +8,11 @@ import org.springframework.data.domain.Range;
 import org.springframework.data.domain.Range.Bound;
 import org.springframework.data.redis.connection.Limit;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-@Repository
+@Service
 @RequiredArgsConstructor
-public class RecruitmentSearchKeywordRepository {
+public class SimpleRedisRecruitmentSearchService implements RecruitmentSearchService {
 
     private static final String ZSET_KEY = "recruitment_titles";
     private static final String SEARCH_DELIMITER = "\uFFFF";
@@ -20,13 +20,14 @@ public class RecruitmentSearchKeywordRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
 
+    @Override
     public void saveRecruitment(Recruitment recruitment) {
         redisTemplate.opsForZSet()
                 .add(ZSET_KEY, recruitment.getTitle(), DEFAULT_SCORE);
     }
 
-
-    public List<String> findRecruitmentTitlesByPrefix(String prefix, int limit) {
+    @Override
+    public List<String> findRecruitmentTitlesByKeyword(String prefix, int limit) {
         String rangeStart = prefix;
         String rangeEnd = prefix + SEARCH_DELIMITER;
 

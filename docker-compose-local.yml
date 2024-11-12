@@ -6,3 +6,10 @@ services:
     restart: always
     ports:
       - "36379:6379"
+
+  redis-stack:
+    image: redis/redis-stack
+    container_name: redis-stack
+    restart: always
+    ports:
+      - "46379:6379"
