@@ -75,6 +75,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Extract Commit Title
+        id: extract_commit_title
+        run: echo "COMMIT_TITLE=$(echo "${{ github.event.head_commit.message }}" | head -n 1)" >> $GITHUB_ENV
+
       - name: Notify Slack on Success
         if: success()
         uses: slackapi/slack-github-action@v1.24.0
@@ -86,7 +90,7 @@ jobs:
                     "type": "section",
                     "text": {
                       "type": "mrkdwn",
-                      "text": "새로운 개발 서버 버전이 배포됐어요! \n ✅ 요약: ${{ github.event.head_commit.message }} \n ✅ 새 도커 이미지를 PULL 받아주세요"
+                      "text": "새로운 개발 서버 버전이 배포됐어요! \n ✅ 요약: ${{ env.COMMIT_TITLE }} \n ✅ 새 도커 이미지를 PULL 받아주세요"
                     }
                   }
                 ]
