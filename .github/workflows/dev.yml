@@ -2,7 +2,7 @@ name: crews backend development version distribute
 
 on:
   push:
-    branches: [ "feat/#109-search-with-redisearch" ]
+    branches: [ "dev" ]
 
 permissions:
   contents: read
@@ -81,18 +81,12 @@ jobs:
         with:
           payload: |
             {
-              "attachments": [
-                {
-                  "color": "#36a64f",
-                  "title": "새로운 서버 개발 버전이 배포됐어요!"    
-                }
-              ],
               "blocks": [
                   {
                     "type": "section",
                     "text": {
                       "type": "mrkdwn",
-                      "text": "<${{ github.event.pull_request.html_url }}|PR 바로가기>"
+                      "text": "새로운 개발 서버 버전이 배포됐어요! \n<${{ github.event.head_commit.url }}|${{ github.event.head_commit.message }}>"
                     }
                   }
                 ]
