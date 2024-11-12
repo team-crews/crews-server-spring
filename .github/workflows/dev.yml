@@ -2,7 +2,7 @@ name: crews backend development version distribute
 
 on:
   push:
-    branches: [ "feat/#109-search-with-redisearch" ]
+    branches: [ "dev" ]
 
 permissions:
   contents: read
@@ -86,7 +86,7 @@ jobs:
                     "type": "section",
                     "text": {
                       "type": "mrkdwn",
-                      "text": "새로운 개발 서버 버전이 배포됐어요! \n<${{ github.event.head_commit.url }}|${{ github.event.head_commit.message }}>"
+                      "text": "새로운 개발 서버 버전이 배포됐어요! \n ✅PR: <${{ github.event.pull_request.title }}|${{ github.event.pull_request.html_url }}>"
                     }
                   }
                 ]
