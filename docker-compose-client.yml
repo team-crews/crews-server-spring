@@ -1,0 +1,57 @@
+version: '3'
+services:
+
+  server:
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+    container_name: server
+    image: jongmi/crews-server
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    tty: true
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/crews?createDatabaseIfNotExist=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "1234"
+      SPRING_DATA_REDIS_HOST: "redis"
+      SPRING_DATA_REDIS_PORT: "6379"
+      REDS-STACK_HOST: "redis-stack"
+      REDIS-STACK_PORT: "6379"
+
+  db:
+    healthcheck:
+      test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_ROOT_PASSWORD']
+      interval: 10s
+      timeout: 2s
+      retries: 20
+
+    container_name: db
+    image: mysql:8.0.28
+    platform: linux/x86_64
+    restart: always
+    ports:
+      - "33306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      TZ: Asia/Seoul
+      MYSQL_DATABASE: crews
+
+  redis:
+    image: redis:7.0.12
+    container_name: redis
+    restart: always
+    ports:
+      - "36379:6379"
+
+  redis-stack:
+    image: redis/redis-stack
+    container_name: redis-stack
+    restart: always
+    ports:
+      - "56379:6379"

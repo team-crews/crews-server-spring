@@ -21,7 +21,6 @@ import com.server.crews.recruitment.dto.response.RecruitmentSearchResponse;
 import com.server.crews.recruitment.dto.response.RecruitmentStateInProgressResponse;
 import com.server.crews.recruitment.mapper.RecruitmentMapper;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
-import com.server.crews.recruitment.repository.RecruitmentSearchKeywordRepository;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -44,7 +43,7 @@ public class RecruitmentService {
 
     private final RecruitmentRepository recruitmentRepository;
     private final RecruitmentDetailsLoader recruitmentDetailsLoader;
-    private final RecruitmentSearchKeywordRepository recruitmentSearchKeywordRepository;
+    private final RedisStackRecruitmentSearchService recruitmentSearchService;
     private final AdministratorRepository administratorRepository;
     private final ApplicationRepository applicationRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -78,8 +77,8 @@ public class RecruitmentService {
         }
     }
 
-    public List<RecruitmentSearchResponse> searchRecruitmentsTitle(String prefix, int limit) {
-        List<String> recruitmentCodes = recruitmentSearchKeywordRepository.findRecruitmentTitlesByPrefix(prefix, limit);
+    public List<RecruitmentSearchResponse> searchRecruitmentsTitle(String keyword, int limit) {
+        List<String> recruitmentCodes = recruitmentSearchService.findRecruitmentTitlesByKeyword(keyword, limit);
         return recruitmentCodes.stream()
                 .map(RecruitmentSearchResponse::new)
                 .toList();
@@ -93,7 +92,7 @@ public class RecruitmentService {
             throw new CrewsException(CrewsErrorCode.RECRUITMENT_ALREADY_STARTED);
         }
         recruitment.start();
-        recruitmentSearchKeywordRepository.saveRecruitment(recruitment);
+        recruitmentSearchService.saveRecruitment(recruitment);
     }
 
     public RecruitmentStateInProgressResponse findRecruitmentStateInProgress(Long publisherId) {
