@@ -43,7 +43,7 @@ public class RecruitmentService {
 
     private final RecruitmentRepository recruitmentRepository;
     private final RecruitmentDetailsLoader recruitmentDetailsLoader;
-    private final SimpleRedisRecruitmentSearchService simpleRedisRecruitmentSearchService;
+    private final RedisStackRecruitmentSearchService recruitmentSearchService;
     private final AdministratorRepository administratorRepository;
     private final ApplicationRepository applicationRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -77,8 +77,8 @@ public class RecruitmentService {
         }
     }
 
-    public List<RecruitmentSearchResponse> searchRecruitmentsTitle(String prefix, int limit) {
-        List<String> recruitmentCodes = simpleRedisRecruitmentSearchService.findRecruitmentTitlesByKeyword(prefix, limit);
+    public List<RecruitmentSearchResponse> searchRecruitmentsTitle(String keyword, int limit) {
+        List<String> recruitmentCodes = recruitmentSearchService.findRecruitmentTitlesByKeyword(keyword, limit);
         return recruitmentCodes.stream()
                 .map(RecruitmentSearchResponse::new)
                 .toList();
@@ -92,7 +92,7 @@ public class RecruitmentService {
             throw new CrewsException(CrewsErrorCode.RECRUITMENT_ALREADY_STARTED);
         }
         recruitment.start();
-        simpleRedisRecruitmentSearchService.saveRecruitment(recruitment);
+        recruitmentSearchService.saveRecruitment(recruitment);
     }
 
     public RecruitmentStateInProgressResponse findRecruitmentStateInProgress(Long publisherId) {
