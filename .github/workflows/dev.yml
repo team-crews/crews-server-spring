@@ -2,7 +2,7 @@ name: crews backend development version distribute
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "fix/workflow-slack-alarm" ]
 
 permissions:
   contents: read
@@ -75,6 +75,24 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Extract PR number from commit message
+        id: pr_info
+        run: |
+          # Extract PR number from the commit message
+          PR_NUMBER=$(git log -1 --pretty=%B | grep -oP '#\d+' | sed 's/#//')
+          
+          if [ -z "$PR_NUMBER" ]; then
+            echo "No PR number found in commit message"
+            exit 1
+          fi
+
+          # Use GitHub API to get PR details
+          PR_URL="https://github.com/${{ github.repository }}/pull/$PR_NUMBER"
+          PR_TITLE=$(curl -s "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER" | jq -r .title)
+          
+          echo "PR_URL=$PR_URL" >> $GITHUB_ENV
+          echo "PR_TITLE=$PR_TITLE" >> $GITHUB_ENV
+
       - name: Notify Slack on Success
         if: success()
         uses: slackapi/slack-github-action@v1.24.0
@@ -86,7 +104,7 @@ jobs:
                     "type": "section",
                     "text": {
                       "type": "mrkdwn",
-                      "text": "새로운 개발 서버 버전이 배포됐어요! \n ✅PR: <${{ github.event.pull_request.title }}|${{ github.event.pull_request.html_url }}>"
+                      "text": "새로운 개발 서버 버전이 배포됐어요! \n ✅PR: <${{ env.PR_URL }}|${{ env.PR_TITLE }}>"
                     }
                   }
                 ]
