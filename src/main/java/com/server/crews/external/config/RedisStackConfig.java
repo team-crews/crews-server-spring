@@ -3,6 +3,8 @@ package com.server.crews.external.config;
 import com.redis.lettucemod.RedisModulesClient;
 import com.redis.lettucemod.api.StatefulRedisModulesConnection;
 import com.redis.lettucemod.spring.RedisModulesAutoConfiguration;
+import io.lettuce.core.RedisURI;
+import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -21,11 +23,17 @@ public class RedisStackConfig {
 
     @Bean
     public RedisModulesClient redisModulesClient() {
-        return RedisModulesClient.create("redis://" + host + ":" + port);
+        RedisURI redisURI = RedisURI.builder()
+                .withHost(host)
+                .withPort(Integer.parseInt(port))
+                .withTimeout(Duration.ofSeconds(10))
+                .build();
+        return RedisModulesClient.create(redisURI);
     }
 
     @Bean
-    public StatefulRedisModulesConnection<String, String> redisModulesConnection(RedisModulesClient redisModulesClient) {
+    public StatefulRedisModulesConnection<String, String> redisModulesConnection(
+            RedisModulesClient redisModulesClient) {
         return redisModulesClient.connect();
     }
 }
