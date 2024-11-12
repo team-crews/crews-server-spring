@@ -2,7 +2,7 @@ name: crews backend development version distribute
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "feat/#109-search-with-redisearch" ]
 
 permissions:
   contents: read
