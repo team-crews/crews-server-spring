@@ -79,7 +79,7 @@ jobs:
         id: pr_info
         run: |
           # Extract PR number from the commit message
-          PR_NUMBER=$(git log -1 --pretty=%B | grep -oP '#\d+' | sed 's/#//')
+          PR_NUMBER=$(git log -1 --pretty=%B | grep -oP '\(#(\d+)\)' | sed 's/[()]//g' | sed 's/#//')
           
           if [ -z "$PR_NUMBER" ]; then
             echo "No PR number found in commit message"
@@ -104,7 +104,7 @@ jobs:
                     "type": "section",
                     "text": {
                       "type": "mrkdwn",
-                      "text": "새로운 개발 서버 버전이 배포됐어요! \n ✅PR: <${{ env.PR_URL }}|${{ env.PR_TITLE }}>"
+                      "text": "새로운 개발 서버 버전이 배포됐어요! \n ✅ PR: <${{ env.PR_URL }}|${{ env.PR_TITLE }}>"
                     }
                   }
                 ]
