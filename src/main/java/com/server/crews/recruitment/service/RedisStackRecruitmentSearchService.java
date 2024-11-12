@@ -60,12 +60,14 @@ public class RedisStackRecruitmentSearchService implements RecruitmentSearchServ
                     .map(document -> document.get("title"))
                     .toList();
         } catch (Exception e) {
-            e.printStackTrace();
             customLogger.error(e);
             return List.of();
         }
     }
 
+    /*
+    운영 서버에서는 사용하지 말 것.
+     */
     public void createIndex() {
         try (StatefulRedisModulesConnection<String, String> connection = redisStackConnectionPool.borrowObject()) {
             RedisModulesCommands<String, String> commands = connection.sync();
@@ -76,7 +78,6 @@ public class RedisStackRecruitmentSearchService implements RecruitmentSearchServ
                         Field.numeric("deadline").build());
             }
         } catch (Exception e) {
-            e.printStackTrace();
             customLogger.error(e);
         }
     }
