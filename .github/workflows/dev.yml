@@ -86,7 +86,7 @@ jobs:
                     "type": "section",
                     "text": {
                       "type": "mrkdwn",
-                      "text": "새로운 개발 서버 버전이 배포됐어요! \n ✅PR: <${{ github.event.pull_request.title }}|${{ github.event.pull_request.html_url }}>"
+                      "text": "새로운 개발 서버 버전이 배포됐어요! \n ✅ 요약: ${{ github.event.head_commit.message }} \n ✅ 새 도커 이미지를 PULL 받아주세요"
                     }
                   }
                 ]
