@@ -1,4 +1,4 @@
-package com.server.crews.recruitment.repository;
+package com.server.crews.recruitment.service;
 
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_CODE;
 import static com.server.crews.fixture.RecruitmentFixture.DEFAULT_DESCRIPTION;
@@ -12,30 +12,30 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class RecruitmentSearchKeywordRepositoryTest extends CacheStoreTest {
+class SimpleRedisRedisStackRecruitmentSearchServiceTest extends CacheStoreTest {
 
     @Autowired
-    private RecruitmentSearchKeywordRepository recruitmentSearchKeywordRepository;
+    private SimpleRedisRecruitmentSearchService simpleRedisRecruitmentSearchService;
 
     @Test
     @DisplayName("모집 공고 제목을 저장소에 저장하고 접두사로 찾는다.")
     void findRecruitmentTitlesByPrefix() {
         // given
-        recruitmentSearchKeywordRepository.saveRecruitment(
+        simpleRedisRecruitmentSearchService.saveRecruitment(
                 new Recruitment(null, DEFAULT_CODE, "멋쟁이사자처럼 서강대학교 99기 아기사자 모집", DEFAULT_DESCRIPTION,
                         LocalDateTime.of(2030, 10, 5, 0, 0, 0), null,
                         List.of()));
-        recruitmentSearchKeywordRepository.saveRecruitment(
+        simpleRedisRecruitmentSearchService.saveRecruitment(
                 new Recruitment(null, DEFAULT_CODE, "멋쟁이사자처럼 서강대학교 100기 아기사자 모집", DEFAULT_DESCRIPTION,
                         LocalDateTime.of(2030, 11, 5, 0, 0, 0), null,
                         List.of()));
-        recruitmentSearchKeywordRepository.saveRecruitment(
+        simpleRedisRecruitmentSearchService.saveRecruitment(
                 new Recruitment(null, DEFAULT_CODE, "CEOS 백엔드 99기 모집", DEFAULT_DESCRIPTION,
                         LocalDateTime.of(2030, 11, 5, 0, 0, 0), null,
                         List.of()));
 
         // when
-        List<String> results = recruitmentSearchKeywordRepository.findRecruitmentTitlesByPrefix("멋쟁이", 2);
+        List<String> results = simpleRedisRecruitmentSearchService.findRecruitmentTitlesByKeyword("멋쟁이", 2);
 
         // then
         assertThat(results).hasSize(2)

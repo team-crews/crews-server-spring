@@ -21,10 +21,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class RecruitmentSearchServiceTest {
+class RedisStackRecruitmentSearchServiceTest {
 
     @Autowired
-    private RecruitmentSearchService recruitmentSearchService;
+    private RedisStackRecruitmentSearchService redisStackRecruitmentSearchService;
 
     @Autowired
     private RedisModulesClient redisSearchClient;
@@ -47,7 +47,7 @@ class RecruitmentSearchServiceTest {
     @DisplayName("모집 공고 검색에 대한 인덱스를 생성한다.")
     void createIndex() {
         // when
-        recruitmentSearchService.createIndex();
+        redisStackRecruitmentSearchService.createIndex();
 
         // then
         List<Object> recruitmentIndexInfo = commands.ftInfo("recruitment_idx");
@@ -62,23 +62,23 @@ class RecruitmentSearchServiceTest {
     @DisplayName("모집 공고 제목을 텍스트 검색한다.")
     void saveAndSearch() {
         // given
-        recruitmentSearchService.createIndex();
+        redisStackRecruitmentSearchService.createIndex();
 
-        recruitmentSearchService.saveRecruitment(
+        redisStackRecruitmentSearchService.saveRecruitment(
                 new Recruitment(1l, DEFAULT_CODE, "멋쟁이사자처럼 서강대학교 99기 아기사자 모집", DEFAULT_DESCRIPTION,
                         LocalDateTime.of(2030, 10, 5, 0, 0, 0), null,
                         List.of()));
-        recruitmentSearchService.saveRecruitment(
+        redisStackRecruitmentSearchService.saveRecruitment(
                 new Recruitment(2l, DEFAULT_CODE, "대박 멋진 멋쟁이사자처럼 서강대학교 100기 아기사자 모집", DEFAULT_DESCRIPTION,
                         LocalDateTime.of(2030, 11, 5, 0, 0, 0), null,
                         List.of()));
-        recruitmentSearchService.saveRecruitment(
+        redisStackRecruitmentSearchService.saveRecruitment(
                 new Recruitment(3l, DEFAULT_CODE, "CEOS 백엔드 99기 모집", DEFAULT_DESCRIPTION,
                         LocalDateTime.of(2030, 11, 5, 0, 0, 0), null,
                         List.of()));
 
         // when
-        List<String> results = recruitmentSearchService.findRecruitmentTitlesByKeyword("멋쟁이", 5);
+        List<String> results = redisStackRecruitmentSearchService.findRecruitmentTitlesByKeyword("멋쟁이", 5);
 
         // then
         assertThat(results).hasSize(2)
