@@ -2,7 +2,7 @@ name: crews backend development version distribute
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "feat/#109-search-with-redisearch" ]
 
 permissions:
   contents: read
@@ -70,3 +70,46 @@ jobs:
           platforms: |
             linux/amd64
             linux/arm64
+
+  alarm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.ACTION_TOKEN }}
+          submodules: true
+
+      - name: Check if docker-compose-client.yml was modified
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -q "docker-compose-client.yml"; then
+            echo "modified=true" >> $GITHUB_ENV
+          else
+            echo "modified=false" >> $GITHUB_ENV
+          fi
+
+      - name: Notify Slack on Success
+        if: success()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "#36a64f",
+                  "title": "새로운 서버 개발 버전이 배포됐어요!",
+                  "fields": [
+                    {
+                      "title": "도커 컴포즈 파일이 변경됐나요?",
+                      "title_link": "https://github.com/team-crews/crews-server-spring/blob/dev/docker-compose-local.yml",
+                      "value": "${{ env.modified }}",
+                      "short": true
+                    }
+                  ]      
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
