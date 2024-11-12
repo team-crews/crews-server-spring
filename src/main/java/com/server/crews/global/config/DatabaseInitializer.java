@@ -1,5 +1,6 @@
 package com.server.crews.global.config;
 
+import com.redis.lettucemod.api.StatefulRedisModulesConnection;
 import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.NarrativeAnswer;
 import com.server.crews.applicant.domain.SelectiveAnswer;
@@ -15,9 +16,11 @@ import com.server.crews.recruitment.domain.Section;
 import com.server.crews.recruitment.domain.SelectiveQuestion;
 import com.server.crews.recruitment.repository.RecruitmentRepository;
 import com.server.crews.recruitment.repository.RecruitmentSearchKeywordRepository;
+import com.server.crews.recruitment.service.RecruitmentSearchService;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
@@ -36,6 +39,7 @@ public class DatabaseInitializer implements ApplicationRunner {
     private final ApplicantRepository applicantRepository;
     private final ApplicationRepository applicationRepository;
     private final RecruitmentSearchKeywordRepository recruitmentSearchKeywordRepository;
+    private final RecruitmentSearchService recruitmentSearchService;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -70,6 +74,8 @@ public class DatabaseInitializer implements ApplicationRunner {
         recruitment.close();
         recruitmentRepository.save(recruitment);
         recruitmentSearchKeywordRepository.saveRecruitment(recruitment);
+        recruitmentSearchService.createIndex();
+        recruitmentSearchService.saveRecruitment(recruitment);
 
         Applicant kh = new Applicant("kh@google.com", passwordEncoder.encode("test-password"));
         Applicant lkh = new Applicant("lkh@google.com", passwordEncoder.encode("test-password"));
