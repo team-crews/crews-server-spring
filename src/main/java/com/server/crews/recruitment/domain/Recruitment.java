@@ -37,7 +37,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         indexes = {
                 @Index(columnList = "publisher_id", name = "idx_publisher_id"),
                 @Index(columnList = "code", name = "idx_code"),
-                @Index(columnList = "title", name = "idx_title")
+                @Index(columnList = "title", name = "idx_title"),
+                @Index(columnList = "deadline, progress", name = "idx_deadline_progress")
         }
 )
 @EntityListeners(AuditingEntityListener.class)
