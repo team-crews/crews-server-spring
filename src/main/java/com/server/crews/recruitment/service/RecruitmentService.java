@@ -147,10 +147,13 @@ public class RecruitmentService {
     public void closeRecruitments() {
         LocalDateTime now = LocalDateTime.now(clock);
         List<Recruitment> recruitments = recruitmentRepository.findAll();
+
         List<Recruitment> recruitmentsToBeClosed = recruitments.stream()
                 .filter(recruitment -> recruitment.hasOnOrAfterDeadline(now))
+                .filter(recruitment -> !recruitment.isAnnounced())
                 .toList();
         recruitmentsToBeClosed.forEach(Recruitment::close);
+
         String closedRecruitmentIds = recruitmentsToBeClosed.stream()
                 .map(Recruitment::getId)
                 .map(String::valueOf)
