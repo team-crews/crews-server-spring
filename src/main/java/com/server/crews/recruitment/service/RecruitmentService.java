@@ -146,11 +146,10 @@ public class RecruitmentService {
     @Scheduled(cron = "${schedules.cron.closing-recruitment}")
     public void closeRecruitments() {
         LocalDateTime now = LocalDateTime.now(clock);
-        List<Recruitment> recruitments = recruitmentRepository.findAll();
-        List<Recruitment> recruitmentsToBeClosed = recruitments.stream()
-                .filter(recruitment -> recruitment.hasOnOrAfterDeadline(now))
-                .toList();
+        List<Recruitment> recruitmentsToBeClosed = recruitmentRepository.findByDeadlineLessThanEqualAndProgressNot(now,
+                RecruitmentProgress.ANNOUNCED);
         recruitmentsToBeClosed.forEach(Recruitment::close);
+
         String closedRecruitmentIds = recruitmentsToBeClosed.stream()
                 .map(Recruitment::getId)
                 .map(String::valueOf)
