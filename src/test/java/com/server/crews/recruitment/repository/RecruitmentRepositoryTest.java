@@ -11,8 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import com.server.crews.auth.domain.Administrator;
 import com.server.crews.environ.repository.RepositoryTest;
 import com.server.crews.recruitment.domain.Recruitment;
-import com.server.crews.recruitment.repository.RecruitmentRepository;
+import com.server.crews.recruitment.domain.RecruitmentProgress;
 import jakarta.validation.ConstraintViolationException;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,5 +51,20 @@ class RecruitmentRepositoryTest extends RepositoryTest {
         // when & then
         assertThatThrownBy(() -> recruitmentRepository.save(recruitment))
                 .isInstanceOf(ConstraintViolationException.class);
+    }
+
+    @Test
+    @DisplayName("기준보다 이전 마감일과 모집 단계로 모집 공고 목록을 조회한다.")
+    void findByDeadlineLessThanEqualAndProgressNot() {
+        // given
+        Administrator publisher = createDefaultAdmin();
+        createDefaultRecruitment(publisher);
+
+        // when
+        List<Recruitment> recruitments = recruitmentRepository.findByDeadlineLessThanEqualAndProgressNot(
+                LocalDateTime.of(2030, 10, 5, 18, 0), RecruitmentProgress.ANNOUNCED);
+
+        // then
+        assertThat(recruitments).hasSize(1);
     }
 }
