@@ -92,14 +92,6 @@ public class Recruitment {
 
     private void addSections(List<Section> sections) {
         sections.forEach(section -> section.updateRecruitment(this));
-        sections.stream()
-                .map(section -> section.getSelectiveQuestions())
-                .flatMap(Collection::stream)
-                .forEach(selectiveQuestion -> selectiveQuestion.updateRecruitment(this));
-        sections.stream()
-                .map(section -> section.getNarrativeQuestions())
-                .flatMap(Collection::stream)
-                .forEach(narrativeQuestion -> narrativeQuestion.updateRecruitment(this));
         this.sections.addAll(sections);
     }
 

@@ -25,9 +25,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "narrative_question",
         indexes = {
-                @Index(columnList = "section_id", name = "idx_section_id"),
-                @Index(columnList = "recruitment_id", name = "idx_recruitment_id")
-
+                @Index(columnList = "section_id", name = "idx_section_id")
         }
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -35,10 +33,6 @@ public class NarrativeQuestion implements Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recruitment_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Recruitment recruitment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
@@ -60,7 +54,7 @@ public class NarrativeQuestion implements Question {
     private Integer wordLimit;
 
     public NarrativeQuestion(Long id) {
-        this(id, null, null, null, null, null, null);
+        this(id, null, null, null, null);
     }
 
     public NarrativeQuestion(Long id, String content, Boolean necessity, Integer order, Integer wordLimit) {
@@ -77,10 +71,6 @@ public class NarrativeQuestion implements Question {
 
     public void updateSection(Section section) {
         this.section = section;
-    }
-
-    public void updateRecruitment(Recruitment recruitment) {
-        this.recruitment = recruitment;
     }
 
     public Long getSectionId() {
