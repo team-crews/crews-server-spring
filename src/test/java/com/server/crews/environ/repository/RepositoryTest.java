@@ -73,14 +73,12 @@ public abstract class RepositoryTest {
     private NarrativeQuestion createNarrativeQuestion(Section section) {
         NarrativeQuestion narrativeQuestion = NARRATIVE_QUESTION();
         narrativeQuestion.updateSection(section);
-        narrativeQuestion.updateRecruitment(section.getRecruitment());
         return narrativeQuestion;
     }
 
     private SelectiveQuestion createSelectiveQuestion(Section section) {
         SelectiveQuestion selectiveQuestion = SELECTIVE_QUESTION();
         selectiveQuestion.updateSection(section);
-        selectiveQuestion.updateRecruitment(section.getRecruitment());
         return selectiveQuestion;
     }
 
