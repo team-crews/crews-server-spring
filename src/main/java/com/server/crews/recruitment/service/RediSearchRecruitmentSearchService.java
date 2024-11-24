@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class RedisStackRecruitmentSearchService implements RecruitmentSearchService {
+public class RediSearchRecruitmentSearchService implements RecruitmentSearchService {
     private static final String INDEX_KEY = "recruitment:";
     private static final String INDEX_NAME = "recruitment_idx";
     private static final ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");

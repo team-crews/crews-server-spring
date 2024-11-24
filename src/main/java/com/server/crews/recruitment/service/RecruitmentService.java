@@ -43,7 +43,7 @@ public class RecruitmentService {
 
     private final RecruitmentRepository recruitmentRepository;
     private final RecruitmentDetailsLoader recruitmentDetailsLoader;
-    private final RedisStackRecruitmentSearchService recruitmentSearchService;
+    private final RediSearchRecruitmentSearchService recruitmentSearchService;
     private final AdministratorRepository administratorRepository;
     private final ApplicationRepository applicationRepository;
     private final ApplicationEventPublisher eventPublisher;
