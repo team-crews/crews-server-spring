@@ -12,4 +12,4 @@
 - Nginx
 - Docker
 ## Architecture
-![crews-architecture drawio](https://github.com/user-attachments/assets/84c41e9e-2509-4cb8-b1d5-bd38bbc5b155)
+![crews-architecture-v2 drawio](https://github.com/user-attachments/assets/e6abf1d9-3d55-4cad-b65c-1b31e1f0eb35)
