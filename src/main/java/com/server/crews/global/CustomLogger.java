@@ -6,7 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 public class CustomLogger {
-    private static final String PACKAGE_NAME = "com.server.crews";
+    private static final int STACK_TRACE_STORE_LIMIT = 8;
+
     private final Logger logger;
 
     public CustomLogger(Class<?> clazz) {
@@ -31,12 +32,19 @@ public class CustomLogger {
 
     private String extractPackageStackTrace(Exception e) {
         StringBuilder stackTraceBuilder = new StringBuilder();
+        int count = 0;
         for (StackTraceElement element : e.getStackTrace()) {
-            if (element.getClassName().startsWith(PACKAGE_NAME)) {
-                stackTraceBuilder.append(element).append("\n");
+            stackTraceBuilder.append(element).append(" ");
+            count++;
+            if (exceedStoreLimit(count)) {
+                break;
             }
         }
         return stackTraceBuilder.toString();
+    }
+
+    private boolean exceedStoreLimit(int count) {
+        return count >= STACK_TRACE_STORE_LIMIT;
     }
 
     public void info(String var1, Object... var2) {

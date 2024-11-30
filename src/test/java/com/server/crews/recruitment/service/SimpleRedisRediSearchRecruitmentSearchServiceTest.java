@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class SimpleRedisRedisStackRecruitmentSearchServiceTest extends CacheStoreTest {
+class SimpleRedisRediSearchRecruitmentSearchServiceTest extends CacheStoreTest {
 
     @Autowired
     private SimpleRedisRecruitmentSearchService simpleRedisRecruitmentSearchService;
