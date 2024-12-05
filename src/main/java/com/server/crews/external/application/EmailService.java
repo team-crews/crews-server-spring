@@ -4,11 +4,14 @@ import com.server.crews.applicant.domain.Application;
 import com.server.crews.applicant.domain.Outcome;
 import com.server.crews.global.CustomLogger;
 import com.server.crews.recruitment.domain.Recruitment;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -22,11 +25,18 @@ public class EmailService {
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
 
-    public void send(Application application, Recruitment recruitment) {
-        customLogger.info("send - application id: {} recruitment id: {}", application.getId(), recruitment.getId());
-        MimeMessagePreparator message = createMessage(application, recruitment);
+    @Async("emailThreadPoolTaskExecutor")
+    public void sendBatch(List<Application> applications, Recruitment recruitment) {
+        List<MimeMessagePreparator> mimeMessagePreparators = applications.stream()
+                .map(application -> createMessage(application, recruitment))
+                .toList();
+        javaMailSender.send(mimeMessagePreparators.toArray(new MimeMessagePreparator[0]));
 
-        javaMailSender.send(message);
+        String applicationIds = applications.stream()
+                .map(Application::getId)
+                .map(String::valueOf)
+                .collect(Collectors.joining(", "));
+        customLogger.info("send email - recruitment id: {} application ids: {}", recruitment.getId(), applicationIds);
     }
 
     private MimeMessagePreparator createMessage(Application application, Recruitment recruitment) {

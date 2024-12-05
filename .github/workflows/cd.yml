@@ -89,7 +89,10 @@ jobs:
             sudo chmod +x /usr/local/bin/docker-compose
             
             docker pull ${{ secrets.DOCKER_PROD_SERVER_IMAGE_NAME }}
-            docker rm -f crews-server
+            
+            docker stop --time=3 crews-server
+            docker rm crews-server
+            
             docker-compose up crews-server -d
 
             docker image prune -f
