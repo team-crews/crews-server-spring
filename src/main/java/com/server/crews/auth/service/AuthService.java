@@ -28,12 +28,20 @@ public class AuthService {
     public TokenResponse registerForAdmin(AdminLoginRequest request) {
         String clubName = request.clubName();
         String password = request.password();
+        validateDuplicatedClubName(clubName);
 
         String encodedPassword = passwordEncoder.encode(password);
         Administrator administrator = new Administrator(clubName, encodedPassword);
         administratorRepository.save(administrator);
         String accessToken = jwtTokenProvider.createAccessToken(Role.ADMIN, clubName);
         return new TokenResponse(administrator.getClubName(), accessToken);
+    }
+
+    private void validateDuplicatedClubName(String clubName) {
+        administratorRepository.findByClubName(clubName)
+                .ifPresent(administrator -> {
+                    throw new CrewsException(CrewsErrorCode.DUPLICATED_CLUB_NAME);
+                });
     }
 
     public TokenResponse loginForAdmin(AdminLoginRequest request) {
